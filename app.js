@@ -13,22 +13,11 @@ app.get('/', function(req, res)
 {
 	res.render('home.html');
 });
-
+/*
 app.post('/', function(req, res) {
-	var id = req.body.username;
-	var pass = req.body.password;
-	var repass = req.body.repassword;
-	var email = req.body.email;
-	console.log(id);
-	console.log(pass);
-	console.log(repass);
-	console.log(email);
-	if (pass !== repass) {
-		return res.redirect('/signup');
-	}
 	res.render('home.html');
 });
-
+*/
 /*
 app.post('/', function(req, res) 
 {
@@ -51,6 +40,19 @@ app.post('/welcome', function(req, res)
 app.get('/signup', function(req, res) 
 {
 	res.render('sign-up-form.html', {error:false});
+});
+
+app.post('/signup_submit', function(req, res){
+	var id = req.body.username;
+	var pass = req.body.password;
+	var repass = req.body.repassword;
+	var email = req.body.email;
+	console.log(id);
+	console.log(pass);
+	console.log(repass);
+	console.log(email);
+	
+	return res.redirect("/");
 });
 
 var server = app.listen(3000, function() {});
