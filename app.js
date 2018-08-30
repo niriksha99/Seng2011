@@ -17,10 +17,15 @@ app.get('/', function(req, res)
 app.post('/', function(req, res) {
 	var id = req.body.username;
 	var pass = req.body.password;
+	var repass = req.body.repassword;
 	var email = req.body.email;
-	console.log(id)
-	console.log(pass)
-	console.log(email)
+	console.log(id);
+	console.log(pass);
+	console.log(repass);
+	console.log(email);
+	if (pass !== repass) {
+		return res.redirect('/signup');
+	}
 	res.render('home.html');
 });
 
@@ -38,18 +43,14 @@ app.get('/dashboard', function(req, res)
 
 app.post('/welcome', function(req, res) 
 {
-	var name = req.body.name;
-	console.log(name);
-	res.render('welcome.html', {name:name});
+	var my_name = req.body.name;
+	console.log(my_name);
+	res.render('welcome.html', {name:my_name});
 });
-/*
-var id;
-var pass;
-var email;
-*/
+
 app.get('/signup', function(req, res) 
 {
-	res.render('sign-up-form.html');
+	res.render('sign-up-form.html', {error:false});
 });
 
 var server = app.listen(3000, function() {});
