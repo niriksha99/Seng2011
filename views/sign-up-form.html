@@ -9,7 +9,7 @@
         <div class="row">
           <div class="col-lg-6 col-md-12 mb-5 element-animate">
             <h3 class="mb-5">Sign-Up Form.</h3>
-            <form action="/" method="post">
+            <form action="/signup_submit" onsubmit="return checkPass()" method="post">
                   <div class="row">
                     <div class="col-md-12 form-group">
                       <label for="name">Username</label>
@@ -19,11 +19,11 @@
                   <div class="row">
                     <div class="col-md-12 form-group">
                       <label for="name">Password</label>
-                      <input type="password" name="password" class="form-control " required="required">
+                      <input type="password" id="password" name="password" class="form-control " required="required">
                     </div>
                     <div class="col-md-12 form-group">
                       <label for="name">Re-type Password</label>
-                      <input type="password" name="repassword" class="form-control " required="required">
+                      <input type="password" id="repassword" name="repassword" class="form-control " required="required">
                     </div>
                   </div>
                   <div class="row">
@@ -32,9 +32,17 @@
                       <input type="email" name="email" class="form-control " required="required">
                     </div>
                   </div>
-                  <% if (error) { %>
-                        <p style="color: red;"> Please enter valid password </p>
-                  <% } %>
+                  <script>
+                      function checkPass() {
+                        var pass = document.getElementById("password").value;
+                        var repass = document.getElementById("repassword").value;
+                        if (pass != repass) {
+                          alert("Passwords don't match!");
+                          return false;
+                        }
+                        return true;
+                      }
+                  </script>
                   <br>
                   <div class="row">
                     <div class="col-md-6 form-group">
