@@ -1,8 +1,8 @@
 var express = require('express');
-//var session = require('express-session');
+var session = require('express-session');
 var app = express();
 
-//app.use(session({secret: 'P1n3@pp7ePizz4'}));
+app.use(session({secret: 'P1n3@pp7ePizz4'}));
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -15,9 +15,10 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-
 app.get('/', function(req, res){
-	res.render('homepage.html', {error:false});
+	var valid = req.session.valid;
+	req.session.valid = null;
+	res.render('homepage.html', {error:valid});
 });
 
 app.get('/signup', function(req, res) 
@@ -52,15 +53,24 @@ app.post('/login', function(req, res)
 	console.log(id);
 	console.log(ps);
 	if (id === "admin" && ps === "password") {
-		res.redirect('/user/:id');
+		req.session.username = id;
+		res.redirect('/user');
 	} else {
+		req.session.valid = true;
 		res.redirect('/');
 	}
 });
 
-app.get('/user/:id', function(req, res)
+app.get('/home', function(req, res)
 {
-	res.render('user_homepage.html', {user:req.params.id});
+	res.render('homepage.html');
+});
+
+app.get('/user', function(req, res)
+{
+	if (req.session.username !== null) {
+		res.render('user_homepage.html', {user:req.session.username});
+	}
 });
 
 app.get('/requests', function(req, res)
@@ -76,12 +86,18 @@ app.get('/make_requests', function(req, res)
 app.get('/link_business', function(req, res)
 {
 	res.render('link_business.html');
-})
+});
 
 app.get('/business', function(req, res)
 {
 	res.render('my_businesses.html');
-})
+});
+
+app.get('/signout', function(req, res)
+{
+	req.session.username = null;
+	res.redirect('/');
+});
 
 var server = app.listen(3000, function() {});
 
