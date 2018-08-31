@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{{ user }} Dashboard</title>
+    <title><%= user %> Dashboard</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -35,19 +35,22 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="request_form.html">Request form</a>
+              <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="my_requests.html">My Requests</a>
+              <a class="nav-link" href="/make_request">Request form</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="link_business.html">Link Business</a>
+              <a class="nav-link" href="/requests">My Requests</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="my_businesses.html">My Businesses</a>
+              <a class="nav-link" href="/link_business">Link Business</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="homepage.html">Sign out</a>
+              <a class="nav-link" href="/business">My Businesses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/">Sign out</a>
             </li>
           </ul>
         </div>
@@ -61,7 +64,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>Hello, {{user}}</h1>
+              <h1>Hello, <%= user %></h1>
             </div>
           </div>
         </div>
