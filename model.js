@@ -16,9 +16,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(req, res){
-	var valid = req.session.valid;
-	req.session.valid = null;
-	res.render('homepage.html', {error:valid});
+	if (req.session.valid === undefined) req.session.valid = false;
+	if (req.session.error === undefined) req.session.error = false;
+	if (req.session.username === undefined) req.session.username = null;
+	res.render('homepage.html', {error:req.session.error, login:req.session.username});
 });
 
 app.get('/signup', function(req, res) 
@@ -54,9 +55,11 @@ app.post('/login', function(req, res)
 	console.log(ps);
 	if (id === "admin" && ps === "password") {
 		req.session.username = id;
+		req.session.valid = true;
+		req.session.error = false;
 		res.redirect('/user');
 	} else {
-		req.session.valid = true;
+		req.session.error = true;
 		res.redirect('/');
 	}
 });
@@ -78,7 +81,7 @@ app.get('/requests', function(req, res)
 	res.render('my_requests.html');
 });
 
-app.get('/make_requests', function(req, res)
+app.get('/make_request', function(req, res)
 {
 	res.render('request_form.html');
 });
@@ -96,6 +99,8 @@ app.get('/business', function(req, res)
 app.get('/signout', function(req, res)
 {
 	req.session.username = null;
+	req.session.valid = false;
+	req.session.error = false;
 	res.redirect('/');
 });
 
