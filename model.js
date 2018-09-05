@@ -27,8 +27,8 @@ app.get('/signup', function(req, res)
 	res.render('sign_up.html');
 });
 
-app.post('/signup_submit', function(req, res)
-{
+//insert the user's information into the user table
+app.post('/signup_submit',(req, res) => {
 	var first = req.body.first_name;
 	var last = req.body.last_name;
 	var id = req.body.username;
@@ -36,6 +36,15 @@ app.post('/signup_submit', function(req, res)
 	var repass = req.body.repassword;
 	var phone = req.body.mobile_number;
 	var email = req.body.email;
+	
+    let post = {user_name :id, first_name :first, last_name :last, password :pass, phone_nubmer :phone, email_address : email};
+    let sql = 'INSERT INTO Users SET ?';
+    let query = db.query(sql, post, (err, result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send('User 1 added...');
+	});
+
 	console.log(first);
 	console.log(last);
 	console.log(id);
@@ -43,16 +52,22 @@ app.post('/signup_submit', function(req, res)
 	console.log(repass);
 	console.log(phone);
 	console.log(email);
-	
 	return res.redirect("/");
 });
 
-app.post('/login', function(req, res)
-{
+app.post('/login', (req, res)=> {
+    let sql = `SELECT * FROM Users WHERE id = ${req.body.username}`;
+    let query = db.query(sql, (err, result) => {
+        if(err) throw err;
+        console.log(result);
+        res.send('Post fetched...');
+	});
+	//need to get the password from the corresponding table
 	var id = req.body.username;
 	var ps = req.body.password;
 	console.log(id);
 	console.log(ps);
+	//once get the password from the database, compare ps with it
 	if (id === "admin" && ps === "password") {
 		req.session.username = id;
 		req.session.valid = true;
@@ -63,6 +78,7 @@ app.post('/login', function(req, res)
 		res.redirect('/');
 	}
 });
+
 
 app.get('/home', function(req, res)
 {
