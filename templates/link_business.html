@@ -76,47 +76,48 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Business Form.</h3>
-        <form action="/business" method="post">
+        <form action="/link_business_submit" method="post">
+        <form onsubmit="" action="" method="post">
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business name</label>
-                  <input type="text" id="business_name" name="business_name" class="form-control ">
+                  <input type="text" id="business_name" name="business_name" class="form-control" required="required">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Opening time (if applicable)</label>
-                  <input type="text" id="opening_time" name="opening_time" class="form-control ">
+                  <input type="text" id="opening_time" name="opening_time" class="form-control" required="required">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Phone number</label>
-                  <input type="tel" id="phone_number" name="phone_number" class="form-control ">
+                  <input type="text" id="phone_number" name="phone" class="form-control" required="required">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Email Address</label>
-                  <input type="email" id="email" name="email" class="form-control ">
+                  <input type="text" id="email" name="email" class="form-control" required="required">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business Description</label>
-                  <input type="text" id="description" name="description" class="form-control ">
+                  <input type="text" id="business_description" name="business_description" class="form-control" required="required">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 form-group">
-                  <input type="submit" value="Create" class="btn btn-primary">
+                  <a href="/individual_business" class="btn btn-dark mt-2 mt-sm-0y"> Create </a>
                 </div>
               </div>
             </form>
             <form action="" method="post">
               <div class="row">
                  <div class="col-md-6 form-group">
-                    <a href="/user" class="btn btn-primary"> Cancel </a>
+                    <a href="/user" class="btn btn-dark mt-2 mt-sm-0y"> Cancel </a>
                  </div>
               </div>
             </form>

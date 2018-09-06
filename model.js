@@ -22,7 +22,7 @@ app.get('/', function(req, res){
 	res.render('homepage.html', {error:req.session.error, login:req.session.username});
 });
 
-app.get('/signup', function(req, res) 
+app.get('/signup', function(req, res)
 {
 	res.render('sign_up.html');
 });
@@ -43,7 +43,23 @@ app.post('/signup_submit', function(req, res)
 	console.log(repass);
 	console.log(phone);
 	console.log(email);
-	
+
+	return res.redirect("/");
+});
+
+app.post('/link_business_submit', function(req, res)
+{
+	var business_name = req.body.business_name;
+	var opening_time = req.body.opening_time;
+	var phone = req.body.mobile_number;
+	var email = req.body.email;
+	var business_description = req.body.business_description;
+	console.log(business_name);
+	console.log(opening_time);
+	console.log(phone);
+	console.log(email);
+	console.log(business_description);
+
 	return res.redirect("/");
 });
 
@@ -81,6 +97,16 @@ app.get('/requests', function(req, res)
 	res.render('my_requests.html');
 });
 
+app.get('/individual_request', function(req, res)
+{
+	res.render('individual_request.html');
+});
+
+app.get('/individual_bid', function(req, res)
+{
+	res.render('individual_bid.html');
+});
+
 app.get('/make_request', function(req, res)
 {
 	res.render('request_form.html');
@@ -96,6 +122,27 @@ app.get('/business', function(req, res)
 	res.render('my_businesses.html');
 });
 
+app.get('/individual_business', function(req, res)
+{
+	res.render('business.html');
+});
+
+app.get('/my_bids', function(req, res)
+{
+	res.render('my_bids.html');
+	//res.sendFile(path.join(__dirname+'/my_bids.html'));
+});
+
+app.get('/accepted_bids', function(req, res)
+{
+	res.render('accepted_bids.html');
+});
+
+app.get('/catering_requests', function(req, res)
+{
+	res.render('catering_requests.html');
+});
+
 app.get('/signout', function(req, res)
 {
 	req.session.username = null;
@@ -104,6 +151,6 @@ app.get('/signout', function(req, res)
 	res.redirect('/');
 });
 
-var server = app.listen(3000, function() {});
+var server = app.listen(8000, function() {});
 
-console.log('http://localhost:3000')
+console.log('http://localhost:8000')
