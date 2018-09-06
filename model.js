@@ -1,8 +1,9 @@
 var express = require('express');
 var session = require('express-session');
+var mysql = require('mysql');
 var app = express();
 
-app.use(session({secret: 'P1n3@pp7ePizz4'}));
+app.use(session({secret: 'P1n3@pp7ePizz4', saveUninitialized: true, resave: true}));
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -15,11 +16,26 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+const con = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'database',
+});
+
+con.connect((err) => {
+	if (err) {
+		console.log("Can't connect to database");
+		return;
+	}
+
+	console.log("Connection established!");
+});
+
 app.get('/', function(req, res){
 	if (req.session.valid === undefined) req.session.valid = false;
 	if (req.session.error === undefined) req.session.error = false;
 	if (req.session.username === undefined) req.session.username = null;
-	res.render('homepage.html', {error:req.session.error, login:req.session.username});
+	res.render('homepage.html', {error: req.session.error, login: req.session.username});
 });
 
 app.get('/signup', function(req, res) 
@@ -66,13 +82,19 @@ app.post('/login', function(req, res)
 
 app.get('/home', function(req, res)
 {
-	res.render('homepage.html');
+	if (req.session.username !== null) {
+		res.render('homepage.html', {error: req.session.error, login: req.session.username});
+	} else {
+		res.redirect('/');
+	}
 });
 
 app.get('/user', function(req, res)
 {
 	if (req.session.username !== null) {
-		res.render('user_homepage.html', {user:req.session.username});
+		res.render('user_homepage.html', {user: req.session.username});
+	} else {
+		res.redirect('/');
 	}
 });
 
@@ -102,6 +124,18 @@ app.get('/signout', function(req, res)
 	req.session.valid = false;
 	req.session.error = false;
 	res.redirect('/');
+});
+
+app.post('/apply_business', function(req, res)
+{
+	//
+	res.redirect('/business');
+});
+
+app.post('/post_request', function(req, res)
+{
+	//
+	res.redirect('/requests');
 });
 
 var server = app.listen(3000, function() {});
