@@ -15,13 +15,13 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-var mysql = require('mysql');
+ var mysql = require('mysql');
 // ***** start of db stuff *****
 
-// var con;
+var con;
 
 // setup PartyWhip database, !!! REMOVES CURRENT PARTYWHIP DATABASE !!!
-/*
+
 initialise_database(create_tables);
 
 function initialise_database(callback) {
@@ -71,7 +71,6 @@ function basic_query(sql, message) {
 	});
 }
 
-*/
 // ***** end of db stuff *****
 
 app.get('/', function(req, res){
