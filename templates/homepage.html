@@ -32,8 +32,9 @@
           Menu
           <i class="fa fa-bars"></i>
         </button>
-        <% if (login === null) { %>
+         <% if (login === null) { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
+<<<<<<< HEAD
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <a href="/signup" class="nav-link">Sign-up</a>
@@ -91,6 +92,32 @@
                  <h4 style="color: red;"> Please enter a valid username and password </h4>
               <% } %>
           </form>
+=======
+        <form action="/login" method="post">
+          <div class="row">
+          <div class="col-md-5">
+            <input type="text" id="username" name="username" placeholder="username" class="form-control ">
+          </div>
+          <div class="col-md-5">
+            <input type="password" id="password" name="password" placeholder="password" class="form-control ">
+          </div>
+          </div>
+          <br>
+          <div class="row">
+          <div class="col-md-5">
+            <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
+          </div>
+          </div>
+            <% if (error === true) { %>
+              <p style="color: white;"> Please enter a valid username and password </p>
+            <% } %>
+        </form>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a href="/signup" class="nav-link">Sign-up</a>
+          </li>
+        </ul>
+>>>>>>> origin/master
         </div>
         <% } else { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -116,9 +143,10 @@
           </ul>
         </div>
         <% } %>
+
       </div>
     </nav>
--->
+
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
       <div class="overlay"></div>
@@ -138,8 +166,13 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h>Party whip is...</h>
+          <h>What to put here?</h>
         </div>
+      </div>
+      <div class="row">
+          <a href="/accepted_bids" class="list-group-item list-group-item-action">
+            <h4>testing page - accepted_bids</h4>
+          </a>
       </div>
     </div>
 
