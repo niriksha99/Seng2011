@@ -7,7 +7,7 @@ function initialise_database(callback) {
 	var initial_con = mysql.createConnection({
 		host: "localhost",
 		user: "root",
-		password: "password"
+		password: "database"
 	});
 
 //	basic_query(initial_con, "DROP DATABASE IF EXISTS PartyWhip", "Old PartyWhip database removed (if it existed)");
