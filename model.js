@@ -16,76 +16,12 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// ***** start of db stuff *****
-
-var con;
-
-// setup PartyWhip database, !!! REMOVES CURRENT PARTYWHIP DATABASE !!!
-
-initialise_database(create_tables);
-
-function initialise_database(callback) {
-	var initial_con = mysql.createConnection({
-		host: "localhost",
-		user: "root",
-		password: "database"
-	});
-
-	initial_con.connect(function(err) {
-		if (err) throw err;
-		console.log("initial con Connected!");
-		initial_con.query("DROP DATABASE IF EXISTS PartyWhip", function (err, result) {
-			if (err) throw err;
-			console.log("Old PartyWhip database removed (if it existed)");
-		});
-		initial_con.query("CREATE DATABASE PartyWhip", function (err, result) {
-			if (err) throw err;
-			console.log("PartyWhip database created");
-		});
-	});
-	setTimeout( function() {
-		if (typeof callback == 'function') {
-			callback();
-		}}, 2000);
-}
-
-function create_tables() {
-	con = mysql.createConnection({
-		host: "localhost",
-		user: "root",
-		password: "database",
-		database: "PartyWhip"
-	});
-	basic_query("CREATE TABLE Users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255))", "created Users table");	
-	basic_query("CREATE TABLE Requests (id INT AUTO_INCREMENT PRIMARY KEY, userID INT, date DATE, time TIME, deadline DATE, suburb VARCHAR(255), type VARCHAR(255), noPeople INT, qualityLevel VARCHAR(255), budget FLOAT(10,2), additional_info VARCHAR(255), completed BIT, FOREIGN KEY (userID) REFERENCES Users(id)) ", "created Requests table");
-	// not sure if foreign key is set up properly
-
-	basic_query("CREATE TABLE Businesses (id INT AUTO_INCREMENT PRIMARY KEY, userID INT, title VARCHAR(255), opening_hours VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255), description VARCHAR(255), FOREIGN KEY (userID) REFERENCES Users(id))", "created Businesses table");
-	// link userID to Users(id)
-
-	basic_query("CREATE TABLE Bids(requestID INT, businessID INT, price FLOAT(10,2), status BIT, FOREIGN KEY (requestID) REFERENCES Requests(id), FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(requestID, businessID)) ", "created Bids table");
-	// link businessID and reqID to Businesses(id) and Requests(id)
-
-	// add basic admin credentials
-	basic_query("INSERT INTO Users (username, password) VALUES ('admin', 'pass')", "add admin login");
-}
-
-function basic_query(sql, message) {	
-	con.query(sql, function (err, result) {
-		if (err) throw err;
-		console.log(message);
-	});
-//	con.connect(function(err) {
-//		if (err) throw err;
-//		console.log("Connected!");
-//		con.query(sql, function (err, result) {
-//			if (err) throw err;
-//			console.log(message);
-//		});
-//	});
-}
-
-// ***** end of db stuff *****
+var con = mysql.createConnection({
+	host: "localhost",
+	user: "root",
+	password: "password",
+	database: "PartyWhip"
+});
 
 function login_required(req, res, next) {
 	if (!req.session.username) {
@@ -178,6 +114,52 @@ app.post('/link_business_submit', login_required, function(req, res)
 
 	req.session.business_name = business_name;
 	return res.redirect("/individual_business");
+});
+
+app.post('/post_request', login_required, function(req, res)
+{
+	var event_date = req.body.date;
+	var event_time = req.body.time;
+	var deadline = req.body.deadline;
+	var event_suburb = req.body.suburb;
+	var event_type = req.body.type;
+	var num_ppl = req.body.no_people;
+	var quality = req.body.quality;
+	var budget = req.body.budget;
+	var choice = req.body.legendRadio;
+	var add_info = req.body.additional_info;
+	var completed = 0;
+
+	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
+		if (err) throw err;
+		var request = {
+			userID: result[0].id,
+			date: event_date,
+			time: event_time,
+			deadline: deadline,
+			suburb: event_suburb,
+			type: event_type,
+			noPeople: num_ppl,
+			qualityLevel: quality,
+			budget: budget,
+			choice: choice,
+			additional_info: add_info,
+			completed: completed
+		};
+		console.log(request);
+		con.query('INSERT INTO Requests SET ?', request, function(err, result) {
+			if (err) throw err;
+			console.log('Inserted: ', res.insertId);
+		});
+	});
+
+	con.query('SELECT * FROM Requests', function(err,rows) {
+	  if (err) throw err;
+	  console.log(rows);
+	});
+
+	//req.session.business_name = business_name;
+	return res.redirect("/individual_request");
 });
 
 app.post('/login', function(req, res)
