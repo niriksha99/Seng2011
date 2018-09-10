@@ -32,34 +32,6 @@
           Menu
           <i class="fa fa-bars"></i>
         </button>
-        <% if (login === null) { %>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-          <form action="/login" method="post">
-            <div class="row">
-            <div class="col-md-5">
-              <input type="text" id="username" name="username" placeholder="username" class="form-control ">
-            </div>
-            <div class="col-md-5">
-              <input type="password" id="password" name="password" placeholder="password" class="form-control ">
-            </div>
-            </div>
-            <br>
-            <div class="row">
-            <div class="col-md-5">
-              <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
-            </div>
-            </div>
-          </form>
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/home">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signup">Sign-up</a>
-            </li>
-          </ul>
-          </div>
-        <% } else { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
@@ -79,7 +51,6 @@
             </li>
           </ul>
         </div>
-        <% } %>
       </div>
     </nav>
 

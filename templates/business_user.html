@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><%= user %> Dashboard</title>
+    <title>{{ Business_Name }}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/home">Home</a>
+              <a class="nav-link" href="/user">My Profile</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/make_request">Request form</a>
@@ -64,7 +64,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>Hello, <%= user %></h1>
+              <h1>{{Business_Name}}</h1>
             </div>
           </div>
         </div>
@@ -75,31 +75,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <p>display notifications e.g. ??</p>
-          <p>change user info -- not really important as of now</p>
-          <p>recent 3 requests made by user </p>
-        </div>
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="row">
-              <a href="/individual_request_user" class="list-group-item list-group-item-action">
-                <h4>Request</h4>
-                <p>Event name</p>
-              </a>
-          </div>
-
-          <div class="row">
-              <a href="/individual_request_user" class="list-group-item list-group-item-action">
-                <h4>Request</h4>
-                <p>Event name</p>
-              </a>
-          </div>
-
-          <div class="row">
-              <a href="/individual_request_user" class="list-group-item list-group-item-action">
-                <h4>Request</h4>
-                <p>Event name</p>
-              </a>
-          </div>
+          <h>for the customer to view -- Get business info from database</h>
         </div>
       </div>
     </div>

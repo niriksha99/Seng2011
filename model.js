@@ -78,6 +78,34 @@ app.post('/signup_submit', function(req, res)
 	return res.redirect("/");
 });
 
+app.post('/catering_request_submit', function(req, res)
+{
+	var event_name = req.body.event_name;
+	var event_date = req.body.event_date;
+	var event_time = req.body.event_time;
+	var deadline = req.body.deadline;
+	var suburb = req.body.suburb;
+	var event_type = req.body.event_type;
+	var no_people = req.body.no_people;
+	var food_quality = req.body.food_quality;
+	// how to put option into table
+	var budget = req.body.budget;
+	var additional_info = req.body.additional_info;
+
+	console.log(event_name);
+	console.log(event_date);
+	console.log(event_time);
+	console.log(deadline);
+	console.log(suburb);
+	console.log(event_type);
+	console.log(no_people);
+	console.log(food_quality);
+	console.log(budget);
+	console.log(additional_info);
+
+	return res.redirect("/individual_request_user");
+});
+
 app.post('/link_business_submit', login_required, function(req, res)
 {
 	var business_name = req.body.business_name;
