@@ -7,7 +7,7 @@ function initialise_database(callback) {
 	var initial_con = mysql.createConnection({
 		host: "localhost",
 		user: "root",
-		password: "database"
+		password: "niriksha"
 	});
 
 	initial_con.connect(function(err) {
@@ -32,10 +32,10 @@ function create_tables() {
 	con = mysql.createConnection({
 		host: "localhost",
 		user: "root",
-		password: "password",
+		password: "niriksha",
 		database: "PartyWhip"
 	});
-	basic_query("CREATE TABLE Users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255))", "created Users table");	
+	basic_query("CREATE TABLE Users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255))", "created Users table");
 
 	basic_query("CREATE TABLE Requests (id INT AUTO_INCREMENT PRIMARY KEY, userID INT, date DATE, time TIME, deadline DATE, suburb VARCHAR(255), type VARCHAR(255), noPeople INT, qualityLevel VARCHAR(255), budget FLOAT(10,2), choice VARCHAR(255), additional_info VARCHAR(255), completed INT, FOREIGN KEY (userID) REFERENCES Users(id)) ", "created Requests table");
 	// not sure if foreign key is set up properly
@@ -47,7 +47,7 @@ function create_tables() {
 	// link businessID and reqID to Businesses(id) and Requests(id)
 }
 
-function basic_query(sql, message) {	
+function basic_query(sql, message) {
 	con.query(sql, function (err, result) {
 		if (err) throw err;
 		console.log(message);
@@ -61,4 +61,3 @@ function basic_query(sql, message) {
 //		});
 //	});
 }
-

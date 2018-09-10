@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "database",
+	password: "niriksha",
 	database: "PartyWhip"
 });
 
@@ -239,6 +239,11 @@ app.get('/individual_bid', login_required, function(req, res)
 	res.render('individual_bid.html');
 });
 
+app.get('/individual_request_user', function(req, res)
+{
+	res.render('individual_request_user.html');
+});
+
 app.get('/make_request', login_required, function(req, res)
 {
 	res.render('request_form.html', {user: req.session.username});
@@ -257,6 +262,11 @@ app.get('/business', login_required, function(req, res)
 app.get('/individual_business', login_required, function(req, res)
 {
 	res.render('business.html', {business_name: req.session.business_name});
+});
+
+app.get('/individual_business_user', function(req, res)
+{
+	res.render('business_user.html');
 });
 
 app.get('/my_bids', login_required, function(req, res)
