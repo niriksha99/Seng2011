@@ -219,6 +219,23 @@ app.get('/home', function(req, res)
 	}
 });
 
+app.post('/search', function(req, res){
+
+	var search = req.body.search;
+
+  con.query('SELECT * FROM Businesses WHERE title = ?', [search], function(err, rows, fields) {
+    if(err) throw err;
+    var data = [];
+    for(i=0;i<rows.length;i++){
+      data.push(rows[i].title);
+    }
+    res.end(JSON.stringify(data));
+    console.log(req.params.input);
+  });
+
+});
+
+
 app.get('/user', login_required, function(req, res)
 {
 	res.render('user_homepage.html', {user: req.session.username});
