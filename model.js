@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
+	password: "password",
 	database: "PartyWhip"
 });
 
@@ -113,6 +113,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var phone = req.body.phone;
 	var email = req.body.email;
 	var business_description = req.body.business_description;
+	var business;
 	// console.log(business_name);
 	// console.log(opening_time);
 	// console.log(phone);
@@ -120,7 +121,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 	// console.log(business_description);
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
-		var business = {
+		business = {
 			userID: result[0].id,
 			title: business_name,
 			opening_hours: opening_time,
@@ -135,10 +136,12 @@ app.post('/link_business_submit', login_required, function(req, res)
 		});
 	});
 
-	con.query('SELECT * FROM Businesses', function(err,rows) {
-	  if (err) throw err;
-	  console.log(rows);
-	});
+	setTimeout(function () {
+		con.query('SELECT * FROM Businesses', function(err,rows) {
+		  if (err) throw err;
+		  console.log(rows);
+		});
+	}, 3000);
 
 	req.session.business_name = business_name;
 	return res.redirect("/individual_business");
