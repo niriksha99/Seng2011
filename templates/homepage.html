@@ -98,10 +98,15 @@
               <span class="subheading">for a stress-less celebration</span>
               <br>
               <div class="search-container">
-                <form action="/individual_business_user">
-                  <input type="text" placeholder="Search for businesses" name="search">
-                  <button type="submit"><i class="fa fa-search"></i></button>
+                <form action="/search" method="post">
+                  <input type="text" id="search" name="search" placeholder="search" class="form-control ">
+                  <br>
+                  <input type="submit" value="Search" class="btn btn-dark mt-2 mt-sm-0">
                 </form>
+                <!--<form action="/individual_business_user">
+                  <input class="form-control" type="text" placeholder="Search for businesses" name="search">
+                  <button type="submit"><i class="fa fa-search"></i></button>
+                </form>-->
               </div>
             </div>
           </div>
