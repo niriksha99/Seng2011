@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{{ Event_Name }}</title>
+    <title><%= user %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -67,7 +67,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>{{Event_Name}}</h1>
+              <h1><%= user %></h1>
             </div>
           </div>
         </div>
@@ -78,7 +78,17 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <p>get data from database about the user's event</p>
+          <p> Event name  =  <%= a %> </p>
+          <p> Event date = <%= b %> </p>
+          <p> Event time = <%= c %> </p>
+          <p> Event deadline = <%= d %> </p>
+          <p> Suburb event is going to be held in = <%= e %> </p>
+          <p> Type of event = <%= f %> </p>
+          <p> Number of people = <%= g %> </p>
+          <p> Quality Level = <%= h %> </p>
+          <p> Budget = <%= i %> </p>
+          <p> Cook on province(1) or Bring prepared food = <%= j %> </p>
+          <p> Additional Information = <%= k %> </p>
           <div class="row">
             <div class="col-md-6 form-group">
               <input type="delete" value="Delete Request" class="btn btn-primary">
