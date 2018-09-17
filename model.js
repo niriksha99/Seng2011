@@ -78,7 +78,7 @@ app.post('/signup_submit', function(req, res)
 	return res.redirect("/");
 });
 
-app.post('/catering_request_submit', function(req, res)
+/*app.post('/catering_request_submit', function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
@@ -104,7 +104,7 @@ app.post('/catering_request_submit', function(req, res)
 	console.log(additional_info);
 
 	return res.redirect("/individual_request_user");
-});
+});*/
 
 app.post('/link_business_submit', login_required, function(req, res)
 {
@@ -113,15 +113,10 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var phone = req.body.phone;
 	var email = req.body.email;
 	var business_description = req.body.business_description;
-	var business;
-	// console.log(business_name);
-	// console.log(opening_time);
-	// console.log(phone);
-	// console.log(email);
-	// console.log(business_description);
+
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
-		business = {
+		var business = {
 			userID: result[0].id,
 			title: business_name,
 			opening_hours: opening_time,
@@ -136,12 +131,10 @@ app.post('/link_business_submit', login_required, function(req, res)
 		});
 	});
 
-	setTimeout(function () {
-		con.query('SELECT * FROM Businesses', function(err,rows) {
-		  if (err) throw err;
-		  console.log(rows);
-		});
-	}, 3000);
+	con.query('SELECT * FROM Businesses', function(err,rows) {
+	  if (err) throw err;
+	  console.log(rows);
+	});
 
 	req.session.business_name = business_name;
 	return res.redirect("/individual_business");
@@ -149,6 +142,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 
 app.post('/post_request', login_required, function(req, res)
 {
+	var event_name = req.body.event_name
 	var event_date = req.body.date;
 	var event_time = req.body.time;
 	var deadline = req.body.deadline;
@@ -165,6 +159,7 @@ app.post('/post_request', login_required, function(req, res)
 		if (err) throw err;
 		var request = {
 			userID: result[0].id,
+			event_name: event_name,
 			date: event_date,
 			time: event_time,
 			deadline: deadline,
@@ -188,9 +183,9 @@ app.post('/post_request', login_required, function(req, res)
 	  if (err) throw err;
 	  console.log(rows);
 	});
-
+	return res.redirect('/individual_request_user');
 	//req.session.business_name = business_name;
-	return res.redirect("/individual_request");
+	//return res.redirect("/individual_request");
 });
 
 app.post('/login', function(req, res)
@@ -238,10 +233,26 @@ app.post('/search', function(req, res){
 
 });
 
-
 app.get('/user', login_required, function(req, res)
 {
-	res.render('user_homepage.html', {user: req.session.username});
+	var search = req.session.username;
+	con.query('SELECT * FROM Users WHERE username = ?', [search], function(err, rows, fields) {
+		if(err) throw err;
+		var a = [];
+		var b = [];
+		var c = [];
+		var d = [];
+		var e = [];
+		for(i=0;i<rows.length;i++){
+      a.push(rows[i].first_name);
+			b.push(rows[i].last_name);
+			c.push(rows[i].password);
+			d.push(rows[i].phone_no);
+			e.push(rows[i].email);
+    }
+		res.render('user_homepage.html', {user: req.session.username, f_n: a, l_n: b, p: c, p_n: d, e_a: e});
+	});
+
 });
 
 app.get('/requests', login_required, function(req, res)
@@ -261,7 +272,29 @@ app.get('/individual_bid', login_required, function(req, res)
 
 app.get('/individual_request_user', function(req, res)
 {
-	res.render('individual_request_user.html');
+	var search = req.session.username;
+
+		con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, rows, fields) {
+			if(err) throw err;
+			var a = []; var b = []; var c = []; var d = []; var e = []; var f = [];
+			var g = []; var h = []; var i = []; var j = []; var k = [];
+			for(l=0;l<rows.length;l++){
+	      a.push(rows[l].event_name);
+				b.push(rows[l].date);
+				c.push(rows[l].time);
+				d.push(rows[l].deadline);
+				e.push(rows[l].suburb);
+				f.push(rows[l].type);
+				g.push(rows[l].noPeople);
+				h.push(rows[l].qualityLevel);
+				i.push(rows[l].budget);
+				j.push(rows[l].choice);
+				k.push(rows[l].additional_info);
+	    }
+			res.render('individual_request_user.html', {user: req.session.username,
+			a:a, b:b, c:c, d:d, e:e, f:f, g:g, h:h, i:i, j:j, k:k});
+	});
+
 });
 
 app.get('/make_request', login_required, function(req, res)
