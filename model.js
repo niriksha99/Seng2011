@@ -36,6 +36,7 @@ app.get('/', function(req, res){
 	if (req.session.valid === undefined) req.session.valid = false;
 	if (req.session.error === undefined) req.session.error = false;
 	if (req.session.username === undefined) req.session.username = null;
+	if (req.session.userid === undefined) req.session.userid = null;
 	res.render('homepage.html', {error: req.session.error, login: req.session.username});
 });
 
@@ -201,8 +202,13 @@ app.post('/login', function(req, res)
 	// OR we can fetch all users and search/check credential ourselves?
 	con.query('SELECT * FROM Users WHERE username = ?', [id], function(err, result, fields) {
 		if (err) throw err;
-		if (result[0].password === ps) {
+		if (result.length <= 0) {
+			req.session.error = true;
+			res.redirect('/');
+		}
+		else if (result[0].password === ps) {
 			req.session.username = id;
+			req.session.userid = result[0].id;
 			req.session.valid = true;
 			req.session.error = false;
 			res.redirect('/user');
@@ -276,12 +282,34 @@ app.get('/link_business', login_required, function(req, res)
 
 app.get('/business', login_required, function(req, res)
 {
-	res.render('my_businesses.html');
+	con.query('SELECT * FROM Businesses WHERE userID = ?', [req.session.userid], function(err, result, fields) {
+		if (err) throw err;
+		var businesses = [];	
+		for (var i = 0; i < result.length; i++) {
+			businesses.push(result[i].title);
+		}
+		res.render('my_businesses.html', {business_list: businesses});
+	});
 });
 
 app.get('/individual_business', login_required, function(req, res)
 {
 	res.render('business.html', {business_name: req.session.business_name});
+});
+
+app.post('/individual_business', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
+		if (err) throw err;
+		var business = {
+			business_name: result[0].title,
+			opening_time: result[0].opening_hours,
+			phone: result[0].phone_no,
+			email: result[0].email,
+			business_description: result[0].description
+		};
+		res.render('business.html', {business: business});
+	});
 });
 
 app.get('/individual_business_user', function(req, res)
@@ -313,6 +341,7 @@ app.get('/signout', login_required, function(req, res)
 	delete req.session.username;
 	delete req.session.valid;
 	delete req.session.business_name;
+	delete req.session.userid;
 	res.redirect('/');
 });
 
