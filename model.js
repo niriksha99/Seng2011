@@ -144,7 +144,13 @@ app.post('/link_business_submit', login_required, function(req, res)
 		});
 	}, 3000);
 
-	req.session.business_name = business_name;
+	req.session.business = {
+			business_name: business_name,
+			opening_time: opening_time,
+			phone: phone,
+			email: email,
+			business_description: business_description
+		};
 	return res.redirect("/individual_business");
 });
 
@@ -294,7 +300,8 @@ app.get('/business', login_required, function(req, res)
 
 app.get('/individual_business', login_required, function(req, res)
 {
-	res.render('business.html', {business_name: req.session.business_name});
+	console.log(req.session.business_name);
+	res.render('business.html', {business: req.session.business});
 });
 
 app.post('/individual_business', login_required, function(req, res)
@@ -340,7 +347,7 @@ app.get('/signout', login_required, function(req, res)
 	//req.session.error = false;
 	delete req.session.username;
 	delete req.session.valid;
-	delete req.session.business_name;
+	delete req.session.business;
 	delete req.session.userid;
 	res.redirect('/');
 });
