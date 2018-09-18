@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><%= user %></title>
+    <title><%= request.event_name %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -67,7 +67,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1><%= user %></h1>
+              <h1><%= request.event_name %></h1>
             </div>
           </div>
         </div>
@@ -78,17 +78,17 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <p> Event name  =  <%= a %> </p>
-          <p> Event date = <%= b %> </p>
-          <p> Event time = <%= c %> </p>
-          <p> Event deadline = <%= d %> </p>
-          <p> Suburb event is going to be held in = <%= e %> </p>
-          <p> Type of event = <%= f %> </p>
-          <p> Number of people = <%= g %> </p>
-          <p> Quality Level = <%= h %> </p>
-          <p> Budget = <%= i %> </p>
-          <p> Cook on province(1) or Bring prepared food = <%= j %> </p>
-          <p> Additional Information = <%= k %> </p>
+          <p> Event name  =  <%= request.event_name %> </p>
+          <p> Event date = <%= request.event_date %> </p>
+          <p> Event time = <%= request.event_time %> </p>
+          <p> Event deadline = <%= request.event_deadline %> </p>
+          <p> Suburb event is going to be held in = <%= request.event_suburb %> </p>
+          <p> Type of event = <%= request.event_type %> </p>
+          <p> Number of people = <%= request.noPeople %> </p>
+          <p> Quality Level = <%= request.qualityLevel %> </p>
+          <p> Budget = <%= request.budget %> </p>
+          <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
+          <p> Additional Information = <%= request.additional_info %> </p>
           <div class="row">
             <div class="col-md-6 form-group">
               <input type="delete" value="Delete Request" class="btn btn-primary">
