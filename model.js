@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
-	database: "Seng"
+	password: "password",
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
@@ -36,7 +36,7 @@ app.get('/', function(req, res){
 	if (req.session.valid === undefined) req.session.valid = false;
 	if (req.session.error === undefined) req.session.error = false;
 	if (req.session.username === undefined) req.session.username = null;
-	if (req.session.userid === undefined) req.session.userid = null;
+	//if (req.session.userid === undefined) req.session.userid = null;
 	res.render('homepage.html', {error: req.session.error, login: req.session.username});
 });
 
@@ -228,7 +228,7 @@ app.post('/login', function(req, res)
 		}
 		else if (result[0].password === ps) {
 			req.session.username = id;
-			req.session.userid = result[0].id;
+			//req.session.userid = result[0].id;
 			req.session.valid = true;
 			req.session.error = false;
 			res.redirect('/user');
@@ -289,7 +289,7 @@ app.get('/user', login_required, function(req, res)
 
 app.get('/requests', login_required, function(req, res)
 {
-	con.query('SELECT * FROM Requests WHERE userID = ?', [req.session.userid], function(err, result, fields) {
+	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
 		for (var i = 0; i < result.length; i++) {
@@ -366,7 +366,7 @@ app.get('/link_business', login_required, function(req, res)
 
 app.get('/business', login_required, function(req, res)
 {
-	con.query('SELECT * FROM Businesses WHERE userID = ?', [req.session.userid], function(err, result, fields) {
+	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var businesses = [];
 		for (var i = 0; i < result.length; i++) {
@@ -427,7 +427,7 @@ app.get('/signout', login_required, function(req, res)
 	delete req.session.valid;
 	delete req.session.business;
 	delete req.session.request;
-	delete req.session.userid;
+	//delete req.session.userid;
 	res.redirect('/');
 });
 
