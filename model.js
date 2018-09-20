@@ -36,7 +36,7 @@ app.get('/', function(req, res){
 	if (req.session.valid === undefined) req.session.valid = false;
 	if (req.session.error === undefined) req.session.error = false;
 	if (req.session.username === undefined) req.session.username = null;
-	//if (req.session.userid === undefined) req.session.userid = null;
+	if (req.session.userid === undefined) req.session.userid = null;
 	res.render('homepage.html', {error: req.session.error, login: req.session.username});
 });
 
@@ -47,6 +47,7 @@ app.get('/signup', function(req, res)
 
 app.post('/signup_submit', function(req, res)
 {
+	delete req.session.error;
 	var first = req.body.first_name;
 	var last = req.body.last_name;
 	var id = req.body.username;
@@ -228,7 +229,7 @@ app.post('/login', function(req, res)
 		}
 		else if (result[0].password === ps) {
 			req.session.username = id;
-			//req.session.userid = result[0].id;
+			req.session.userid = result[0].id;
 			req.session.valid = true;
 			req.session.error = false;
 			res.redirect('/user');
@@ -305,6 +306,32 @@ app.get('/individual_request', login_required, function(req, res)
 	res.render('individual_request.html');
 });
 
+app.post('/individual_request', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request_name], function(err, result, fields) {
+		if (err) throw err;
+		var request = {
+			event_name: result[0].event_name,
+			event_date: result[0].event_date,
+			event_time: result[0].event_time,
+			event_deadline: result[0].event_deadline,
+			event_suburb: result[0].event_suburb,
+			event_type: result[0].event_type,
+			noPeople: result[0].noPeople,
+			qualityLevel: result[0].qualityLevel,
+			budget: result[0].budget,
+			choice: result[0].choice,
+			additional_info: result[0].additional_info
+		};
+		var owner = false;
+		if (req.session.userid === result[0].userID) {
+			owner = true;
+		}
+		var bidder = !owner;
+		res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
+	});
+});
+
 app.get('/individual_bid', login_required, function(req, res)
 {
 	res.render('individual_bid.html');
@@ -318,6 +345,8 @@ app.get('/individual_request_user', login_required, function(req, res)
 app.post('/individual_request_user', function(req, res)
 {
 	var search = req.session.username;
+	var owner = true;
+	var bidder = !owner;
 
 		con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, result, fields) {
 			if(err) throw err;
@@ -330,6 +359,7 @@ app.post('/individual_request_user', function(req, res)
 				event_type: result[0].event_type,
 				noPeople: result[0].noPeople,
 				qualityLevel: result[0].qualityLevel,
+				budget: result[0].budget,
 				choice: result[0].choice,
 				additional_info: result[0].additional_info
 			};
@@ -348,7 +378,7 @@ app.post('/individual_request_user', function(req, res)
 	    }*/
 			//res.render('individual_request_user.html', {user: req.session.username,
 			//a:a, b:b, c:c, d:d, e:e, f:f, g:g, h:h, i:i, j:j, k:k});
-			res.render('individual_request_user.html', {request: request});
+			res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
 	});
 
 });
@@ -374,6 +404,17 @@ app.get('/business', login_required, function(req, res)
 		}
 		res.render('my_businesses.html', {business_list: businesses});
 	});
+});
+
+app.post('/bidding', login_required, function(req, res)
+{
+	var bid = {
+		price: req.body.bid
+	};
+	con.query('INSERT INTO Bids SET ?', bid, function(err, result, fields) {
+		res.render();
+	});
+	res.render();
 });
 
 app.get('/individual_business', login_required, function(req, res)
@@ -415,7 +456,14 @@ app.get('/accepted_bids', login_required, function(req, res)
 
 app.get('/catering_requests', login_required, function(req, res)
 {
-	res.render('catering_requests.html');
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		var request_name = [];
+		for (var i = 0; i < result.length; i++) {
+			request_name.push(result[i].event_name);
+		}
+		res.render('catering_requests.html', {requests: request_name});
+	});
 });
 
 app.get('/signout', login_required, function(req, res)
@@ -427,7 +475,8 @@ app.get('/signout', login_required, function(req, res)
 	delete req.session.valid;
 	delete req.session.business;
 	delete req.session.request;
-	//delete req.session.userid;
+	delete req.session.error;
+	delete req.session.userid;
 	res.redirect('/');
 });
 

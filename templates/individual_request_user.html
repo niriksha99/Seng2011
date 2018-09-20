@@ -89,6 +89,7 @@
           <p> Budget = <%= request.budget %> </p>
           <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
           <p> Additional Information = <%= request.additional_info %> </p>
+          <% if (owner === true) { %>
           <div class="row">
             <div class="col-md-6 form-group">
               <input type="delete" value="Delete Request" class="btn btn-primary">
@@ -103,6 +104,27 @@
               <input type="delete" value="Delete Bid" class="btn btn-primary">
             </div>
           </div>
+          <% } else if (bidder === true) { %>
+            <form action="/bidding" method="post">
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Approximate Budget</label>
+                  <input type="text" id="bid" name="bid" class="form-control " placeholder="$">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Additional Information</label>
+                  <input type="text" id="additional_info" name="additional_info" class="form-control ">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <input type="submit" value="Bid Request" class="btn btn-primary">
+                </div>
+              </div>
+            </form>
+          <% } %>
         </div>
       </div>
     </div>
