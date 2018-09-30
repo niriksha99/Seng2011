@@ -228,11 +228,6 @@ app.post('/individual_request', function(req, res)
 	});
 });
 
-app.post('/post_bid', login_required, function(req, res)
-{
-	//
-});
-
 app.get('/delete_request', function(req, res)
 {
 	console.log(req.body.event_name);
@@ -330,32 +325,27 @@ app.get('/requests', login_required, function(req, res)
 	});
 });
 
-app.post('/individual_request', login_required, function(req, res)
-{
-	//select Requests.*, Businesses.* from Requests right join Businesses on event_name = 'death from assignment'
-	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request_name], function(err, result, fields) {
-		if (err) throw err;
-		var request = {
-			event_name: result[0].event_name,
-			event_date: result[0].event_date,
-			event_time: result[0].event_time,
-			event_deadline: result[0].event_deadline,
-			event_suburb: result[0].event_suburb,
-			event_type: result[0].event_type,
-			noPeople: result[0].noPeople,
-			qualityLevel: result[0].qualityLevel,
-			budget: result[0].budget,
-			choice: result[0].choice,
-			additional_info: result[0].additional_info
-		};
-		var owner = false;
-		if (req.session.userid === result[0].userID) {
-			owner = true;
-		}
-		var bidder = !owner;
-		res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
-	});
-});
+// app.post('/individual_request', login_required, function(req, res)
+// {
+// 	//select Requests.*, Businesses.* from Requests right join Businesses on event_name = 'death from assignment'
+// 	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request_name], function(err, result, fields) {
+// 		if (err) throw err;
+// 		var request = {
+// 			event_name: result[0].event_name,
+// 			event_date: result[0].event_date,
+// 			event_time: result[0].event_time,
+// 			event_deadline: result[0].event_deadline,
+// 			event_suburb: result[0].event_suburb,
+// 			event_type: result[0].event_type,
+// 			noPeople: result[0].noPeople,
+// 			qualityLevel: result[0].qualityLevel,
+// 			budget: result[0].budget,
+// 			choice: result[0].choice,
+// 			additional_info: result[0].additional_info
+// 		};
+// 		res.render('individual_request.html', {request: request});
+// 	});
+// });
 
 app.get('/individual_bid', login_required, function(req, res)
 {
@@ -391,7 +381,9 @@ app.post('/individual_bid', login_required, function(req, res)
 app.get('/individual_request_user', login_required, function(req, res)
 {
 	console.log(req.session.event_name);
-	res.render('individual_request_user.html', {request: req.session.request});
+	var owner = true;
+	var bidder = !owner;
+	res.render('individual_request_user.html', {request: req.session.request, owner: owner, bidder: bidder});
 });
 
 app.post('/individual_request_user', function(req, res)
@@ -452,7 +444,7 @@ app.post('/bidding', login_required, function(req, res)
 		var bid = {
 			requestID: result[0].id,
 			businessID: req.session.businessid,
-			price: req.body.bid,
+			price: req.body.price,
 			comment: req.body.additional_info,
 			status: 1
 		};
@@ -507,14 +499,33 @@ app.get('/individual_business_user', function(req, res)
 
 app.get('/my_bids', login_required, function(req, res)
 {
-	con.query('SELECT * FROM Requests WHERE id = (SELECT requestID FROM Bids WHERE businessID = ?)', [req.session.businessid], function(err, result, fields) {
+	var requests_bidded = []
+	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
-		var bid_names = [];
 		for (var i = 0; i < result.length; i++) {
-			bid_names.push(result[i].event_name);
+			requests_bidded.push(result[i].requestID);
 		}
-		res.render('my_bids.html', {bids: bid_names});
+		con.query('SELECT * FROM Requests', function(err, result, fields) {
+			if (err) throw err;
+			var bid_names = [];
+			for (var i = 0; i < result.length; i++) {
+				if (requests_bidded.includes(result[i].id))
+					bid_names.push(result[i].event_name);
+			}
+			res.render('my_bids.html', {bids: bid_names});
+		})
 	});
+
+
+	// con.query('SELECT * FROM Requests', function(err, result, fields) {
+	// 	if (err) throw err;
+	// 	var bid_names = [];
+	// 	for (var i = 0; i < result.length; i++) {
+	// 		if (requests_bidded.includes(result[i].id))
+	// 			bid_names.push(result[i].event_name);
+	// 	}
+	// 	res.render('my_bids.html', {bids: bid_names});
+	// });
 
 	//res.sendFile(path.join(__dirname+'/my_bids.html'));
 });

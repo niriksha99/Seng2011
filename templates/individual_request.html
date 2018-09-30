@@ -84,17 +84,18 @@
           <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
           <p> Additional Information = <%= request.additional_info %> </p>
 
-          <form action="/post_bid" method="post">
+          <form action="/bidding" method="post">
             <div class="row">
               <div class="col-md-6 form-group">
-                <label for="name">Approximate Bidding Amount</label>
-                <input type="number" id="price" name="price" class="form-control ">
+                  <label for="name">Approximate Bidding Amount</label>
+                  <input type="number" id="price" name="price" class="form-control " placeholder="$">
                 <br>
-                <input type="submit" value="Bid" class="btn btn-primary">
+                  <label for="name">Additional Information</label>
+                  <input type="text" id="additional_info" name="additional_info" class="form-control ">
+                <button type="submit" value="<%= request.event_name %>" id="event_name" name="event_name" class="btn btn-primary">Bid Request</button>
               </div>
             </div>
           </form>
-
         </div>
       </div>
     </div>
