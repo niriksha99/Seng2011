@@ -61,7 +61,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>{{Event_Name}}</h1>
+              <h1><%= request.event_name %></h1>
             </div>
           </div>
         </div>
@@ -72,8 +72,29 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h>get data from database</h>
-          <br>
+          <p> Event name  =  <%= request.event_name %> </p>
+          <p> Event date = <%= request.event_date %> </p>
+          <p> Event time = <%= request.event_time %> </p>
+          <p> Event deadline = <%= request.event_deadline %> </p>
+          <p> Suburb event is going to be held in = <%= request.event_suburb %> </p>
+          <p> Type of event = <%= request.event_type %> </p>
+          <p> Number of people = <%= request.noPeople %> </p>
+          <p> Quality Level = <%= request.qualityLevel %> </p>
+          <p> Budget = <%= request.budget %> </p>
+          <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
+          <p> Additional Information = <%= request.additional_info %> </p>
+
+          <form action="/post_bid" method="post">
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label for="name">Approximate Bidding Amount</label>
+                <input type="number" id="price" name="price" class="form-control ">
+                <br>
+                <input type="submit" value="Bid" class="btn btn-primary">
+              </div>
+            </div>
+          </form>
+
         </div>
       </div>
     </div>
