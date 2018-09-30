@@ -86,7 +86,7 @@
           <p> Type of event = <%= request.event_type %> </p>
           <p> Number of people = <%= request.noPeople %> </p>
           <p> Quality Level = <%= request.qualityLevel %> </p>
-          <p> Budget = <%= request.budget %> </p>
+          <p> Budget = $<%= request.budget %> </p>
           <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
           <p> Additional Information = <%= request.additional_info %> </p>
           <% if (owner === true) { %>
@@ -106,13 +106,19 @@
           </div>
           <% } else if (bidder === true) { %>
             <form action="/bidding" method="post">
+              <!--<select class="selectpicker" data-style="btn-info" name="selectpicker">
+                  <optgroup label="Select Business">
+                      <option name="" value="0">Select Business</option>
+                      <option name="table1" value="1">Table 1</option>
+                      <option name="table2" value="2">Table 2</option>
+                      <option name="table3" value="3">Table 3</option>
+                  </optgroup>
+              </select>-->
               <div class="row">
                 <div class="col-md-12 form-group">
-                  <label for="name">Approximate Budget</label>
+                  <label for="name">Price to Bid</label>
                   <input type="text" id="bid" name="bid" class="form-control " placeholder="$">
                 </div>
-              </div>
-              <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Additional Information</label>
                   <input type="text" id="additional_info" name="additional_info" class="form-control ">
@@ -120,7 +126,8 @@
               </div>
               <div class="row">
                 <div class="col-md-6 form-group">
-                  <input type="submit" value="Bid Request" class="btn btn-primary">
+                  <!--<input type="submit" value="Bid Request" class="btn btn-primary">-->
+                  <button type="submit" value="<%= request.event_name %>" id="event_name" name="event_name" class="btn btn-primary">Bid Request</button>
                 </div>
               </div>
             </form>
