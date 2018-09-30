@@ -381,19 +381,18 @@ app.post('/individual_bid', login_required, function(req, res)
 app.get('/individual_request_user', login_required, function(req, res)
 {
 	console.log(req.session.event_name);
-	var owner = true;
-	var bidder = !owner;
-	res.render('individual_request_user.html', {request: req.session.request, owner: owner, bidder: bidder});
+	// var owner = true;
+	// var bidder = !owner;
+	res.render('individual_request_user.html', {request: req.session.request});//, owner: owner, bidder: bidder});
 });
 
 app.post('/individual_request_user', function(req, res)
 {
-	//con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result, fields) {
-	var search = req.session.username;
-	var owner = true;
-	var bidder = !owner;
-
-	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, result, fields) {
+	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result, fields) {
+	// var search = req.session.username;
+	// var owner = true;
+	// var bidder = !owner;
+	//con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, result, fields) {
 		if(err) throw err;
 		var request = {
 			event_name: result[0].event_name,
@@ -409,8 +408,8 @@ app.post('/individual_request_user', function(req, res)
 			choice: result[0].choice,
 			additional_info: result[0].additional_info
 		};
-		//res.render('individual_request_user.html', {request: request});
-		res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
+		res.render('individual_request_user.html', {request: request});
+		//res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
 	});
 });
 
@@ -466,8 +465,6 @@ app.post('/bidding', login_required, function(req, res)
 		};
 		res.redirect('/individual_business');
 	});
-
-	//res.redirect('/user');
 });
 
 app.get('/individual_business', login_required, function(req, res)
@@ -515,19 +512,6 @@ app.get('/my_bids', login_required, function(req, res)
 			res.render('my_bids.html', {bids: bid_names});
 		})
 	});
-
-
-	// con.query('SELECT * FROM Requests', function(err, result, fields) {
-	// 	if (err) throw err;
-	// 	var bid_names = [];
-	// 	for (var i = 0; i < result.length; i++) {
-	// 		if (requests_bidded.includes(result[i].id))
-	// 			bid_names.push(result[i].event_name);
-	// 	}
-	// 	res.render('my_bids.html', {bids: bid_names});
-	// });
-
-	//res.sendFile(path.join(__dirname+'/my_bids.html'));
 });
 
 app.get('/accepted_bids', login_required, function(req, res)
@@ -535,24 +519,8 @@ app.get('/accepted_bids', login_required, function(req, res)
 	res.render('accepted_bids.html', {login: req.session.username});
 });
 
-/*
-app.get('/catering_requests', login_required, function(req, res)
-{
-	con.query('SELECT * FROM Requests', function(err, result, fields) {
-		if (err) throw err;
-		var request_name = [];
-		for (var i = 0; i < result.length; i++) {
-			request_name.push(result[i].event_name);
-		}
-		res.render('catering_requests.html', {requests: request_name});
-	});
-});
-*/
 app.get('/signout', login_required, function(req, res)
 {
-	//req.session.username = null;
-	//req.session.valid = false;
-	//req.session.error = false;
 	delete req.session.username;
 	delete req.session.valid;
 	delete req.session.business;
