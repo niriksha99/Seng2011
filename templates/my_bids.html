@@ -72,25 +72,13 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-
-          <div class="row">
-              <a href="/individual_bid" class="list-group-item list-group-item-action">
-                <h4>Event name</h4>
-              </a>
-          </div>
-
-          <div class="row">
-              <a href="/individual_bid" class="list-group-item list-group-item-action">
-                <h4>Event name</h4>
-              </a>
-          </div>
-
-          <div class="row">
-              <a href="/individual_bid" class="list-group-item list-group-item-action">
-                <h4>Event name</h4>
-              </a>
-          </div>
-
+          <% for (var i=0; i < bids.length; i++) { %>
+            <div class="row">
+            <form method="post" action="/individual_bid">
+              <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=bids[i]%>">
+            </form>
+            </div>
+          <% } %>
         </div>
       </div>
     </div>

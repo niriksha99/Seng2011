@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Bid for {{ Event_Name }}</title>
+    <title>Bid for <%= bid.event_name %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -62,7 +62,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>Bid for {{Event_Name}}</h1>
+              <h1>Bid for <%= bid.event_name %></h1>
             </div>
           </div>
         </div>
@@ -73,7 +73,24 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h>get data from database</h>
+          <p> Event name  =  <%= bid.event_name %> </p>
+          <p> Event date = <%= bid.event_date %> </p>
+          <p> Event time = <%= bid.event_time %> </p>
+          <p> Event deadline = <%= bid.event_deadline %> </p>
+          <p> Suburb event is going to be held in = <%= bid.event_suburb %> </p>
+          <p> Type of event = <%= bid.event_type %> </p>
+          <p> Number of people = <%= bid.noPeople %> </p>
+          <p> Quality Level = <%= bid.qualityLevel %> </p>
+          <p> Budget = $<%= bid.budget %> </p>
+          <p> Cook on province(1) or Bring prepared food = <%= bid.choice %> </p>
+          <p> Additional Information = <%= bid.additional_info %> </p>
+          <p> My bid: $<%= bid.amount %> </p>
+          <p> My comments: <%= bid.comment %> </p>
+          <% if (bid.status === 1) { %>
+          <p> My bid is still active </p>
+          <% } else { %>
+          <p> My bid is inactive now </p>
+          <% } %>
         </div>
       </div>
     </div>
