@@ -80,34 +80,6 @@ app.post('/signup_submit', function(req, res)
 	return res.redirect("/");
 });
 
-app.post('/catering_request_submit', function(req, res)
-{
-	var event_name = req.body.event_name;
-	var event_date = req.body.event_date;
-	var event_time = req.body.event_time;
-	var deadline = req.body.deadline;
-	var suburb = req.body.suburb;
-	var event_type = req.body.event_type;
-	var no_people = req.body.no_people;
-	var food_quality = req.body.food_quality;
-	// how to put option into table
-	var budget = req.body.budget;
-	var additional_info = req.body.additional_info;
-
-	console.log(event_name);
-	console.log(event_date);
-	console.log(event_time);
-	console.log(deadline);
-	console.log(suburb);
-	console.log(event_type);
-	console.log(no_people);
-	console.log(food_quality);
-	console.log(budget);
-	console.log(additional_info);
-
-	return res.redirect("/individual_request_user");
-});
-
 app.post('/link_business_submit', login_required, function(req, res)
 {
 	var business_name = req.body.business_name;
@@ -152,7 +124,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 
 app.post('/post_request', login_required, function(req, res)
 {
-	var event_name = req.body.event_name
+	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
 	var event_time = req.body.event_time;
 	var event_deadline = req.body.event_deadline;
@@ -207,6 +179,7 @@ app.post('/post_request', login_required, function(req, res)
 			event_type: event_type,
 			noPeople: noPeople,
 			qualityLevel: qualityLevel,
+			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
 			completed: completed
@@ -214,6 +187,62 @@ app.post('/post_request', login_required, function(req, res)
 
 	//req.session.business_name = business_name;
 	return res.redirect("/individual_request_user");
+});
+
+app.get('/catering_requests', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields){
+		if (err) throw err;
+		var requests = [];
+		for (var i = 0; i < result.length; i++) {
+			requests.push(result[i].event_name);
+		}
+		res.render('catering_requests.html', {request_list: requests});
+	});
+});
+
+app.get('/individual_request', login_required, function(req, res)
+{
+	console.log(req.session.event_name);
+	res.render('individual_request.html', {request: req.session.request});
+});
+
+app.post('/individual_request', function(req, res)
+{
+		con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result, fields) {
+			if(err) throw err;
+			var request = {
+				event_name: result[0].event_name,
+				event_date: result[0].event_date,
+				event_time: result[0].event_time,
+				event_deadline: result[0].event_deadline,
+				event_suburb: result[0].event_suburb,
+				event_type: result[0].event_type,
+				noPeople: result[0].noPeople,
+				budget: result[0].budget,
+				qualityLevel: result[0].qualityLevel,
+				choice: result[0].choice,
+				additional_info: result[0].additional_info
+			};
+			res.render('individual_request.html', {request: request});
+	});
+});
+
+app.post('/post_bid', login_required, function(req, res)
+{
+	//
+});
+
+app.get('/delete_request', function(req, res)
+{
+	console.log(req.body.event_name);
+	con.query('DELETE FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result) {
+	//con.query('DELETE FROM Requests WHERE event_name = ?', ['bye'], function(err, result) {
+		if (err) throw err;
+		console.log("Record deleted");
+		return res.redirect('/user');
+	});
+
 });
 
 app.post('/login', function(req, res)
@@ -299,18 +328,12 @@ app.get('/requests', login_required, function(req, res)
 		}
 		res.render('my_requests.html', {request_list: requests});
 	});
-	//res.render('my_requests.html');
-});
-
-app.get('/individual_request', login_required, function(req, res)
-{
-	res.render('individual_request.html');
 });
 
 app.post('/individual_request', login_required, function(req, res)
 {
 	//select Requests.*, Businesses.* from Requests right join Businesses on event_name = 'death from assignment'
-	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request_name], function(err, result, fields) {
+	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result, fields) {
 		if (err) throw err;
 		var request = {
 			event_name: result[0].event_name,
@@ -367,6 +390,7 @@ app.post('/individual_bid', login_required, function(req, res)
 
 app.get('/individual_request_user', login_required, function(req, res)
 {
+	console.log(req.session.event_name);
 	res.render('individual_request_user.html', {request: req.session.request});
 });
 
@@ -376,39 +400,26 @@ app.post('/individual_request_user', function(req, res)
 	var owner = true;
 	var bidder = !owner;
 
-		con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, result, fields) {
-			if(err) throw err;
-			var request = {
-				event_name: result[0].event_name,
-				event_date: result[0].event_date,
-				event_time: result[0].event_time,
-				event_deadline: result[0].event_deadline,
-				event_suburb: result[0].event_suburb,
-				event_type: result[0].event_type,
-				noPeople: result[0].noPeople,
-				qualityLevel: result[0].qualityLevel,
-				budget: result[0].budget,
-				choice: result[0].choice,
-				additional_info: result[0].additional_info
-			};
-			/*for(l=0;l<rows.length;l++){
-	      a.push(rows[l].event_name);
-				b.push(rows[l].date);
-				c.push(rows[l].time);
-				d.push(rows[l].deadline);
-				e.push(rows[l].suburb);
-				f.push(rows[l].type);
-				g.push(rows[l].noPeople);
-				h.push(rows[l].qualityLevel);
-				i.push(rows[l].budget);
-				j.push(rows[l].choice);
-				k.push(rows[l].additional_info);
-	    }*/
-			//res.render('individual_request_user.html', {user: req.session.username,
-			//a:a, b:b, c:c, d:d, e:e, f:f, g:g, h:h, i:i, j:j, k:k});
-			res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
+	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [search], function(err, result, fields) {
+	//con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.event_name], function(err, result, fields) {
+		if(err) throw err;
+		var request = {
+			event_name: result[0].event_name,
+			event_date: result[0].event_date,
+			event_time: result[0].event_time,
+			event_deadline: result[0].event_deadline,
+			event_suburb: result[0].event_suburb,
+			event_type: result[0].event_type,
+			noPeople: result[0].noPeople,
+			budget: result[0].budget,
+			qualityLevel: result[0].qualityLevel,
+			budget: result[0].budget,
+			choice: result[0].choice,
+			additional_info: result[0].additional_info
+		};
+		res.render('individual_request_user.html', {request: request, owner: owner, bidder: bidder});
+		//res.render('individual_request_user.html', {request: request});
 	});
-
 });
 
 
@@ -512,7 +523,7 @@ app.get('/accepted_bids', login_required, function(req, res)
 {
 	res.render('accepted_bids.html', {login: req.session.username});
 });
-
+/*
 app.get('/catering_requests', login_required, function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
@@ -524,7 +535,7 @@ app.get('/catering_requests', login_required, function(req, res)
 		res.render('catering_requests.html', {requests: request_name});
 	});
 });
-
+*/
 app.get('/signout', login_required, function(req, res)
 {
 	//req.session.username = null;
