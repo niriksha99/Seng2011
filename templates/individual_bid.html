@@ -88,8 +88,15 @@
           <p> My comments: <%= bid.comment %> </p>
           <% if (bid.status === 1) { %>
           <p> My bid is still active </p>
-          <% } else { %>
+          <% } else if (bid.status === 0) { %>
           <p> My bid is inactive now </p>
+            <div class="col-md-6 form-group">
+              <form method="post" action="/delete_bid">
+                <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(bid) %>" class="btn btn-primary">Delete Bid</button>
+              </form>
+            </div>
+          <% } else if (bid.status === 2) { %>
+            <p> Your bid is accepted! </p>
           <% } %>
         </div>
       </div>

@@ -91,18 +91,41 @@
           <p> Additional Information = <%= request.additional_info %> </p>
           <div class="row">
             <div class="col-md-6 form-group">
-              <a class="btn btn-primary" href="/delete_request">Delete Request</a>
+              <form method="post" action="/delete_request">
+                <button type="submit" id="request" name="request" value="<%= request.event_name %>" class="btn btn-primary">Delete Request</button>
+              </form>
             </div>
           </div>
-          <p>show all the bids placed</p>
-          <div class="row">
-            <div class="col-md-6 form-group">
-              <input type="choose" value="Choose Bid" class="btn btn-primary">
+          <% if (request.completed === 0) { %>
+            <% for (var i = 0; i < biddings.length; i++) { %>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <form method="post" action="/individual_business">
+                  <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings[i].business%>">
+                </form>
+                <p> Bid price: $<%= biddings[i].value %></p>
+                <p> Comments: <%= biddings[i].info %></p>
+              </div>
+              <div class="col-md-6 form-group">
+                <form method="post" action="/accept_bid">
+                  <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(biddings[i]) %>" class="btn btn-primary">Choose Bid</button>
+                </form>
+              </div>
+              <div class="col-md-6 form-group">
+                <form method="post" action="/cancel_bid">
+                  <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(biddings[i]) %>" class="btn btn-primary">Remove Bid</button>
+                </form>
+              </div>
             </div>
+            <% } %>
+          <% } else { %>
+            <p> You accepted the bid from:</p>
             <div class="col-md-6 form-group">
-              <input type="delete" value="Delete Bid" class="btn btn-primary">
+              <form method="post" action="/individual_business">
+                <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings[i].business%>">
+              </form>
             </div>
-          </div>
+          <% } %>
         </div>
       </div>
     </div>
