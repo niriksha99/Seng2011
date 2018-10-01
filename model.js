@@ -519,6 +519,88 @@ app.get('/accepted_bids', login_required, function(req, res)
 	res.render('accepted_bids.html', {login: req.session.username});
 });
 
+app.get('/sort_by_price_low', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		// put info in 2d array
+		var sort_by_price = [];
+		for (var i = 0; i < result.length; i++) {
+			sort_by_price.push(result[i].budget);
+			sort_by_price.push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < sort_by_price.length; i=i+2) {
+			for (var j = sort_by_price.length-2; j > i; j=j-2) {
+				if (sort_by_price[j] <= sort_by_price[j-2]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp1;
+					var temp2 = sort_by_price[j+1];
+					sort_by_price[j+1] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp2;
+				}
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_price.splice(i, 1);
+		}
+
+		res.render('catering_requests.html', {request_list: sort_by_price});
+	});
+});
+
+app.get('/sort_by_price_high', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		// put info in 2d array
+		var sort_by_price = [];
+		for (var i = 0; i < result.length; i++) {
+			sort_by_price.push(result[i].budget);
+			sort_by_price.push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < sort_by_price.length; i=i+2) {
+			for (var j = sort_by_price.length-2; j > i; j=j-2) {
+				if (sort_by_price[j] >= sort_by_price[j-2]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp1;
+					var temp2 = sort_by_price[j+1];
+					sort_by_price[j+1] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp2;
+				}
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_price.splice(i, 1);
+		}
+
+		res.render('catering_requests.html', {request_list: sort_by_price});
+	});
+});
+		/*for (var i = 0; i < result.length; i++) {
+			sort_by_price[i].push(result[i].budget);
+			sort_by_price[i][1].push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < result.length; i++) {
+			for (var j = result.length-1; j > i; j--) {
+				if (sort_by_price[j] <= sort_by_price[j-1]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp;
+					var temp2 = sort_by_price[j][1];
+					sort_by_price[j][1] = sort_by_price[j-1][1];
+					sort_by_price[j-1][1] = temp;
+				}
+			}
+		}*/
+
+
 app.get('/signout', login_required, function(req, res)
 {
 	delete req.session.username;
