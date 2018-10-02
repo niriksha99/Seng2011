@@ -274,20 +274,29 @@ app.get('/home', function(req, res)
 	}
 });
 
-app.post('/search', function(req, res){
+//search by event_type
+app.post('/search', function(req, res)
+{
+	var key = req.body.search;
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		var search_result = [];
+		var search_by_type = [];
+		for (var i = 0; i < result.length; i++) {
+			search.type = result[i].event_type;
+			search.name = result[i].event_name;
+			search_by_type.push(search);
+		}
 
-	var search = req.body.search;
+		for (var i = 0; i < search_by_type.length; i=i+1 ){
+			if (search_by_type.type == key){
+				search_result.push(search_by_type.name);
+			}
+		}
 
-  con.query('SELECT * FROM Businesses WHERE title = ?', [search], function(err, rows, fields) {
-    if(err) throw err;
-    var data = [];
-    for(i=0;i<rows.length;i++){
-      data.push(rows[i].title);
-    }
-    res.end(JSON.stringify(data));
-    console.log(req.params.input);
-  });
-
+		res.end(JSON.stringify(search_result));
+    	console.log(req.params.input);
+	});
 });
 
 
@@ -599,7 +608,6 @@ app.get('/sort_by_price_high', login_required, function(req, res)
 				}
 			}
 		}*/
-
 
 app.get('/signout', login_required, function(req, res)
 {
