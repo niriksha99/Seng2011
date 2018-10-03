@@ -328,20 +328,29 @@ app.get('/home', function(req, res)
 	}
 });
 
-app.post('/search', function(req, res){
+//search by event_type
+app.post('/search', function(req, res)
+{
+	var key = req.body.search;
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		var search_result = [];
+		var search_by_type = [];
+		for (var i = 0; i < result.length; i++) {
+			search.type = result[i].event_type;
+			search.name = result[i].event_name;
+			search_by_type.push(search);
+		}
 
-	var search = req.body.search;
+		for (var i = 0; i < search_by_type.length; i=i+1 ){
+			if (search_by_type.type == key){
+				search_result.push(search_by_type.name);
+			}
+		}
 
-  con.query('SELECT * FROM Businesses WHERE title = ?', [search], function(err, rows, fields) {
-    if(err) throw err;
-    var data = [];
-    for(i=0;i<rows.length;i++){
-      data.push(rows[i].title);
-    }
-    res.end(JSON.stringify(data));
-    console.log(req.params.input);
-  });
-
+		res.end(JSON.stringify(search_result));
+    	console.log(req.params.input);
+	});
 });
 
 
@@ -618,6 +627,87 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 		res.render('accepted_bids.html', {accepted: acc_bids});
 	})
 });
+
+app.get('/sort_by_price_low', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		// put info in 2d array
+		var sort_by_price = [];
+		for (var i = 0; i < result.length; i++) {
+			sort_by_price.push(result[i].budget);
+			sort_by_price.push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < sort_by_price.length; i=i+2) {
+			for (var j = sort_by_price.length-2; j > i; j=j-2) {
+				if (sort_by_price[j] <= sort_by_price[j-2]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp1;
+					var temp2 = sort_by_price[j+1];
+					sort_by_price[j+1] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp2;
+				}
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_price.splice(i, 1);
+		}
+
+		res.render('catering_requests.html', {request_list: sort_by_price});
+	});
+});
+
+app.get('/sort_by_price_high', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		// put info in 2d array
+		var sort_by_price = [];
+		for (var i = 0; i < result.length; i++) {
+			sort_by_price.push(result[i].budget);
+			sort_by_price.push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < sort_by_price.length; i=i+2) {
+			for (var j = sort_by_price.length-2; j > i; j=j-2) {
+				if (sort_by_price[j] >= sort_by_price[j-2]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp1;
+					var temp2 = sort_by_price[j+1];
+					sort_by_price[j+1] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp2;
+				}
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_price.splice(i, 1);
+		}
+
+		res.render('catering_requests.html', {request_list: sort_by_price});
+	});
+});
+		/*for (var i = 0; i < result.length; i++) {
+			sort_by_price[i].push(result[i].budget);
+			sort_by_price[i][1].push(result[i].event_name);
+		}
+		// use bubblesort
+		for (var i = 0; i < result.length; i++) {
+			for (var j = result.length-1; j > i; j--) {
+				if (sort_by_price[j] <= sort_by_price[j-1]) {
+					var temp1 = sort_by_price[j];
+					sort_by_price[j] = sort_by_price[j-1];
+					sort_by_price[j-1] = temp;
+					var temp2 = sort_by_price[j][1];
+					sort_by_price[j][1] = sort_by_price[j-1][1];
+					sort_by_price[j-1][1] = temp;
+				}
+			}
+		}*/
 
 app.get('/signout', login_required, function(req, res)
 {
