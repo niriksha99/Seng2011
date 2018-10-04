@@ -54,6 +54,18 @@ app.get('/', function(req, res){
 	res.render('homepage.html', {error: err, login: req.session.username});
 });
 
+function bidder_required(req, res, next) {
+	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
+		if (err) throw err;
+		if (result.length <= 0) {
+			res.redirect('/error');
+		} else {
+			res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+			next();
+		}
+	});
+}
+
 app.get('/signup', function(req, res)
 {
 	res.render('sign_up.html');
@@ -388,28 +400,6 @@ app.get('/requests', login_required, function(req, res)
 	});
 });
 
-// app.post('/individual_request', login_required, function(req, res)
-// {
-// 	//select Requests.*, Businesses.* from Requests right join Businesses on event_name = 'death from assignment'
-// 	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request_name], function(err, result, fields) {
-// 		if (err) throw err;
-// 		var request = {
-// 			event_name: result[0].event_name,
-// 			event_date: result[0].event_date,
-// 			event_time: result[0].event_time,
-// 			event_deadline: result[0].event_deadline,
-// 			event_suburb: result[0].event_suburb,
-// 			event_type: result[0].event_type,
-// 			noPeople: result[0].noPeople,
-// 			qualityLevel: result[0].qualityLevel,
-// 			budget: result[0].budget,
-// 			choice: result[0].choice,
-// 			additional_info: result[0].additional_info
-// 		};
-// 		res.render('individual_request.html', {request: request});
-// 	});
-// });
-
 app.get('/individual_bid', login_required, function(req, res)
 {
 	res.render('individual_bid.html');
@@ -505,7 +495,6 @@ app.post('/individual_request_user', function(req, res)
 	});
 });
 
-
 app.get('/make_request', login_required, function(req, res)
 {
 	res.render('request_form.html', {user: req.session.username});
@@ -581,9 +570,9 @@ app.post('/individual_business', login_required, function(req, res)
 	});
 });
 
-app.get('/individual_business_user', function(req, res)
+app.get('/individual_business_everyone', function(req, res)
 {
-	res.render('business_user.html');
+	res.render('business_everyone.html');
 });
 
 app.get('/my_bids', login_required, bidder_required, function(req, res)
@@ -691,23 +680,44 @@ app.get('/sort_by_price_high', login_required, function(req, res)
 		res.render('catering_requests.html', {request_list: sort_by_price});
 	});
 });
-		/*for (var i = 0; i < result.length; i++) {
-			sort_by_price[i].push(result[i].budget);
-			sort_by_price[i][1].push(result[i].event_name);
+
+// implement on frontend once rating is done
+app.get('/top_5_business', function(req, res)
+{
+	con.query('SELECT * FROM Business', function(err, result, fields) {
+		if (err) throw err;
+		var sort_by_rating = [];
+		for (var i = 0; i < result.length; i++) {
+			sort_by_rating.push(result[i].rating);
+			sort_by_rating.push(result[i].title);
 		}
 		// use bubblesort
-		for (var i = 0; i < result.length; i++) {
-			for (var j = result.length-1; j > i; j--) {
-				if (sort_by_price[j] <= sort_by_price[j-1]) {
-					var temp1 = sort_by_price[j];
-					sort_by_price[j] = sort_by_price[j-1];
-					sort_by_price[j-1] = temp;
-					var temp2 = sort_by_price[j][1];
-					sort_by_price[j][1] = sort_by_price[j-1][1];
-					sort_by_price[j-1][1] = temp;
+		for (var i = 0; i < sort_by_rating.length; i=i+2) {
+			for (var j = sort_by_rating.length-2; j > i; j=j-2) {
+				if (sort_by_rating[j] >= sort_by_rating[j-2]) {
+					var temp1 = sort_by_rating[j];
+					sort_by_rating[j] = sort_by_rating[j-2];
+					sort_by_rating[j-2] = temp1;
+					var temp2 = sort_by_rating[j+1];
+					sort_by_rating[j+1] = sort_by_rating[j-1];
+					sort_by_rating[j-1] = temp2;
 				}
 			}
-		}*/
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_price.splice(i, 1);
+		}
+
+		var top_5_business = [];
+		for (var i = 0; i < 5; i=i+1) {
+			top_5_business.push(sort_by_rating[i]);
+		}
+
+		res.render('homepage.html', {business_list: top_5_business});
+
+	});
+});
 
 app.get('/signout', login_required, function(req, res)
 {

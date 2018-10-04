@@ -38,7 +38,7 @@
               <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/make_request">Request Form</a>
@@ -78,17 +78,80 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <p> Event name  =  <%= request.event_name %> </p>
-          <p> Event date = <%= request.event_date %> </p>
-          <p> Event time = <%= request.event_time %> </p>
-          <p> Event deadline = <%= request.event_deadline %> </p>
-          <p> Suburb event is going to be held in = <%= request.event_suburb %> </p>
-          <p> Type of event = <%= request.event_type %> </p>
-          <p> Number of people = <%= request.noPeople %> </p>
-          <p> Quality Level = <%= request.qualityLevel %> </p>
-          <p> Budget = $<%= request.budget %> </p>
-          <p> Cook on province(1) or Bring prepared food = <%= request.choice %> </p>
-          <p> Additional Information = <%= request.additional_info %> </p>
+
+          <h1> Event Information </h1>
+
+          <br>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width: 50%" scope="row">Event name</th>
+                <td><%= request.event_name %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event date</th>
+                <td><%= request.event_date %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event deadline</th>
+                <td><%= request.event_deadline %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Suburb</th>
+                <td><%= request.event_suburb %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Type of event</th>
+                <td><%= request.event_type %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Number of people</th>
+                <td><%= request.noPeople %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Quality Level</th>
+                <td><%= request.qualityLevel %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Budget</th>
+                <td>$<%= request.budget %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Cook on province (1) <br> Bring prepared food (2)</th>
+                <td><%= request.choice %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Additional Information</th>
+                <td><%= request.additional_info %></td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="row">
             <div class="col-md-6 form-group">
               <form method="post" action="/delete_request">

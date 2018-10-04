@@ -73,6 +73,112 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
+
+          <h1> Event Information </h1>
+
+          <br>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width: 50%" scope="row">Event name</th>
+                <td><%= bid.event_name %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event date</th>
+                <td><%= bid.event_date %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= bid.event_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event deadline</th>
+                <td><%= bid.event_deadline %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Suburb</th>
+                <td><%= bid.event_suburb %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Type of event</th>
+                <td><%= bid.event_type %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Number of people</th>
+                <td><%= bid.noPeople %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Quality Level</th>
+                <td><%= bid.qualityLevel %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Budget</th>
+                <td>$<%= bid.budget %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Cook on province (1) <br> Bring prepared food (2)</th>
+                <td><%= bid.choice %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Additional Information</th>
+                <td><%= bid.additional_info %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">My bid</th>
+                <td>$<%= bid.amount %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">My comments</th>
+                <td><%= bid.comment %></td>
+              </tr>
+            </tbody>
+            <% if (bid.status === 1) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">My bid is still active</th>
+                </tr>
+              </tbody>
+            <% } else if (bid.status === 0) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">My bid is inactive now</th>
+                </tr>
+              </tbody>
+            <% } else if (bid.status === 2) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">Your bid is accepted!</th>
+                </tr>
+              </tbody>
+            <% } %>
+          </table>
+
+
           <p> Event name  =  <%= bid.event_name %> </p>
           <p> Event date = <%= bid.event_date %> </p>
           <p> Event time = <%= bid.event_time %> </p>
