@@ -13,11 +13,11 @@ function initialise_database(callback) {
 	initial_con.connect(function(err) {
 		if (err) throw err;
 		console.log("initial con Connected!");
-		initial_con.query("DROP DATABASE IF EXISTS Seng", function (err, result) {
+		initial_con.query("DROP DATABASE IF EXISTS PartyWhip", function (err, result) {
 			if (err) throw err;
 			console.log("Old PartyWhip database removed (if it existed)");
 		});
-		initial_con.query("CREATE DATABASE Seng", function (err, result) {
+		initial_con.query("CREATE DATABASE PartyWhip", function (err, result) {
 			if (err) throw err;
 			console.log("PartyWhip database created");
 		});

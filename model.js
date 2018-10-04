@@ -460,10 +460,10 @@ app.post('/individual_request_user', function(req, res)
 			status: result[0].completed
 		};
 		var req_id = result[0].id;
-		var bid_list = [];
 		if (request.status === 0) {
 			con.query('SELECT Bids.*, Businesses.* FROM Bids LEFT JOIN Businesses ON Bids.businessID = Businesses.id WHERE Bids.requestID = ?', [req_id], function(err, result, fields) {
 				if (err) throw err;
+				var bid_list = [];
 				for (var i = 0; i < result.length; i++) {
 					if (result[i].status === 1) {
 						var bid = {
@@ -488,8 +488,7 @@ app.post('/individual_request_user', function(req, res)
 					requestid: req_id,
 					businessid: result[0].businessID
 				}
-				bid_list.push(bid);
-				res.render('individual_request_user.html', {request: request, biddings: bid_list});
+				res.render('individual_request_user.html', {request: request, biddings: bid});
 			});
 		}
 	});
