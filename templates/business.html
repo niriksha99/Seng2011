@@ -71,16 +71,34 @@
     <!-- Main Content -->
     <div class="container">
       <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="col-md-4">
           <h3>Opening hours:</h3>
           <%= business.opening_time %>
+          <br><br>
           <h3> Contact detail:</h3>
           Phone: <%= business.phone %><br>
           Email: <%= business.email %>
-          <h3>Info</h3>
-          <%= business.business_description %>
+          <br><br>
+          <h3> Address:</h3>
+          asdfghjkl
         </div>
-      </div>
+        <div class="col-md-8">
+          <h3>About This Business</h3>
+          <%= business.business_description %>
+          <br><br>
+          <h3>Events Catered For</h3>
+          dinner party,<br>
+          BBQ,<br>
+          birthday party,<br>
+          wedding party,<br>
+          dinner-for-two,<br>
+          a family/friends get-together,
+          <br><br>
+          <h3>Delivery Options</h3>
+          take-away
+          home-deliver
+          cook at event
+        </div>
     </div>
 
     <!-- Footer -->
