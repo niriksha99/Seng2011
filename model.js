@@ -121,7 +121,8 @@ app.post('/link_business_submit', login_required, function(req, res)
 			opening_hours: opening_time,
 			phone_no: phone,
 			email: email,
-			description: business_description
+			description: business_description,
+			fame: 0.0
 		};
 		console.log(business);
 		con.query('INSERT INTO Businesses SET ?', business, function(err, result) {
