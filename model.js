@@ -54,18 +54,6 @@ app.get('/', function(req, res){
 	res.render('homepage.html', {error: err, login: req.session.username});
 });
 
-function bidder_required(req, res, next) {
-	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
-		if (err) throw err;
-		if (result.length <= 0) {
-			res.redirect('/error');
-		} else {
-			res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-			next();
-		}
-	});
-}
-
 app.get('/signup', function(req, res)
 {
 	res.render('sign_up.html');
@@ -125,9 +113,21 @@ app.post('/link_business_submit', login_required, function(req, res)
 			fame: 0.0
 		};
 		console.log(business);
-		con.query('INSERT INTO Businesses SET ?', business, function(err, result) {
+		con.query('INSERT INTO Businesses SET ?', business, function(err, res) {
 			if (err) throw err;
-			console.log('Inserted: ', res.insertId);
+			console.log('Inserted business: ', res.insertId);
+			var rate = {
+				businessID: res.insertId,
+				oneStar: 0.0,
+				twoStar: 0.0,
+				threeStar: 0.0,
+				fourStar: 0.0,
+				fiveStar: 0.0,
+				sum: 0
+			};
+			con.query('INSERT INTO RateSum SET ?', rate, function(err, result, fields) {
+				if (err) throw err;
+			});
 		});
 	});
 
@@ -145,6 +145,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 	// 		email: email,
 	// 		business_description: business_description
 	// };
+
 	return res.redirect("/business");
 });
 
@@ -182,9 +183,9 @@ app.post('/post_request', login_required, function(req, res)
 			completed: completed
 		};
 		console.log(request);
-		con.query('INSERT INTO Requests SET ?', request, function(err, result) {
+		con.query('INSERT INTO Requests SET ?', request, function(err, res) {
 			if (err) throw err;
-			console.log('Inserted: ', res.insertId);
+			console.log('Inserted request: ', res.insertId);
 		});
 	});
 
@@ -259,11 +260,11 @@ app.post('/delete_request', login_required, function(req, res)
 	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request], function(err, result) {
 		if (err) throw err;
 		var request_id = result[0].id;
-		con.query('DELETE FROM Requests WHERE id = ?', [request_id], function(err, result) {
-			if (err) throw err;
-		});
 		con.query('DELETE FROM Bids WHERE requestID = ?', [request_id], function(err, result) {
 			if(err) throw err;
+		});
+		con.query('DELETE FROM Requests WHERE id = ?', [request_id], function(err, result) {
+			if (err) throw err;
 		});
 	});
 	res.redirect('/requests');
@@ -528,7 +529,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			comment: req.body.additional_info,
 			status: 1
 		};
-		con.query('INSERT INTO Bids SET ?', bid, function(err, result) {
+		con.query('INSERT INTO Bids SET ?', bid, function(err, res) {
 			if (err) throw err;
 			console.log('Inserted: ', res.insertId);
 		});
@@ -542,16 +543,18 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			opening_time: result[0].opening_hours,
 			phone: result[0].phone_no,
 			email: result[0].email,
-			business_description: result[0].description
+			business_description: result[0].description,
+			rate: result[0].fame,
+			owner: (result[0].userID === req.session.userid)
 		};
 		res.redirect('/individual_business');
 	});
 });
 
-app.get('/individual_business', login_required, function(req, res)
+app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
 	console.log(req.session.business_name);
-	res.render('business.html', {business: req.session.business});
+	res.render('business.html', {business: req.session.business, rated: 0});
 });
 
 app.post('/individual_business', login_required, function(req, res)
@@ -563,10 +566,20 @@ app.post('/individual_business', login_required, function(req, res)
 			opening_time: result[0].opening_hours,
 			phone: result[0].phone_no,
 			email: result[0].email,
-			business_description: result[0].description
+			business_description: result[0].description,
+			rate: result[0].fame,
+			owner: (result[0].userID === req.session.userid)
 		};
+
 		req.session.businessid = result[0].id;
-		res.render('business.html', {business: business});
+		con.query('SELECT * FROM Ratings WHERE userID = ? AND businessID = ?', [req.session.userid, result[0].id], function(err, result2, fields) {
+			if (err) throw err;
+			if (result2.length <= 0) {
+				res.render('business.html', {business: business, rated: 0});
+			} else {
+				res.render('business.html', {business: business, rated: result2[0].rate});
+			}
+		});
 	});
 });
 
@@ -605,9 +618,9 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
+		var acc_bids = [];
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
-			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
@@ -717,6 +730,78 @@ app.get('/top_5_business', function(req, res)
 		res.render('homepage.html', {business_list: top_5_business});
 
 	});
+});
+
+app.post('/rate', login_required, function(req, res)
+{
+	var val = req.body.rate_star;
+	// get business info
+	var business = JSON.parse(req.body.business);
+	console.log(business.business_name);
+
+	if (val === 1) {
+		console.log("Rate 1 star!");
+		con.query('UPDATE RateSum SET oneStar = (oneStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 2) {
+		console.log("Rate 2 star!");
+		con.query('UPDATE RateSum SET twoStar = (twoStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 3) {
+		console.log("Rate 3 star!");
+		con.query('UPDATE RateSum SET threeStar = (threeStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 4) {
+		console.log("Rate 4 star!");
+		con.query('UPDATE RateSum SET fourStar = (fourStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 5) {
+		console.log("Rate 5 star!");
+		con.query('UPDATE RateSum SET fiveStar = (fiveStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	}
+
+	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result, fields) {
+		if (err) throw err;
+		var total = result[0].sum;
+		var value = result[0].oneStar + result[0].twoStar * 2 + result[0].threeStar * 3 + result[0].fourStar * 4 + result[0].fiveStar * 5;
+		value = value / total;
+		con.query('UPDATE Businesses SET fame = ? WHERE id = ?', [value.toFixed(2), business.id], function(err, result, fields) {
+			if (err) throw err;
+		});
+
+		var rating = {
+			userID: req.session.userid,
+			businessID: result[0].businessID,
+			rate: parseInt(val, 10),
+			comment: req.body.comment
+		};
+		con.query('INSERT INTO Ratings SET ?', rating, function(err, result, fields) {
+			if (err) throw err;
+		});
+	});
+
+	res.render('business.html', {business: business, rated: val});
 });
 
 app.get('/signout', login_required, function(req, res)
