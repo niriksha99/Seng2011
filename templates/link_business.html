@@ -38,13 +38,16 @@
               <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/make_request">Request Form</a>
+              <a class="nav-link" href="/make_request">New Request</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/requests">My Requests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/link_business"><u>Link Business</u></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/business">My Businesses</a>
@@ -92,6 +95,12 @@
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
+                  <label for="name">Closing time (if applicable)</label>
+                  <input type="text" id="closing_time" name="closing_time" class="form-control" required="required">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
                   <label for="name">Phone number</label>
                   <input type="text" id="phone_number" name="phone" class="form-control" required="required">
                 </div>
@@ -104,8 +113,48 @@
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
+                  <label for="name">Address</label>
+                  <input type="text" id="address" name="address" class="form-control" required="required">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
                   <label for="name">Business Description</label>
                   <input type="text" id="business_description" name="business_description" class="form-control" required="required">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Choose one</label>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="radio" name="cater1" id="caterOption1" value="1">
+                      BBq
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="radio" name="cater1" id="caterOption2" value="1">
+                      Birthday
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Choose one</label>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="radio" name="delivery1" id="deliveryChoice1" value="1">
+                      Deliver
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="radio" name="delivery1" id="deliveryChoice2" value="1">
+                      Pick-up
+                    </label>
+                  </div>
                 </div>
               </div>
               <div class="row">

@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "password",
-	database: "PartyWhip"
+	password: "niriksha",
+	database: "Seng"
 });
 
 function login_required(req, res, next) {
@@ -109,19 +109,27 @@ app.post('/link_business_submit', login_required, function(req, res)
 {
 	var business_name = req.body.business_name;
 	var opening_time = req.body.opening_time;
+	var closing_time = req.body.closing_time;
 	var phone = req.body.phone;
 	var email = req.body.email;
+	var address = req.body.address;
 	var business_description = req.body.business_description;
+	var events_cater = req.body.cater1;
+	var delivery_options = req.body.delivery1;
 	var business;
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		business = {
 			userID: result[0].id,
 			title: business_name,
-			opening_hours: opening_time,
+			opening_time: opening_time,
+			closing_time: closing_time,
 			phone_no: phone,
 			email: email,
-			description: business_description
+			address: address,
+			description: business_description,
+			events_cater: events_cater,
+			delivery_options: delivery_options
 		};
 		console.log(business);
 		con.query('INSERT INTO Businesses SET ?', business, function(err, result) {
@@ -271,7 +279,7 @@ app.post('/delete_request', login_required, function(req, res)
 app.post('/accept_bid', login_required, function(req, res)
 {
 	var bid = JSON.parse(req.body.bid_info);
-	
+
 	con.query('SELECT * FROM Bids WHERE requestID = ?', [bid.requestid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
@@ -538,10 +546,14 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 		req.session.business_name = result[0].title;
 		req.session.business = {
 			business_name: result[0].title,
-			opening_time: result[0].opening_hours,
+			opening_time: result[0].opening_time,
+			closing_time: result[0].closing_time,
 			phone: result[0].phone_no,
 			email: result[0].email,
-			business_description: result[0].description
+			address: result[0].address,
+			business_description: result[0].description,
+			events_cater: result[0].events_cater,
+			delivery_options: result[0].delivery_options
 		};
 		res.redirect('/individual_business');
 	});
@@ -559,10 +571,14 @@ app.post('/individual_business', login_required, function(req, res)
 		if (err) throw err;
 		var business = {
 			business_name: result[0].title,
-			opening_time: result[0].opening_hours,
+			opening_time: result[0].opening_time,
+			closing_time: result[0].closing_time,
 			phone: result[0].phone_no,
 			email: result[0].email,
-			business_description: result[0].description
+			address: result[0].address,
+			business_description: result[0].description,
+			events_cater: result[0].cater1,
+			delivery_options: result[0].delivery1
 		};
 		req.session.businessid = result[0].id;
 		res.render('business.html', {business: business});
