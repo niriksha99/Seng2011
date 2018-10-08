@@ -96,8 +96,30 @@
           <br><br>
           <h3>Delivery Options</h3>
           <%= business.delivery_options %>
-
         </div>
+       </div>
+       <br><br><br>
+       <h3> Overall ratings: <%= business.rate %></h3>
+       <% if (business.owner !== true) { %>
+         <% if (rated === 0) { %>
+           <div class="col-md-10">
+             <h3>Rate Business</h3>
+             <form method="post" action="/rate">
+               <input type="radio" name="rate_star" id="rate_star" value="1">One Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="2">Two Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="3">Three Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="4">Four Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="5">Five Star<br>
+               <input type="text" name="comment" id="comment" placeholder="Review">
+               <button type="submit" name="business" id="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Rate</button>
+             </form>
+           </div>
+         <% } else { %>
+           <p> You haved rated this business <%= rated %> star!</p>
+         <% } %>
+       <% } %>
+
+
     </div>
 
     <!-- Footer -->

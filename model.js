@@ -54,18 +54,6 @@ app.get('/', function(req, res){
 	res.render('homepage.html', {error: err, login: req.session.username});
 });
 
-function bidder_required(req, res, next) {
-	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
-		if (err) throw err;
-		if (result.length <= 0) {
-			res.redirect('/error');
-		} else {
-			res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-			next();
-		}
-	});
-}
-
 app.get('/signup', function(req, res)
 {
 	res.render('sign_up.html');
@@ -114,8 +102,8 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var email = req.body.email;
 	var address = req.body.address;
 	var business_description = req.body.business_description;
-	var events_cater = req.body.cater1;
-	var delivery_options = req.body.delivery1;
+	var events_cater = JSON.stringify(req.body.events_cater, null, 2);
+	var delivery_options = JSON.stringify(req.body.delivery, null, 2);
 	var business;
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
@@ -129,12 +117,25 @@ app.post('/link_business_submit', login_required, function(req, res)
 			address: address,
 			description: business_description,
 			events_cater: events_cater,
-			delivery_options: delivery_options
+			delivery_options: delivery_options,
+			fame: 0.0
 		};
 		console.log(business);
-		con.query('INSERT INTO Businesses SET ?', business, function(err, result) {
+		con.query('INSERT INTO Businesses SET ?', business, function(err, res) {
 			if (err) throw err;
-			console.log('Inserted: ', res.insertId);
+			console.log('Inserted business: ', res.insertId);
+			var rate = {
+				businessID: res.insertId,
+				oneStar: 0.0,
+				twoStar: 0.0,
+				threeStar: 0.0,
+				fourStar: 0.0,
+				fiveStar: 0.0,
+				sum: 0
+			};
+			con.query('INSERT INTO RateSum SET ?', rate, function(err, result, fields) {
+				if (err) throw err;
+			});
 		});
 	});
 
@@ -145,13 +146,6 @@ app.post('/link_business_submit', login_required, function(req, res)
 		});
 	}, 3000);
 
-	// req.session.business = {
-	// 		business_name: business_name,
-	// 		opening_time: opening_time,
-	// 		phone: phone,
-	// 		email: email,
-	// 		business_description: business_description
-	// };
 	return res.redirect("/business");
 });
 
@@ -159,12 +153,12 @@ app.post('/post_request', login_required, function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
-	var event_time = req.body.event_time;
+	var event_start_time = req.body.event_start_time;
+	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline;
 	var event_suburb = req.body.event_suburb;
-	var event_type = req.body.event_type;
+	var event_type = JSON.stringify(req.body.event_type);
 	var noPeople = req.body.noPeople;
-	var qualityLevel = req.body.qualityLevel;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
 	var additional_info = req.body.additional_info;
@@ -177,12 +171,12 @@ app.post('/post_request', login_required, function(req, res)
 			userID: result[0].id,
 			event_name: event_name,
 			event_date: event_date,
-			event_time: event_time,
+			event_start_time: event_start_time,
+			event_end_time: event_end_time,
 			event_deadline: event_deadline,
 			event_suburb: event_suburb,
 			event_type: event_type,
 			noPeople: noPeople,
-			qualityLevel: qualityLevel,
 			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
@@ -191,7 +185,7 @@ app.post('/post_request', login_required, function(req, res)
 		console.log(request);
 		con.query('INSERT INTO Requests SET ?', request, function(err, result) {
 			if (err) throw err;
-			console.log('Inserted: ', res.insertId);
+			console.log('Inserted request: ', res.insertId);
 		});
 	});
 
@@ -206,16 +200,16 @@ app.post('/post_request', login_required, function(req, res)
 			owner: req.session.userid,
 			event_name: event_name,
 			event_date: event_date,
-			event_time: event_time,
+			event_start_time: event_start_time,
+			event_end_time: event_end_time,
 			event_deadline: event_deadline,
 			event_suburb: event_suburb,
 			event_type: event_type,
 			noPeople: noPeople,
-			qualityLevel: qualityLevel,
 			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
-			completed: completed
+			status: completed
 		};
 
 	//req.session.business_name = business_name;
@@ -247,13 +241,13 @@ app.post('/individual_request', login_required, function(req, res)
 			var request = {
 				event_name: result[0].event_name,
 				event_date: result[0].event_date,
-				event_time: result[0].event_time,
+				event_start_time: result[0].event_start_time,
+				event_end_time: result[0].event_end_time,
 				event_deadline: result[0].event_deadline,
 				event_suburb: result[0].event_suburb,
 				event_type: result[0].event_type,
 				noPeople: result[0].noPeople,
 				budget: result[0].budget,
-				qualityLevel: result[0].qualityLevel,
 				choice: result[0].choice,
 				additional_info: result[0].additional_info
 			};
@@ -266,15 +260,16 @@ app.post('/delete_request', login_required, function(req, res)
 	con.query('SELECT * FROM Requests WHERE event_name = ?', [req.body.request], function(err, result) {
 		if (err) throw err;
 		var request_id = result[0].id;
-		con.query('DELETE FROM Requests WHERE id = ?', [request_id], function(err, result) {
-			if (err) throw err;
-		});
 		con.query('DELETE FROM Bids WHERE requestID = ?', [request_id], function(err, result) {
 			if(err) throw err;
+		});
+		con.query('DELETE FROM Requests WHERE id = ?', [request_id], function(err, result) {
+			if (err) throw err;
 		});
 	});
 	res.redirect('/requests');
 });
+
 
 app.post('/accept_bid', login_required, function(req, res)
 {
@@ -421,14 +416,14 @@ app.post('/individual_bid', login_required, bidder_required, function(req, res)
 		var bid_info = {
 			event_name: result[0].event_name,
 			event_date: result[0].event_date,
-			event_time: result[0].event_time,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
 			event_deadline: result[0].event_deadline,
 			event_suburb: result[0].event_suburb,
 			event_type: result[0].event_type,
 			noPeople: result[0].noPeople,
-			qualityLevel: result[0].qualityLevel,
-			budget: result[0].budget,
 			choice: result[0].choice,
+			budget: result[0].budget,
 			additional_info: result[0].additional_info,
 			amount: result[0].price,
 			comment: result[0].comment,
@@ -455,13 +450,12 @@ app.post('/individual_request_user', function(req, res)
 		var request = {
 			event_name: result[0].event_name,
 			event_date: result[0].event_date,
-			event_time: result[0].event_time,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
 			event_deadline: result[0].event_deadline,
 			event_suburb: result[0].event_suburb,
 			event_type: result[0].event_type,
 			noPeople: result[0].noPeople,
-			budget: result[0].budget,
-			qualityLevel: result[0].qualityLevel,
 			budget: result[0].budget,
 			choice: result[0].choice,
 			additional_info: result[0].additional_info,
@@ -535,7 +529,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			comment: req.body.additional_info,
 			status: 1
 		};
-		con.query('INSERT INTO Bids SET ?', bid, function(err, result) {
+		con.query('INSERT INTO Bids SET ?', bid, function(err, res) {
 			if (err) throw err;
 			console.log('Inserted: ', res.insertId);
 		});
@@ -550,16 +544,17 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			closing_time: result[0].closing_time,
 			phone: result[0].phone_no,
 			email: result[0].email,
-			address: result[0].address,
 			business_description: result[0].description,
-			events_cater: result[0].events_cater,
-			delivery_options: result[0].delivery_options
+			events_cater: JSON.parse(result[0].events_cater),
+			delivery_options: JSON.parse(rseult[0].delivery_options),
+			rate: result[0].fame,
+			owner: (result[0].userID === req.session.userid)
 		};
 		res.redirect('/individual_business');
 	});
 });
 
-app.get('/individual_business', login_required, function(req, res)
+app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
 	console.log(req.session.business_name);
 	res.render('business.html', {business: req.session.business});
@@ -577,11 +572,27 @@ app.post('/individual_business', login_required, function(req, res)
 			email: result[0].email,
 			address: result[0].address,
 			business_description: result[0].description,
-			events_cater: result[0].cater1,
-			delivery_options: result[0].delivery1
+			events_cater: JSON.parse(result[0].events_cater),
+			delivery_options: JSON.parse(result[0].delivery_options),
+			rate: result[0].fame,
+			owner: (result[0].userID === req.session.userid)
 		};
 		req.session.businessid = result[0].id;
-		res.render('business.html', {business: business});
+		con.query('SELECT * FROM RateSum WHERE businessID = ?', [req.session.businessid], function(err, result3, fields) {
+			if (err) throw err;
+			var total = result3[0].sum;
+			var value = result3[0].oneStar + result3[0].twoStar * 2 + result3[0].threeStar * 3 + result3[0].fourStar * 4 + result3[0].fiveStar * 5;
+			value = value / total;
+			business.rate = value.toFixed(2);
+		});
+		con.query('SELECT * FROM Ratings WHERE userID = ? AND businessID = ?', [req.session.userid, result[0].id], function(err, result2, fields) {
+			if (err) throw err;
+			var rated = 0;
+			if (result2.length > 0) {
+				rated = result2[0].rate;
+			}
+			res.render('business.html', {business: business, rated: rated});
+		});
 	});
 });
 
@@ -620,9 +631,9 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
+		var acc_bids = [];
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
-			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
@@ -631,6 +642,7 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 		res.render('accepted_bids.html', {accepted: acc_bids});
 	})
 });
+
 
 app.get('/sort_by_price_low', login_required, function(req, res)
 {
@@ -731,6 +743,85 @@ app.get('/top_5_business', function(req, res)
 
 		res.render('homepage.html', {business_list: top_5_business});
 
+	});
+});
+
+app.post('/rate', login_required, function(req, res)
+{
+	var val = parseInt(req.body.rate_star, 10);
+	// get business info
+	var business = JSON.parse(req.body.business);
+	console.log(business.business_name);
+
+	if (val === 1) {
+		console.log("Rate 1 star!");
+		con.query('UPDATE RateSum SET oneStar = (oneStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 2) {
+		console.log("Rate 2 star!");
+		con.query('UPDATE RateSum SET twoStar = (twoStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 3) {
+		console.log("Rate 3 star!");
+		con.query('UPDATE RateSum SET threeStar = (threeStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 4) {
+		console.log("Rate 4 star!");
+		con.query('UPDATE RateSum SET fourStar = (fourStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	} else if (val === 5) {
+		console.log("Rate 5 star!");
+		con.query('UPDATE RateSum SET fiveStar = (fiveStar + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+		con.query('UPDATE RateSum SET sum = (sum + 1) WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result) {
+			if (err) throw err;
+		});
+	}
+
+	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result, fields) {
+		if (err) throw err;
+		var rating = {
+			userID: req.session.userid,
+			businessID: result[0].businessID,
+			rate: val,
+			comment: req.body.comment
+		};
+		con.query('INSERT INTO Ratings SET ?', rating, function(err, result, fields) {
+			if (err) throw err;
+		});
+	});
+
+	setTimeout(function () {
+		con.query('SELECT * FROM Businesses', function(err, rows) {
+			if (err) throw err;
+			console.log(rows);
+		});
+	}, 3000);
+
+	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business.business_name], function(err, result, fields) {
+		if (err) throw err;
+		var total = result[0].sum;
+		var value = result[0].oneStar + result[0].twoStar * 2 + result[0].threeStar * 3 + result[0].fourStar * 4 + result[0].fiveStar * 5;
+		value = value / total;
+		business.rate = value.toFixed(2);
+		res.render('business.html', {business: business, rated: val});
 	});
 });
 
