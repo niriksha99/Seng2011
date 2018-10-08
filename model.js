@@ -209,7 +209,7 @@ app.post('/post_request', login_required, function(req, res)
 			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
-			completed: completed
+			status: completed
 		};
 
 	//req.session.business_name = business_name;
