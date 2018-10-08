@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
+	password: "password",
 	database: "Seng"
 });
 
@@ -216,7 +216,7 @@ app.post('/post_request', login_required, function(req, res)
 	return res.redirect("/individual_request_user");
 });
 
-app.get('/catering_requests', login_required, function(req, res)
+app.get('/catering_requests', function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields){
 		if (err) throw err;
@@ -343,7 +343,7 @@ app.get('/home', function(req, res)
 	}
 });
 
-//search by event_type
+//search for requests by event_type
 app.post('/search', function(req, res)
 {
 	var key = req.body.search;
@@ -351,20 +351,33 @@ app.post('/search', function(req, res)
 		if (err) throw err;
 		var search_result = [];
 		for (var i = 0; i < result.length; i++ ){
-			if (result[i].event_type == key){
-				search_result.push(result[i].id);
+			var name = '"' + key + '"';
+
+			if (result[i].event_type == name){
+				search_result.push(result[i].event_name);
 			}
 		}
-		con.query('SELECT * FROM Requests WHERE id = ?', [search_result], function(err, result, fields){
-			if (err) throw err;
-			var requests = [];
-			for (var i = 0; i < result.length; i++) {
-				requests.push(result[i].event_name);
-			}
-			res.render('catering_requests.html', {request_list: requests});
-		});
+		res.render('catering_requests.html', {request_list: search_result});
 	});
 });
+
+//search for businesses by catering type
+/*app.post('/search', function(req, res)
+{
+	var key = req.body.search;
+	con.query('SELECT * FROM Businesses', function(err, result, fields) {
+		if (err) throw err;
+		var search_result = [];
+		for (var i = 0; i < result.length; i++ ){
+			var name = '"' + key + '"';
+
+			if (result[i].events_cater == name){
+				search_result.push(result[i].title);
+			}
+		}
+		res.render('all_businesses.html', {business_list: search_result});
+	});
+});*/
 
 app.get('/user', login_required, function(req, res)
 {
@@ -641,7 +654,7 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 });
 
 
-app.get('/sort_by_price_low', login_required, function(req, res)
+app.get('/sort_by_price_low', function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
@@ -668,12 +681,12 @@ app.get('/sort_by_price_low', login_required, function(req, res)
 		for (var i = 0; i < result.length; i=i+1) {
 			sort_by_price.splice(i, 1);
 		}
-
 		res.render('catering_requests.html', {request_list: sort_by_price});
+
 	});
 });
 
-app.get('/sort_by_price_high', login_required, function(req, res)
+app.get('/sort_by_price_high', function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
