@@ -80,7 +80,7 @@
           <table class="table">
             <tbody>
               <tr>
-                <th style="width: 50%" scope="row">Event name</th>
+                <th style="width: 40%" scope="row">Event name</th>
                 <td><%= request.event_name %></td>
               </tr>
             </tbody>
@@ -93,7 +93,13 @@
             <tbody>
               <tr>
                 <th scope="row">Event time</th>
-                <td><%= request.event_time %></td>
+                <td><%= request.event_start_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_end_time %></td>
               </tr>
             </tbody>
             <tbody>
@@ -122,19 +128,13 @@
             </tbody>
             <tbody>
               <tr>
-                <th scope="row">Quality Level</th>
-                <td><%= request.qualityLevel %></td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr>
                 <th scope="row">Budget</th>
                 <td>$<%= request.budget %></td>
               </tr>
             </tbody>
             <tbody>
               <tr>
-                <th scope="row">Cook on province (1) <br> Bring prepared food (2)</th>
+                <th scope="row">Food Preparation</th>
                 <td><%= request.choice %></td>
               </tr>
             </tbody>
