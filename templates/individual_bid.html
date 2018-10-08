@@ -35,20 +35,22 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/user">Home</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/business">Business</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/my_bids">My Bids</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/accepted_bids">Accepted bids</a>
+              <a class="nav-link active" href="/accepted_bids"><u>Accepted bids</u></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/catering_requests">Catering requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/signout">Sign out</a>
-            </li>
             </li>
           </ul>
         </div>
@@ -178,32 +180,6 @@
             <% } %>
           </table>
 
-
-          <p> Event name  =  <%= bid.event_name %> </p>
-          <p> Event date = <%= bid.event_date %> </p>
-          <p> Event time = <%= bid.event_time %> </p>
-          <p> Event deadline = <%= bid.event_deadline %> </p>
-          <p> Suburb event is going to be held in = <%= bid.event_suburb %> </p>
-          <p> Type of event = <%= bid.event_type %> </p>
-          <p> Number of people = <%= bid.noPeople %> </p>
-          <p> Quality Level = <%= bid.qualityLevel %> </p>
-          <p> Budget = $<%= bid.budget %> </p>
-          <p> Cook on province(1) or Bring prepared food = <%= bid.choice %> </p>
-          <p> Additional Information = <%= bid.additional_info %> </p>
-          <p> My bid: $<%= bid.amount %> </p>
-          <p> My comments: <%= bid.comment %> </p>
-          <% if (bid.status === 1) { %>
-          <p> My bid is still active </p>
-          <% } else if (bid.status === 0) { %>
-          <p> My bid is inactive now </p>
-            <div class="col-md-6 form-group">
-              <form method="post" action="/delete_bid">
-                <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(bid) %>" class="btn btn-primary">Delete Bid</button>
-              </form>
-            </div>
-          <% } else if (bid.status === 2) { %>
-            <p> Your bid is accepted! </p>
-          <% } %>
         </div>
       </div>
     </div>

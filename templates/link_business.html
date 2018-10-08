@@ -38,13 +38,16 @@
               <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/make_request">Request Form</a>
+              <a class="nav-link" href="/make_request">New Request</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/requests">My Requests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/link_business"><u>Link Business</u></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/business">My Businesses</a>
@@ -87,7 +90,13 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Opening time (if applicable)</label>
-                  <input type="text" id="opening_time" name="opening_time" class="form-control" required="required">
+                  <input type="text" id="opening_time" name="opening_time" class="form-control" required="required" placeholder="HH:MM">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Closing time (if applicable)</label>
+                  <input type="text" id="closing_time" name="closing_time" class="form-control" required="required" placeholder="HH:MM">
                 </div>
               </div>
               <div class="row">
@@ -104,8 +113,90 @@
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
+                  <label for="name">Address</label>
+                  <input type="text" id="address" name="address" class="form-control" required="required">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
                   <label for="name">Business Description</label>
                   <input type="text" id="business_description" name="business_description" class="form-control" required="required">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Choose option/s that are applicable</label>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption1" value="Wedding Services Catering">
+                      Wedding Services Catering
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption2" value="Corporate Catering">
+                      Corporate Catering
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption3" value="Cocktail Reception">
+                      Cocktail Reception
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption4" value="Sit-down Catering">
+                      Sit-down Catering
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption5" value="Petite Take-Away Buffet Catering">
+                      Petite Take-Away Buffet Catering
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption6" value="Bento Catering">
+                      Bento Catering
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption7" value="Buffet Catering">
+                      Buffet Catering
+                    </label>
+                  </div>
+                  <!--<div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="events_cater" id="caterOption8" value="1">
+                      <input type="text" name="other_text" style="height:30px" placeholder="Other">
+                    </label>
+                  </div>-->
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 form-group">
+                  <label for="name">Choose one</label>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="delivery" id="deliveryChoice1" value="Deliver">
+                      Deliver
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="delivery" id="deliveryChoice2" value="Pick-up">
+                      Pick-up
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="delivery" id="deliveryChoice3" value="Prepare at venue">
+                      Prepare at venue
+                    </label>
+                  </div>
                 </div>
               </div>
               <div class="row">

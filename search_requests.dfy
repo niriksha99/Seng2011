@@ -29,10 +29,6 @@ class {:autocontracts} RowDataPacket
     var last_modified: string; // ??? datetime
     var status: int;
     
-    predicate Valid() {
-      |deadline| == |event_date| == 10
-    }
-    
     method init(id: int, userID: int, event_name: string, event_date: string, event_time: string, deadline: string, suburb: string, event_type: string, 
                 no_people: int, food_quality: string, budget: real, choice: string, additional_info: string, last_modified: string, status: int)
         requires |deadline| == |event_date| == 10;
@@ -60,58 +56,62 @@ class {:autocontracts} RowDataPacket
     }
 }
 
-method strcmp(a:string, b:string) returns (result: bool)
-requires |a| == |b|
-ensures result == 1 || result == -1
-ensures result == 1 ==> forall j :: 0<=j<|a| ==> a[j]==b[j]
-ensures result == -1 ==> exists i :: 0<=i<|a| && (a[i] != b[i] && (forall j :: 0<=j<i ==> a[j]==b[j]))
+function method min(a: int, b: int): int
+{ if a <= b then a else b }
+
+predicate PrecedeEqual(a: string, b: string, n: int)
+requires n <= min(|a|, |b|);
+{ forall i :: 0 <= i < n ==> a[i] == b[i] }
+
+predicate StringEqual(a: string, b: string)
+{ |a| == |b| && PrecedeEqual(a, b, |a|) }
+
+method strcmp(a: string, b: string) returns (res: int)
+ensures res == 0  ==> a == b;
+ensures res == 1  ==> (exists k :: 0 <= k < |a| && a[k] != b[k] && PrecedeEqual(a, b, k));
 {
-    var i:int;
-    i:=0;
-    while (i < |a| && a[i] == b[i])
-        invariant 0<=i<=|a|
-        invariant forall k::0<=k<i ==> a[k]==b[k]
+    var i := 0;
+    while (i < |a|)
+    invariant 0 <= i <= |a|;
+    invariant StringEqual(a, b);
     {
-        i:=i+1;  
+        if (a[i] != b[i]) { return 1; }
+        i := i + 1;
     }
-    if (i == |a|) {
-        result:=1;
-    }
-    else {
-        if (a[i] != b[i]) {
-        result:=-1;
-        }
-    }
+    assert StringEqual(a, b);
+    if (|a| != |b|) { return 1; }
+    else if (|a| == |b|) { return 0; }
 }
 
 predicate str_match(a: string, b: string)
     requires |a| == |b|
-{   strcmp(a,b) == 1     }
+{   forall i :: 0 <= i < |a| ==> a[i] == b[i] }
 
 predicate str_not_match(a: string, b: string)
-{   strcmp(a,b) == -1   }
+{   exists k :: 0 <= k < |a| && a[k] != b[k]  }
 
 
-method Search(a: array<RowDataPacket>, key: string) returns(b: array<RowDataPacket>)
-modifies b
+method Search(a: array<RowDataPacket>, key: string) returns(b: array<int>)
 requires a.Length > 1
-ensuires 
-ensures forall k:: 0<=k<b.Length ==> b[k].event_type = key
+ensures forall k:: 0<=k<b.Length ==> a[b[k]].event_type == key
 {
-    var i, j, cmp: int
+    var i, j, cmp: int;
+    b:= new int[];
     i:=0;
     j:=0;
     while i<a.Length
         invariant 0<=i<=a.Length
-        invariant forall k:: j<k<i ==> a[k]!=key
+        invariant 0<=j<=a.Length
+        invariant forall k:: j<k<i ==> a[k].event_type!=key
     {
-        cmp:=strcmp(a[i],key)
-        if (cmp == 1){ 
-            b[j]:= a[i];
+        cmp:=strcmp(a[i].event_type,key);
+        if (cmp == 0){ 
+            b[j]:= i + 1;
             j:=j+1; 
         }
         i:=i+1;
     }
     return b;
-}    
+}   
+ 
 

@@ -97,19 +97,27 @@ app.post('/link_business_submit', login_required, function(req, res)
 {
 	var business_name = req.body.business_name;
 	var opening_time = req.body.opening_time;
+	var closing_time = req.body.closing_time;
 	var phone = req.body.phone;
 	var email = req.body.email;
+	var address = req.body.address;
 	var business_description = req.body.business_description;
+	var events_cater = JSON.stringify(req.body.events_cater, null, 2);
+	var delivery_options = JSON.stringify(req.body.delivery, null, 2);
 	var business;
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		business = {
 			userID: result[0].id,
 			title: business_name,
-			opening_hours: opening_time,
+			opening_time: opening_time,
+			closing_time: closing_time,
 			phone_no: phone,
 			email: email,
+			address: address,
 			description: business_description,
+			events_cater: events_cater,
+			delivery_options: delivery_options,
 			fame: 0.0
 		};
 		console.log(business);
@@ -138,14 +146,6 @@ app.post('/link_business_submit', login_required, function(req, res)
 		});
 	}, 3000);
 
-	// req.session.business = {
-	// 		business_name: business_name,
-	// 		opening_time: opening_time,
-	// 		phone: phone,
-	// 		email: email,
-	// 		business_description: business_description
-	// };
-
 	return res.redirect("/business");
 });
 
@@ -153,12 +153,12 @@ app.post('/post_request', login_required, function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
-	var event_time = req.body.event_time;
+	var event_start_time = req.body.event_start_time;
+	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline;
 	var event_suburb = req.body.event_suburb;
-	var event_type = req.body.event_type;
+	var event_type = JSON.stringify(req.body.event_type);
 	var noPeople = req.body.noPeople;
-	var qualityLevel = req.body.qualityLevel;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
 	var additional_info = req.body.additional_info;
@@ -171,12 +171,12 @@ app.post('/post_request', login_required, function(req, res)
 			userID: result[0].id,
 			event_name: event_name,
 			event_date: event_date,
-			event_time: event_time,
+			event_start_time: event_start_time,
+			event_end_time: event_end_time,
 			event_deadline: event_deadline,
 			event_suburb: event_suburb,
 			event_type: event_type,
 			noPeople: noPeople,
-			qualityLevel: qualityLevel,
 			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
@@ -200,12 +200,12 @@ app.post('/post_request', login_required, function(req, res)
 			owner: req.session.userid,
 			event_name: event_name,
 			event_date: event_date,
-			event_time: event_time,
+			event_start_time: event_start_time,
+			event_end_time: event_end_time,
 			event_deadline: event_deadline,
 			event_suburb: event_suburb,
 			event_type: event_type,
 			noPeople: noPeople,
-			qualityLevel: qualityLevel,
 			budget: budget,
 			choice: choice,
 			additional_info: additional_info,
@@ -241,13 +241,13 @@ app.post('/individual_request', login_required, function(req, res)
 			var request = {
 				event_name: result[0].event_name,
 				event_date: result[0].event_date,
-				event_time: result[0].event_time,
+				event_start_time: result[0].event_start_time,
+				event_end_time: result[0].event_end_time,
 				event_deadline: result[0].event_deadline,
 				event_suburb: result[0].event_suburb,
 				event_type: result[0].event_type,
 				noPeople: result[0].noPeople,
 				budget: result[0].budget,
-				qualityLevel: result[0].qualityLevel,
 				choice: result[0].choice,
 				additional_info: result[0].additional_info
 			};
@@ -270,10 +270,11 @@ app.post('/delete_request', login_required, function(req, res)
 	res.redirect('/requests');
 });
 
+
 app.post('/accept_bid', login_required, function(req, res)
 {
 	var bid = JSON.parse(req.body.bid_info);
-	
+
 	con.query('SELECT * FROM Bids WHERE requestID = ?', [bid.requestid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
@@ -415,14 +416,14 @@ app.post('/individual_bid', login_required, bidder_required, function(req, res)
 		var bid_info = {
 			event_name: result[0].event_name,
 			event_date: result[0].event_date,
-			event_time: result[0].event_time,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
 			event_deadline: result[0].event_deadline,
 			event_suburb: result[0].event_suburb,
 			event_type: result[0].event_type,
 			noPeople: result[0].noPeople,
-			qualityLevel: result[0].qualityLevel,
-			budget: result[0].budget,
 			choice: result[0].choice,
+			budget: result[0].budget,
 			additional_info: result[0].additional_info,
 			amount: result[0].price,
 			comment: result[0].comment,
@@ -449,13 +450,12 @@ app.post('/individual_request_user', function(req, res)
 		var request = {
 			event_name: result[0].event_name,
 			event_date: result[0].event_date,
-			event_time: result[0].event_time,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
 			event_deadline: result[0].event_deadline,
 			event_suburb: result[0].event_suburb,
 			event_type: result[0].event_type,
 			noPeople: result[0].noPeople,
-			budget: result[0].budget,
-			qualityLevel: result[0].qualityLevel,
 			budget: result[0].budget,
 			choice: result[0].choice,
 			additional_info: result[0].additional_info,
@@ -540,10 +540,13 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 		req.session.business_name = result[0].title;
 		req.session.business = {
 			business_name: result[0].title,
-			opening_time: result[0].opening_hours,
+			opening_time: result[0].opening_time,
+			closing_time: result[0].closing_time,
 			phone: result[0].phone_no,
 			email: result[0].email,
 			business_description: result[0].description,
+			events_cater: JSON.parse(result[0].events_cater),
+			delivery_options: JSON.parse(rseult[0].delivery_options),
 			rate: result[0].fame,
 			owner: (result[0].userID === req.session.userid)
 		};
@@ -563,10 +566,14 @@ app.post('/individual_business', login_required, function(req, res)
 		if (err) throw err;
 		var business = {
 			business_name: result[0].title,
-			opening_time: result[0].opening_hours,
+			opening_time: result[0].opening_time,
+			closing_time: result[0].closing_time,
 			phone: result[0].phone_no,
 			email: result[0].email,
+			address: result[0].address,
 			business_description: result[0].description,
+			events_cater: JSON.parse(result[0].events_cater),
+			delivery_options: JSON.parse(result[0].delivery_options),
 			rate: result[0].fame,
 			owner: (result[0].userID === req.session.userid)
 		};
@@ -636,6 +643,7 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 		res.render('accepted_bids.html', {accepted: acc_bids});
 	})
 });
+
 
 app.get('/sort_by_price_low', login_required, function(req, res)
 {

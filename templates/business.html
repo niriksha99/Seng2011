@@ -33,26 +33,30 @@
           <i class="fa fa-bars"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/user">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/my_bids">My Bids</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/accepted_bids">Accepted bids</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/catering_requests">Catering requests</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signout">Sign out</a>
-            </li>
-          </ul>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/user">My Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link  active" href="/business"><u>Business</u></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/my_bids">My Bids</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/accepted_bids">Accepted bids</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/catering_requests">Catering requests</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/signout">Sign out</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
@@ -74,51 +78,46 @@
         <div class="col-md-4">
           <h3>Opening hours:</h3>
           <%= business.opening_time %>
+          <%= business.closing_time %>
           <br><br>
           <h3> Contact detail:</h3>
           Phone: <%= business.phone %><br>
           Email: <%= business.email %>
           <br><br>
           <h3> Address:</h3>
-          asdfghjkl
+          <%= business.address %>
         </div>
         <div class="col-md-8">
           <h3>About This Business</h3>
           <%= business.business_description %>
           <br><br>
           <h3>Events Catered For</h3>
-          dinner party,<br>
-          BBQ,<br>
-          birthday party,<br>
-          wedding party,<br>
-          dinner-for-two,<br>
-          a family/friends get-together,
+          <%= business.events_cater %>
           <br><br>
           <h3>Delivery Options</h3>
-          take-away
-          home-deliver
-          cook at event
-          <br><br>
-          <h3> Overall ratings: <%= business.rate %></h3>
+          <%= business.delivery_options %>
         </div>
-        <% if (business.owner !== true) { %>
-          <% if (rated === 0) { %>
-            <div class="col-md-10">
-              <h3>Rate Business</h3>
-              <form method="post" action="/rate">
-                <input type="radio" name="rate_star" id="rate_star" value="1">One Star<br>
-                <input type="radio" name="rate_star" id="rate_star" value="2">Two Star<br>
-                <input type="radio" name="rate_star" id="rate_star" value="3">Three Star<br>
-                <input type="radio" name="rate_star" id="rate_star" value="4">Four Star<br>
-                <input type="radio" name="rate_star" id="rate_star" value="5">Five Star<br>
-                <input type="text" name="comment" id="comment" placeholder="Review">
-                <button type="submit" name="business" id="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Rate</button>
-              </form>
-            </div>
-          <% } else { %>
-            <h3> You haved rated this business <%= rated %> star!</h3>
-          <% } %>
-        <% } %>
+       </div>
+       <br><br><br>
+       <h3> Overall ratings: <%= business.rate %></h3>
+       <% if (business.owner !== true) { %>
+         <% if (rated === 0) { %>
+           <div class="col-md-10">
+             <h3>Rate Business</h3>
+             <form method="post" action="/rate">
+               <input type="radio" name="rate_star" id="rate_star" value="1">One Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="2">Two Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="3">Three Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="4">Four Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="5">Five Star<br>
+               <input type="text" name="comment" id="comment" placeholder="Review">
+               <button type="submit" name="business" id="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Rate</button>
+             </form>
+           </div>
+         <% } else { %>
+           <p> You haved rated this business <%= rated %> star!</p>
+         <% } %>
+       <% } %>
     </div>
 
     <!-- Footer -->
