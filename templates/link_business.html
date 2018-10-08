@@ -79,48 +79,58 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Business Form.</h3>
-        <form action="/link_business_submit" method="post">
-        <form onsubmit="" action="" method="post">
+        <form action="/link_business_submit" method="post" onsubmit="return checkTimes()">
+		<script>
+			function checkTimes() {
+            	var openTime = document.getElementById("opening_time").value.split(':').map(num => parseInt(num, 10));
+                var closeTime = document.getElementById("closing_time").value.split(':').map(num => parseInt(num, 10));
+				if (openTime[0] > closeTime[0] || (openTime[0] == closeTime[0] && openTime[1] >= closeTime[1])) {
+					alert("Opening time must be earlier than Closing time");
+					return false;
+				}
+				return true;
+			}
+		</script>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business name</label>
-                  <input type="text" id="business_name" name="business_name" class="form-control" required="required">
+                  <input type="text" id="business_name" name="business_name" class="form-control" required pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Opening time (if applicable)</label>
-                  <input type="text" id="opening_time" name="opening_time" class="form-control" required="required" placeholder="HH:MM">
+                  <input type="text" id="opening_time" name="opening_time" class="form-control" required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Closing time (if applicable)</label>
-                  <input type="text" id="closing_time" name="closing_time" class="form-control" required="required" placeholder="HH:MM">
+                  <input type="text" id="closing_time" name="closing_time" class="form-control" required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Phone number</label>
-                  <input type="text" id="phone_number" name="phone" class="form-control" required="required">
+                  <input type="tel" id="phone_number" name="phone" class="form-control" required pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Email Address</label>
-                  <input type="text" id="email" name="email" class="form-control" required="required">
+                  <input type="email" id="email" name="email" class="form-control" required="required" pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Address</label>
-                  <input type="text" id="address" name="address" class="form-control" required="required">
+                  <input type="text" id="address" name="address" class="form-control" required pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business Description</label>
-                  <input type="text" id="business_description" name="business_description" class="form-control" required="required">
+                  <input type="text" id="business_description" name="business_description" class="form-control" required pattern=".{1-255}> 
                 </div>
               </div>
               <div class="row">
