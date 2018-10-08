@@ -218,13 +218,22 @@ app.post('/post_request', login_required, function(req, res)
 
 app.get('/catering_requests', login_required, function(req, res)
 {
-	con.query('SELECT * FROM Requests', function(err, result, fields){
+	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
-		var requests = [];
-		for (var i = 0; i < result.length; i++) {
-			requests.push(result[i].event_name);
+		var bid_request = [];
+		for (var i = 0 ; i < result.length; i++) {
+			bid_request.push(result[i].requestID);
 		}
-		res.render('catering_requests.html', {request_list: requests});
+		con.query('SELECT * FROM Requests', function(err, result, fields){
+			if (err) throw err;
+			var requests = [];
+			for (var i = 0; i < result.length; i++) {
+				if (!bid_request.includes(result[i].id)) {
+					requests.push(result[i].event_name);
+				}
+			}
+			res.render('catering_requests.html', {request_list: requests});
+		});
 	});
 });
 
@@ -236,22 +245,22 @@ app.get('/individual_request', login_required, function(req, res)
 
 app.post('/individual_request', login_required, function(req, res)
 {
-		con.query('SELECT * FROM Requests WHERE event_name = ? AND completed = 0', [req.body.event_name], function(err, result, fields) {
-			if(err) throw err;
-			var request = {
-				event_name: result[0].event_name,
-				event_date: result[0].event_date,
-				event_start_time: result[0].event_start_time,
-				event_end_time: result[0].event_end_time,
-				event_deadline: result[0].event_deadline,
-				event_suburb: result[0].event_suburb,
-				event_type: result[0].event_type,
-				noPeople: result[0].noPeople,
-				budget: result[0].budget,
-				choice: result[0].choice,
-				additional_info: result[0].additional_info
-			};
-			res.render('individual_request.html', {request: request});
+	con.query('SELECT * FROM Requests WHERE event_name = ? AND completed = 0', [req.body.event_name], function(err, result, fields) {
+		if(err) throw err;
+		var request = {
+			event_name: result[0].event_name,
+			event_date: result[0].event_date,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
+			event_deadline: result[0].event_deadline,
+			event_suburb: result[0].event_suburb,
+			event_type: result[0].event_type,
+			noPeople: result[0].noPeople,
+			budget: result[0].budget,
+			choice: result[0].choice,
+			additional_info: result[0].additional_info
+		};
+		res.render('individual_request.html', {request: request});
 	});
 });
 
@@ -546,7 +555,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			email: result[0].email,
 			business_description: result[0].description,
 			events_cater: JSON.parse(result[0].events_cater),
-			delivery_options: JSON.parse(rseult[0].delivery_options),
+			delivery_options: JSON.parse(result[0].delivery_options),
 			rate: result[0].fame,
 			owner: (result[0].userID === req.session.userid)
 		};
@@ -584,6 +593,9 @@ app.post('/individual_business', login_required, function(req, res)
 			var value = result3[0].oneStar + result3[0].twoStar * 2 + result3[0].threeStar * 3 + result3[0].fourStar * 4 + result3[0].fiveStar * 5;
 			value = value / total;
 			business.rate = value.toFixed(2);
+			if (total == 0) {
+				business.rate = 0.0;
+			}
 		});
 
 		con.query('SELECT * FROM Ratings WHERE userID = ? AND businessID = ?', [req.session.userid, result[0].id], function(err, result2, fields) {

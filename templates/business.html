@@ -99,7 +99,11 @@
         </div>
        </div>
        <br><br><br>
+       <% if (business.rate === 0.0) { %>
+       <h3> Your business has not been rated yet! </h3>
+       <% } else { %>
        <h3> Overall ratings: <%= business.rate %></h3>
+       <% } %>
        <% if (business.owner !== true) { %>
          <% if (rated === 0) { %>
            <div class="col-md-10">
