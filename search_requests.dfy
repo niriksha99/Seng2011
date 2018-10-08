@@ -56,42 +56,31 @@ class {:autocontracts} RowDataPacket
     }
 }
 
-function method min(a: int, b: int): int
-{ if a <= b then a else b }
-
-predicate PrecedeEqual(a: string, b: string, n: int)
-requires n <= min(|a|, |b|);
-{ forall i :: 0 <= i < n ==> a[i] == b[i] }
-
 predicate StringEqual(a: string, b: string)
-{ |a| == |b| && PrecedeEqual(a, b, |a|) }
+{ |a| == |b| && forall i :: 0 <= i < |a| ==> a[i] == b[i] }
 
 method strcmp(a: string, b: string) returns (res: int)
-ensures res == 0  ==> a == b
-ensures res == -1 ==> (exists k :: 0 <= k < min(|a|, |b|) && a[k] < b[k] && PrecedeEqual(a, b, k)) || (|a| < |b| && PrecedeEqual(a, b, |a|))
-ensures res == 1  ==> (exists k :: 0 <= k < min(|a|, |b|) && a[k] > b[k] && PrecedeEqual(a, b, k)) || (|a| > |b| && PrecedeEqual(a, b, |b|))
+ensures res == 0  ==> StringEqual(a,b)
+ensures res == 1  ==> (|a| != |b| || (|a| == |b| && exists k :: 0 <= k < |a| && a[k] != b[k]) )
 {
+    if (|a| != |b|) {return 1;}
     var i := 0;
-    var minLen := min(|a|, |b|);
-    while (i < minLen)
-    invariant 0 <= i <= minLen;
-    invariant PrecedeEqual(a, b, i);
+    while (i < |a|)
+    invariant 0 <= i <= |a|;
+    invariant forall k :: 0 <= k < i ==> a[k] == b[k]
     {
-        if (a[i] < b[i]) { return -1; }
-        else if (a[i] > b[i]) {return 1; }
+        if (a[i] != b[i]) { return 1; }
         i := i + 1;
     }
-    assert PrecedeEqual(a, b, min(|a|, |b|));
-    if (|a| < |b|) { return -1; }
-    else if (|a| > |b|) { return 1; }
-    else if (|a| == |b|) { return 0; }
+    assert StringEqual(a, b);
+    return 0; 
 }
 
 method Search(a: array<RowDataPacket>, key: string) returns(b: array<int>)
 requires a.Length > 1
-ensures b.Length<=a.Length
+ensures b.Length <= a.Length
 ensures forall k::0<=k<b.Length ==> 0<=b[k]<a.Length;
-ensures forall k::0<=k<b.Length ==> PrecedeEqual(a[b[k]].event_type,key,min(|a[b[k]].event_type|, |key|))
+ensures forall k::0<=k<b.Length ==> StringEqual(a[b[k]].event_type,key)
 {
     var i, j, cmp: int;
     b:= new array<int>;
@@ -99,14 +88,14 @@ ensures forall k::0<=k<b.Length ==> PrecedeEqual(a[b[k]].event_type,key,min(|a[b
     j:=0;
     while i<a.Length
         invariant 0<=i<=a.Length
-        invariant 0<=j<a.Length
-        invariant forall k:: 0<=k<j ==> 0<=b[k]<i
-        invariant forall k:: 0<=k<j ==> PrecedeEqual(a[b[k]].event_type,key,min(|a[b[k]].event_type|,|key|))
+        invariant 0<=j<=i
+       // invariant forall k:: 1<=k<j ==> 0<=b[k]<i
+        invariant forall k:: 1<=k<j ==> StringEqual(a[b[k]].event_type,key)
     {
         cmp:=strcmp(a[i].event_type,key);
-        if (cmp == 0){ 
-            b[j]:= i;
-            j:=j+1; 
+        if (cmp == 0){      
+            b[j]:= i;  
+            j:=j+1;
         }
         i:=i+1;
     }
