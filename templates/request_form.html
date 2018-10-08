@@ -90,14 +90,24 @@
 				// eventDate <= deadline  
 				var dateToday = new Date();
 				// currentDate string in yyyy-mm-dd
-				var currentDate = dateToday.getFullYear() + "-" + dateToday.getMonth()+1 + "-" + dateToday.getDate();
-				var currentTime = dateToday.getHours() + ":" + dateToday.getMinutes();
-				var eventDate = document.getElementById("event_date").value;
-				var eventDeadline = document.getElementById("event_deadline").value; 
-            	var startTime = document.getElementById("event_start_time").value.split(':');
-				if (startTime.length < 5) { startTime = "0" + startTime; }; // add leading 0
-                var endTime = document.getElementById("event_end_time").value.split(':');
-				if (endTime.length < 5) { endTime = "0" + endTime; };
+				var curMonth = dateToday.getMonth() + 1;
+				if (curMonth.length < 2) { curMonth = "0" + curMonth; } // add leading 0
+				var curDay = dateToday.getDate();
+				if (curDay.length < 2) { curDay = "0" + curDay; } // add leading 0
+				var currentDate = dateToday.getFullYear() + "-" + curMonth + "-" + curDay;
+				var curHour = dateToday.getHours();
+				if (curHour.length < 2) { curHour = "0" + curHour; } // add leading 0
+				var curMin = dateToday.getMinutes();
+				if (curMin.length < 2) { curMin = "0" + curMin; } // add leading 0
+				var currentTime = curHour + ":" + curMin;
+				var eventDate = document.getElementById("event_date").value.split('T')[0];
+				var eventDeadline = document.getElementById("event_deadline").value.split('T')[0]; 
+            	var startTime = document.getElementById("event_start_time").value;
+				if (startTime.length < 5) { startTime = "0" + startTime; } // add leading 0
+                var endTime = document.getElementById("event_end_time").value;
+				if (endTime.length < 5) { endTime = "0" + endTime; }
+
+				alert(eventDate + " " + eventDeadline + " " + currentDate + " " + currentTime + " " + startTime + " " + endTime);
 				if  (eventDate < currentDate || (eventDate == currentDate && currentTime > startTime)) {
 					alert("Starting date and time of the event has already passed!\n eventDate:" + eventDate + " currentDate:" + currentDate");
 					return false;
