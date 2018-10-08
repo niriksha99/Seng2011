@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title><%= request.event_name %></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles for this template -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user">My Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/make_request">New Request</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/requests">My Requests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/link_business">Link Business</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/business">My Businesses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/signout">Sign out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('img/champagne.jpg')">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <h1><%= request.event_name %></h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+          <h1> Event Information </h1>
+
+          <br>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width: 40%" scope="row">Event name</th>
+                <td><%= request.event_name %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event date</th>
+                <td><%= request.event_date %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_start_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_end_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event deadline</th>
+                <td><%= request.event_deadline %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Suburb</th>
+                <td><%= request.event_suburb %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Type of event</th>
+                <td><%= request.event_type %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Number of people</th>
+                <td><%= request.noPeople %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Budget</th>
+                <td>$<%= request.budget %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Food Preparation</th>
+                <td><%= request.choice %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Additional Information</th>
+                <td><%= request.additional_info %></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <form method="post" action="/delete_request">
+                <button type="submit" id="request" name="request" value="<%= request.event_name %>" class="btn btn-primary">Delete Request</button>
+              </form>
+            </div>
+          </div>
+          <% if (request.status === 0) { %>
+            <% for (var i = 0; i < biddings.length; i++) { %>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <form method="post" action="/individual_business">
+                  <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings[i].business%>">
+                </form>
+                <p> Bid price: $<%= biddings[i].value %></p>
+                <p> Comments: <%= biddings[i].info %></p>
+              </div>
+              <div class="col-md-6 form-group">
+                <form method="post" action="/accept_bid">
+                  <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(biddings[i]) %>" class="btn btn-primary">Choose Bid</button>
+                </form>
+              </div>
+              <div class="col-md-6 form-group">
+                <form method="post" action="/cancel_bid">
+                  <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(biddings[i]) %>" class="btn btn-primary">Remove Bid</button>
+                </form>
+              </div>
+            </div>
+            <% } %>
+          <% } else { %>
+            <p> You accepted the bid from:</p>
+            <div class="col-md-6 form-group">
+              <form method="post" action="/individual_business">
+                <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings.business%>">
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/clean-blog.min.js"></script>
+
+  </body>
+
+</html>

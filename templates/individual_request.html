@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>My Bids</title>
+    <title><%= request.event_name %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -35,19 +35,16 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Dashboard</a>
+              <a class="nav-link" href="/user">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/business">Business</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="/my_bids"><u>My Bids</u></a>
+              <a class="nav-link" href="/my_bids">My Bids</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/accepted_bids">Accepted bids</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/catering_requests">Catering requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/signout">Sign out</a>
@@ -64,7 +61,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>My Bids</h1>
+              <h1><%= request.event_name %></h1>
             </div>
           </div>
         </div>
@@ -75,13 +72,92 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <% for (var i=0; i < bids.length; i++) { %>
+
+          <h1> Event Information </h1>
+
+          <br>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width: 40%" scope="row">Event name</th>
+                <td><%= request.event_name %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event date</th>
+                <td><%= request.event_date %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_start_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= request.event_end_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event deadline</th>
+                <td><%= request.event_deadline %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Suburb</th>
+                <td><%= request.event_suburb %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Type of event</th>
+                <td><%= request.event_type %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Number of people</th>
+                <td><%= request.noPeople %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Budget</th>
+                <td>$<%= request.budget %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Food Preparation</th>
+                <td><%= request.choice %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Additional Information</th>
+                <td><%= request.additional_info %></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <form action="/bidding" method="post">
             <div class="row">
-            <form method="post" action="/individual_bid">
-              <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=bids[i]%>">
-            </form>
+              <div class="col-md-6 form-group">
+                  <label for="name">Approximate Bidding Amount</label>
+                  <input type="number" id="price" name="price" class="form-control " placeholder="$">
+                <br>
+                  <label for="name">Additional Information</label>
+                  <input type="text" id="additional_info" name="additional_info" class="form-control ">
+                <button type="submit" value="<%= request.event_name %>" id="event_name" name="event_name" class="btn btn-primary">Bid Request</button>
+              </div>
             </div>
-          <% } %>
+          </form>
         </div>
       </div>
     </div>

@@ -1,123 +1,68 @@
-var express = require('express');
-var app = express();
+var mysql = require('mysql');
+var con;
 
-const mysql = require('mysql');
-//Create connection with database
-const db = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'password',
-    database : 'partywhip'
-});
-//Connect
-db.connect((err) => {
-    if(err){
-        throw err;
-    }
-    console.log('MySql Connected...');
-});
-// const app = express();
-//Create database
+initialise_database(create_tables);
 
-//?????should be created only once
-app.get('/createdb', (req, res) => {
-    let sql = 'CREATE DATABASE partywhip';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-        console.log(result);
-        res.send('Database created...');
+function initialise_database(callback) {
+    var initial_con = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "password"
     });
-});
 
-//create a table e.g for users
-app.get('/createpoststable', (req, res) => {
-    let sql = 'CREATE TABLE Users(id int AUTO_INCREMENT, user_name VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_number VARCHAR(255), email_address VARCHAR(255), password VARCHAR(255), PRIMARY KEY(id))';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-        console.log(result);
-        res.send('Users table created...');
+    initial_con.connect(function(err) {
+        if (err) throw err;
+        console.log("initial con Connected!");
+        initial_con.query("DROP DATABASE IF EXISTS Seng", function (err, result) {
+            if (err) throw err;
+            console.log("Old PartyWhip database removed (if it existed)");
+        });
+        initial_con.query("CREATE DATABASE Seng", function (err, result) {
+            if (err) throw err;
+            console.log("PartyWhip database created");
+        });
     });
-});
+    setTimeout( function() {
+        if (typeof callback == 'function') {
+            callback();
+        }}, 2000);
+}
 
-
-//insert a user
-app.get('/insertusers', (req, res) => {
-    let sql = 'INSERT INTO Users (user_name, first_name, last_name, phone_number, email_address, password) VALUES ?';
-	var values = [
-		['Bob123', 'Bob', 'sofjwe', '014274923', 'faoej@jojge.com', 'pass123' ],
-		['Adam123', 'Adam', 'sofjwe', '91447923', 'adsf@jojge.com', 'pas12423' ]
-	];
-    db.query(sql, [values], (err, result) => {
-        if(err) throw err;
-        console.log(result);
-        res.send('Inserted a user...');
+function create_tables() {
+    con = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "password",
+        database: "Seng"
     });
-});
+    basic_query("CREATE TABLE Users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255))", "created Users table");
 
-//show users
-app.get('/showusers', (req, res) => {
-    let sql = 'SELECT * FROM Users';
-    db.query(sql, (err, result, fields) => {
-        if(err) throw err;
-        console.log(result);
-        res.send('Showed users...');
+    basic_query("CREATE TABLE Requests (id INT AUTO_INCREMENT PRIMARY KEY, userID INT, event_name VARCHAR(255), event_date DATE, event_start_time TIME, event_end_time TIME, event_deadline DATE, event_suburb VARCHAR(255), event_type VARCHAR(255), noPeople INT, budget FLOAT(10,2), choice VARCHAR(255), additional_info VARCHAR(255), completed INT, FOREIGN KEY (userID) REFERENCES Users(id)) ", "created Requests table");
+    // not sure if foreign key is set up properly
+
+    basic_query("CREATE TABLE Businesses (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), userID INT, opening_time TIME, closing_time TIME,  phone_no VARCHAR(20), email VARCHAR(255), address VARCHAR(255), description VARCHAR(255), events_cater VARCHAR(255), delivery_options VARCHAR(255), fame FLOAT(10,2), FOREIGN KEY (userID) REFERENCES Users(id))", "created Businesses table"); // link userID to Users(id)
+
+    basic_query("CREATE TABLE Bids(requestID INT, businessID INT, price FLOAT(10,2), comment VARCHAR(255), status TINYINT, FOREIGN KEY (requestID) REFERENCES Requests(id), FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(requestID, businessID)) ", "created Bids table");
+        // link businessID and reqID to Businesses(id) and Requests(id)
+
+        basic_query("CREATE TABLE Ratings(userID INT, businessID INT, rate INT, comment VARCHAR(255), FOREIGN KEY (userID) REFERENCES Users(id), FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(userID, businessID)) ", "created Ratings table");
+
+        basic_query("CREATE TABLE RateSum(businessID INT, oneStar INT, twoStar INT, threeStar INT, fourStar INT, fiveStar INT, sum INT, FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(businessID)) ", "created RateSum table");
+
+        basic_query("CREATE TABLE Notes(userID INT, requestID INT, businessID INT, notification VARCHAR(255), FOREIGN KEY (userID) REFERENCES Users(id), FOREIGN KEY (requestID) REFERENCES Requests(id), FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(userID, requestID, businessID)) ", "created Notes table");
+}
+
+function basic_query(sql, message) {
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log(message);
     });
-});
-
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-app.set('views', './views');
-
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
-app.get('/', function(req, res) 
-{
-	res.render('home.html');
-});
-/*
-app.post('/', function(req, res) {
-	res.render('home.html');
-});
-*/
-/*
-app.post('/', function(req, res) 
-{
-	res.render('welcome.html');
-});
-*/
-
-app.get('/dashboard', function(req, res) 
-{
-	res.render('dashboard.html');
-});
-
-app.post('/welcome', function(req, res) 
-{
-	var my_name = req.body.name;
-	console.log(my_name);
-	res.render('welcome.html', {name:my_name});
-});
-
-app.get('/signup', function(req, res) 
-{
-	res.render('sign-up-form.html', {error:false});
-});
-
-app.post('/signup_submit', function(req, res){
-	var id = req.body.username;
-	var pass = req.body.password;
-	var repass = req.body.repassword;
-	var email = req.body.email;
-	console.log(id);
-	console.log(pass);
-	console.log(repass);
-	console.log(email);
-	
-	return res.redirect("/");
-});
-
-var server = app.listen(8000, function() {});
-
-console.log('http://localhost:3000')
+//  con.connect(function(err) {
+//      if (err) throw err;
+//      console.log("Connected!");
+//      con.query(sql, function (err, result) {
+//          if (err) throw err;
+//          console.log(message);
+//      });
+//  });
+}

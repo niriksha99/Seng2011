@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Accepted Bids</title>
+    <title>{{ Business_Name }}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -26,36 +26,36 @@
   <body>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-      <div class="container">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          Menu
-          <i class="fa fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/user">My Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/business">Business</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/my_bids">My Bids</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/accepted_bids"><u>Accepted bids</u></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/catering_requests">Catering requests</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signout">Sign out</a>
-            </li>
-          </ul>
-        </div>
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fa fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/user">My Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/make_request">Request form</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/requests">My Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/link_business">Link Business</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/business">My Businesses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/signout">Sign out</a>
+          </li>
+        </ul>
       </div>
-    </nav>
+    </div>
+  </nav>
 
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
@@ -64,7 +64,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>Accepted Bids<h1>
+              <h1>{{Business_Name}}</h1>
             </div>
           </div>
         </div>
@@ -74,13 +74,8 @@
     <!-- Main Content -->
     <div class="container">
       <div class="row">
-        <% for (var i=0; i < accepted.length; i++) { %>
-          <div class="row">
-          <form method="post" action="/individual_bid">
-            <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=accepted[i]%>">
-          </form>
-          </div>
-        <% } %>
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <h>for the customer to view -- Get business info from database</h>
         </div>
       </div>
     </div>

@@ -32,34 +32,44 @@
           Menu
           <i class="fa fa-bars"></i>
         </button>
-        <% if (login === null) { %>
+         <% if (login === null) { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a href="/signup" class="nav-link">Sign-up</a>
-            </li>
-          </ul>
-        </div>
-        <!--<% if (login === null) { %>-->
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <form action="/login" method="post">
-              <input type="text" id="username" name="username" placeholder="username" class="form-control ">
-              <input type="password" id="password" name="password" placeholder="password" class="form-control ">
-              <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
-              <% if (error === true) { %>
-                 <br>
-                 <h4 style="color: red;"> Please enter a valid username and password </h4>
-              <% } %>
-          </form>
+        <form action="/login" method="post">
+          <div class="row">
+          <div class="col-md-5">
+            <input type="text" id="username" name="username" placeholder="username" class="form-control ">
+          </div>
+          <div class="col-md-5">
+            <input type="password" id="password" name="password" placeholder="password" class="form-control ">
+          </div>
+          </div>
+          <br>
+          <div class="row">
+          <div class="col-md-5">
+            <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
+          </div>
+          </div>
+            <% if (error === true) { %>
+              <p style="color: white;"> Please enter a valid username and password </p>
+            <% } %>
+        </form>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a href="/signup" class="nav-link">Sign-up</a>
+          </li>
+        </ul>
         </div>
         <% } else { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
+              <a class="nav-link active" href="/home"><u>Home</u></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/make_request">Request form</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/make_request">New Request</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/requests">My Requests</a>
@@ -76,51 +86,10 @@
           </ul>
         </div>
         <% } %>
-        <!--<% } %>-->
+
       </div>
     </nav>
-<!--
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-      <div class="container">
-        <% if (login === null) { %>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <form action="/login" method="post">
-              <input type="text" id="username" name="username" placeholder="username" class="form-control ">
-              <input type="password" id="password" name="password" placeholder="password" class="form-control ">
-              <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
-              <% if (error === true) { %>
-                 <br>
-                 <h4 style="color: red;"> Please enter a valid username and password </h4>
-              <% } %>
-          </form>
-        </div>
-        <% } else { %>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/make_request">Request form</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/requests">My Requests</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/link_business">Link Business</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/business">My Businesses</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signout">Sign out</a>
-            </li>
-          </ul>
-        </div>
-        <% } %>
-      </div>
-    </nav>
--->
+
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
       <div class="overlay"></div>
@@ -130,6 +99,14 @@
             <div class="site-heading">
               <h1>PARTY WHIP</h1>
               <span class="subheading">for a stress-less celebration</span>
+              <br>
+              <div class="search-container">
+                <form action="/search" method="post">
+                  <input type="text" id="search" name="search" placeholder="search" class="form-control ">
+                  <br>
+                  <input type="submit" value="Search" class="btn btn-dark mt-2 mt-sm-0">
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -140,21 +117,12 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h>Party whip is...</h>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-md-10 mx-auto">
-            <p class="copyright text-muted">Copyright &copy; Your Website 2018</p>
+          <div class="row">
+            <h>Top businesses </h>
           </div>
         </div>
       </div>
-    </footer>
+    </div>
 
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>

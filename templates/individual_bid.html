@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Accepted Bids</title>
+    <title>Bid for <%= bid.event_name %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -64,7 +64,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>Accepted Bids<h1>
+              <h1>Bid for <%= bid.event_name %></h1>
             </div>
           </div>
         </div>
@@ -74,13 +74,112 @@
     <!-- Main Content -->
     <div class="container">
       <div class="row">
-        <% for (var i=0; i < accepted.length; i++) { %>
-          <div class="row">
-          <form method="post" action="/individual_bid">
-            <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=accepted[i]%>">
-          </form>
-          </div>
-        <% } %>
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+          <h1> Event Information </h1>
+
+          <br>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width: 50%" scope="row">Event name</th>
+                <td><%= bid.event_name %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event date</th>
+                <td><%= bid.event_date %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= bid.event_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event deadline</th>
+                <td><%= bid.event_deadline %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Suburb</th>
+                <td><%= bid.event_suburb %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Type of event</th>
+                <td><%= bid.event_type %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Number of people</th>
+                <td><%= bid.noPeople %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Quality Level</th>
+                <td><%= bid.qualityLevel %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Budget</th>
+                <td>$<%= bid.budget %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Cook on province (1) <br> Bring prepared food (2)</th>
+                <td><%= bid.choice %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Additional Information</th>
+                <td><%= bid.additional_info %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">My bid</th>
+                <td>$<%= bid.amount %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">My comments</th>
+                <td><%= bid.comment %></td>
+              </tr>
+            </tbody>
+            <% if (bid.status === 1) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">My bid is still active</th>
+                </tr>
+              </tbody>
+            <% } else if (bid.status === 0) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">My bid is inactive now</th>
+                </tr>
+              </tbody>
+            <% } else if (bid.status === 2) { %>
+              <tbody>
+                <tr>
+                  <th scope="row">Your bid is accepted!</th>
+                </tr>
+              </tbody>
+            <% } %>
+          </table>
+
         </div>
       </div>
     </div>

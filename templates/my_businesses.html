@@ -38,16 +38,19 @@
               <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Profile</a>
+              <a class="nav-link" href="/user">My Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/make_request">Request Form</a>
+              <a class="nav-link" href="/make_request">New Request</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/requests">My Requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/link_business">Link Business</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/business"><u>My Businesses</u></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/signout">Sign out</a>
@@ -75,7 +78,13 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <h>???</h>
+            <% for (var i=0; i < business_list.length; i++) { %>
+              <div class="row">
+              <form method="post" action="/individual_business">
+                <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=business_list[i]%>">
+              </form>
+              </div>
+            <% } %>
         </div>
       </div>
     </div>
