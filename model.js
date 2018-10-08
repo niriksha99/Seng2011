@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "password",
+	password: "niriksha",
 	database: "Seng"
 });
 
