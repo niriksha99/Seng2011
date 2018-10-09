@@ -66,41 +66,41 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">First Name</label>
-                  <input type="text" id="first_name" name="first_name" class="form-control" required="required">
+                  <input type="text" id="first_name" name="first_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Last Name</label>
-                  <input type="text" id="last_name" name="last_name" class="form-control " required="required">
+                  <input type="text" id="last_name" name="last_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Username</label>
-                   <input type="text" id="username" name="username" class="form-control " required="required">
+                   <input type="text" id="username" name="username" class="form-control " required pattern="[A-Za-z0-9_-]{1,255}" title="allowed characters: letters, numbers, and any of the following: , . - _ '">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Password</label>
-                  <input type="password" id="password" name="password" class="form-control " required="required">
+                  <input type="password" id="password" name="password" class="form-control " required pattern=".{1,255}">
                 </div>
                 <div class="col-md-12 form-group">
                   <label for="name">Re-enter Password</label>
-                  <input type="password" id="repassword" name="repassword" class="form-control " required="required">
+                  <input type="password" id="repassword" name="repassword" class="form-control " required pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
-                  <label for="name">Mobile Number</label>
-                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control ">
+                  <label for="name">Phone Number</label>
+                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="email">Email</label>
-                  <input type="email" id="email" name="email" class="form-control " required="required">
+                  <input type="email" id="email" name="email" class="form-control " required pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">

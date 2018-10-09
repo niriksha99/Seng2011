@@ -105,6 +105,8 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var events_cater = JSON.stringify(req.body.events_cater, null, 2);
 	var delivery_options = JSON.stringify(req.body.delivery, null, 2);
 	var business;
+	// compare times are correct
+	// check if at least one checkbox is done
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		business = {
@@ -153,9 +155,9 @@ app.post('/post_request', login_required, function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
-	var event_start_time = req.body.event_start_time;
+	var event_start_time = req.body.event_start_time.split('T')[0];
 	var event_end_time = req.body.event_end_time;
-	var event_deadline = req.body.event_deadline;
+	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
 	var event_type = JSON.stringify(req.body.event_type);
 	var noPeople = req.body.noPeople;
@@ -216,7 +218,7 @@ app.post('/post_request', login_required, function(req, res)
 	return res.redirect("/individual_request_user");
 });
 
-app.get('/catering_requests', login_required, function(req, res)
+app.get('/catering_requests', function(req, res)
 {
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
@@ -352,31 +354,40 @@ app.get('/home', function(req, res)
 	}
 });
 
-//search by event_type
+//search for requests by event_type
 app.post('/search', function(req, res)
 {
 	var key = req.body.search;
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		var search_result = [];
-		var search_by_type = [];
-		for (var i = 0; i < result.length; i++) {
-			search.type = result[i].event_type;
-			search.name = result[i].event_name;
-			search_by_type.push(search);
-		}
-
-		for (var i = 0; i < search_by_type.length; i=i+1 ){
-			if (search_by_type.type == key){
-				search_result.push(search_by_type.name);
+		for (var i = 0; i < result.length; i++ ){
+			var name = '"' + key.toLowerCase() + '"';
+			if (result[i].event_type.toLowerCase() == name){
+				search_result.push(result[i].event_name);
 			}
 		}
-
-		res.end(JSON.stringify(search_result));
-    	console.log(req.params.input);
+		res.render('catering_requests.html', {request_list: search_result});
 	});
 });
 
+//search for businesses by catering type
+/*app.post('/search', function(req, res)
+{
+	var key = req.body.search;
+	con.query('SELECT * FROM Businesses', function(err, result, fields) {
+		if (err) throw err;
+		var search_result = [];
+		for (var i = 0; i < result.length; i++ ){
+			var name = '"' + key + '"';
+
+			if (result[i].events_cater == name){
+				search_result.push(result[i].title);
+			}
+		}
+		res.render('all_businesses.html', {business_list: search_result});
+	});
+});*/
 
 app.get('/user', login_required, function(req, res)
 {
@@ -657,7 +668,7 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 });
 
 
-app.get('/sort_by_price_low', login_required, function(req, res)
+app.get('/sort_by_price_low', function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
@@ -684,12 +695,12 @@ app.get('/sort_by_price_low', login_required, function(req, res)
 		for (var i = 0; i < result.length; i=i+1) {
 			sort_by_price.splice(i, 1);
 		}
-
 		res.render('catering_requests.html', {request_list: sort_by_price});
+
 	});
 });
 
-app.get('/sort_by_price_high', login_required, function(req, res)
+app.get('/sort_by_price_high', function(req, res)
 {
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
