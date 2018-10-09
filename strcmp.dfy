@@ -9,6 +9,7 @@ requires n <= min(|a|, |b|);
 //{ |a| == |b| && PrecedeEqual(a, b, |a|) }
 
 method strcmp(a: string, b: string) returns (res: int)
+ensures res == 0 || res == 1 || res == -1;
 ensures res == 0  ==> a == b;
 ensures res == -1 ==> (exists k :: 0 <= k < min(|a|, |b|) && a[k] < b[k] && PrecedeEqual(a, b, k)) || (|a| < |b| && PrecedeEqual(a, b, |a|));
 ensures res == 1  ==> (exists k :: 0 <= k < min(|a|, |b|) && a[k] > b[k] && PrecedeEqual(a, b, k)) || (|a| > |b| && PrecedeEqual(a, b, |b|));
