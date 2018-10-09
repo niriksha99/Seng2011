@@ -20,7 +20,7 @@ var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
 	password: "password",
-	database: "Seng"
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
@@ -105,6 +105,8 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var events_cater = JSON.stringify(req.body.events_cater, null, 2);
 	var delivery_options = JSON.stringify(req.body.delivery, null, 2);
 	var business;
+	// compare times are correct
+	// check if at least one checkbox is done
 	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		business = {
@@ -153,9 +155,9 @@ app.post('/post_request', login_required, function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date;
-	var event_start_time = req.body.event_start_time;
+	var event_start_time = req.body.event_start_time.split('T')[0];
 	var event_end_time = req.body.event_end_time;
-	var event_deadline = req.body.event_deadline;
+	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
 	var event_type = JSON.stringify(req.body.event_type);
 	var noPeople = req.body.noPeople;

@@ -83,18 +83,18 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Request Catering.</h3>
-        <form action="/post_request" method="post">
+        <form onsubmit="return checkValidDateTimes()" action="/post_request" method="post">
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Event name</label>
-                  <input type="text" id="event_name" name="event_name" class="form-control ">
+                  <input type="text" id="event_name" name="event_name" class="form-control " required pattern=".{1,255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Date of event</label>
                   <div class="input-group date">
-                    <input type="text" id="event_date" name="event_date" class="form-control" placeholder="YYYY-MM-DD">
+                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_date" name="event_date" class="form-control" placeholder="YYYY-MM-DD">
                     <div class="input-group-addon">
                       <span class="glyphicon glyphicon-th"></span>
                     </div>
@@ -104,20 +104,22 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Starting time of the event</label>
-                  <input type="text" id="event_start_time" name="event_start_time" class="form-control " placeholder="HH:MM">
+                  <input type="text" id="event_start_time" name="event_start_time" class="form-control " required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Ending time of the event</label>
-                  <input type="text" id="event_end_time" name="event_end_time" class="form-control " placeholder="HH:MM">
+                  <input type="text" id="event_end_time" name="event_end_time" class="form-control " required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Deadline for the request</label>
                   <div class="input-group date">
-                    <input type="text" id="event_deadline" name="event_deadline" class="form-control" placeholder="YYYY-MM-DD">
+                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_deadline" name="event_deadline" class="form-control" placeholder="YYYY-MM-DD">
                     <div class="input-group-addon">
                       <span class="glyphicon glyphicon-th"></span>
                     </div>
@@ -127,7 +129,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Suburb the event is going to be held in</label>
-                  <input type="text" id="event_suburb" name="event_suburb" class="form-control ">
+                  <input type="text" id="event_suburb" name="event_suburb" class="form-control " required pattern=".{1,255}">
                 </div>
               </div>
 
@@ -190,7 +192,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Approximate number of people catering required for</label>
-                  <input type="text" id="noPeople" name="noPeople" class="form-control ">
+                  <input type="text" id="noPeople" name="noPeople" class="form-control " required pattern="[1-9]+[0-9]{1,10}">
                 </div>
               </div>
               <div class="row">
@@ -219,13 +221,13 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Approximate Budget</label>
-                  <input type="text" id="budget" name="budget" class="form-control " placeholder="$">
+                  <input type="text" id="budget" name="budget" class="form-control " placeholder="$" required pattern="[1-9]?[0-9]{0,9}(\.[0-9]{2})?" title="Enter as a whole number or to two decimal places">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Additional Information</label>
-                  <input type="text" id="additional_info" name="additional_info" class="form-control ">
+                  <input type="text" id="additional_info" name="additional_info" class="form-control " pattern=".{1,255}">
                 </div>
               </div>
               <div class="row">
@@ -243,6 +245,50 @@
       </div>
     </div>
 
+		<script>
+			function checkValidDateTimes() {
+				// date of event must be today or later
+				// eventDate <= deadline  
+				let dateToday = new Date();
+				// currentDate string in yyyy-mm-dd
+				let curMonth = (dateToday.getMonth() + 1).toString();
+				if (curMonth.length < 2) { curMonth = "0" + curMonth; } // add leading 0
+
+				let curDay = dateToday.getDate().toString();
+				if (curDay.length < 2) { curDay = "0" + curDay; } // add leading 0
+
+				let currentDate = dateToday.getFullYear().toString() + "-" + curMonth + "-" + curDay;
+				let curHour = dateToday.getHours().toString();
+				if (curHour.length < 2) { curHour = "0" + curHour; } // add leading 0
+
+				let curMin = dateToday.getMinutes().toString();
+				if (curMin.length < 2) { curMin = "0" + curMin; } // add leading 0
+
+				let eventDate = document.getElementById("event_date").value.split('T')[0];
+				let eventDeadline = document.getElementById("event_deadline").value.split('T')[0]; 
+
+				let currentTime = curHour + ":" + curMin;
+            	let startTime = document.getElementById("event_start_time").value.toString();
+				if (startTime.length < 5) { startTime = "0" + startTime; } // add leading 0
+                let endTime = document.getElementById("event_end_time").value.toString();
+				if (endTime.length < 5) { endTime = "0" + endTime; }
+
+				console.log(eventDate + " " + eventDeadline + " " + currentDate + " " + currentTime + " " + startTime + " " + endTime);
+				if  (eventDate < currentDate || (eventDate == currentDate && currentTime > startTime)) {
+					alert("Starting date and time of the event has already passed!");
+					return false;
+				}
+				else if (eventDeadline > eventDate) {
+					alert("Deadline cannot be after the event");
+					return false;
+				}
+				if (startTime >= endTime) {
+					alert("Starting time must be earlier than Ending time");
+					return false;
+				}
+				return true;
+			}
+		</script>
 
     <!-- Footer -->
     <footer>
