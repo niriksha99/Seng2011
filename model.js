@@ -353,9 +353,8 @@ app.post('/search', function(req, res)
 		if (err) throw err;
 		var search_result = [];
 		for (var i = 0; i < result.length; i++ ){
-			var name = '"' + key + '"';
-
-			if (result[i].event_type == name){
+			var name = '"' + key.toLowerCase() + '"';
+			if (result[i].event_type.toLowerCase() == name){
 				search_result.push(result[i].event_name);
 			}
 		}
