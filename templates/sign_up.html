@@ -62,60 +62,52 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Sign-Up Form.</h3>
-        <form action="/signup_submit" onsubmit="return checkPass()" method="post">
+        <form action="/signup_submit" method="post">
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">First Name</label>
-                  <input type="text" id="first_name" name="first_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
+                  <input type="text" id="first_name" name="first_name" class="form-control" pattern="/[a-zA-Z ,\.'-]{1,255}/" title="allowed characters: letters, spaces and any of the following: , . - '" onCheck="checkPattern('first_name','first_name_check')">
                 </div>
               </div>
+                <div class="registrationFormAlert" id="first_name_check"></div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Last Name</label>
-                  <input type="text" id="last_name" name="last_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
+                  <input type="text" id="last_name" name="last_name" class="form-control" pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Username</label>
-                   <input type="text" id="username" name="username" class="form-control " required pattern="[A-Za-z0-9_-]{1,255}" title="allowed characters: letters, numbers, and any of the following: , . - _ '">
+                   <input type="text" id="username" name="username" class="form-control " pattern="[A-Za-z0-9_-]{1,255}" title="allowed characters: letters, numbers, and any of the following: , . - _ '">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Password</label>
-                  <input type="password" id="password" name="password" class="form-control " required pattern=".{1,255}">
+                  <input type="password" id="password" name="password" class="form-control " pattern=".{1,255}" onChange="checkPass()">
                 </div>
                 <div class="col-md-12 form-group">
                   <label for="name">Re-enter Password</label>
-                  <input type="password" id="repassword" name="repassword" class="form-control " required pattern=".{1-255}">
+                  <input type="password" id="repassword" name="repassword" class="form-control " pattern=".{1-255}" onChange="checkPass()">
                 </div>
               </div>
+				<!-- messy !-->
+                <div class="registrationFormAlert" id="passwordMatch"></div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Phone Number</label>
-                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
+                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control" pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="email">Email</label>
-                  <input type="email" id="email" name="email" class="form-control " required pattern=".{1-255}">
+                  <input type="email" id="email" name="email" class="form-control " pattern=".{1-255}">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 form-group">
-                  <script>
-                    function checkPass() {
-                      var pass = document.getElementById("password").value;
-                      var repass = document.getElementById("repassword").value;
-                      if (pass != repass) {
-                        alert("Passwords don't match!");
-                        return false;
-                      }
-                      return true;
-                    }
-                  </script>
                   <input type="submit" value="Sign-up" class="btn btn-dark mt-2 mt-sm-0">
                 </div>
               </div>
@@ -130,6 +122,34 @@
         </div>
       </div>
     </div>
+
+	<!-- Form validation scripts  -->
+	<script>
+		function checkPass() {
+		  var pass = $("#password").val();
+		  var repass = $("#repassword").val();
+		  if (pass != repass) {
+			$("#passwordMatch").html("!!!!!!!!! Passwords do not match."); // change this
+			return false;
+		  }
+		  $("#passwordMatch").html("");
+		  return true;
+		}
+
+		function checkPattern(id, output) {
+		  var elemID = "#" + id;
+		  var input  = $(elemID).val();
+		  if (!input.match($(elemID).attr('pattern'))) {
+			$("#"+output).html($(elemID).attr('title'));
+		  }
+		  $("#"+output).html("");
+		}
+
+		$(document).ready(() => {
+			$("#repassword").keyup(checkPass);
+			$("#first_name").keyup(checkPattern("first_name", "first_name_check"));
+		});
+	  </script>
 
     <!-- Footer -->
     <footer>
