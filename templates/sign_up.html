@@ -60,6 +60,12 @@
       </div>
     </header>
 
+    <% if (error === 1) { %>
+    <p>Username is in use, try something else!
+    <% } else if (error === 2) { %>
+    <p>Your email has been used, try something else or try login to your old account!
+    <% } %>
+
     <!-- Main Content -->
     <div class="container">
       <div class="row">

@@ -56,7 +56,13 @@ app.get('/', function(req, res){
 
 app.get('/signup', function(req, res)
 {
-	res.render('sign_up.html');
+	var err = 0;
+	if (req.session.error === undefined) err = 0;
+	else {
+		err = req.session.error;
+		delete req.session.error;
+	}
+	res.render('sign_up.html', {error : err});
 });
 
 app.post('/signup_submit', function(req, res)
@@ -78,19 +84,36 @@ app.post('/signup_submit', function(req, res)
 		email: email
 	};
 
-	// insert new user (haven't checked if user exists)
-	con.query('INSERT INTO Users SET ?', signup_user, function(err, res) {
+	con.query('SELECT * FROM Users WHERE username = ?', [id], function(err, result, fields) {
 		if (err) throw err;
-		console.log('Inserted: ', res.insertId);
+		if (result.length > 0) {
+			req.session.error = 1;
+			return res.redirect('/signup');
+		} else {
+			con.query('SELECT * FROM Users WHERE email = ?', [email], function(err, result1, fields) {
+				if (err) throw err;
+				if (result1.length > 0) {
+					req.session.error = 2;
+					return res.redirect('/signup');
+				} else {
+					// insert new user (haven't checked if user exists)
+					con.query('INSERT INTO Users SET ?', signup_user, function(err, res) {
+						if (err) throw err;
+						console.log('Inserted: ', res.insertId);
+					});
+					return res.redirect("/");
+				}
+			});
+		}
 	});
+
 
 	// print all users, testing purpose
-	con.query('SELECT * FROM Users', function(err,rows) {
-	  if (err) throw err;
-	  console.log(rows);
-	});
+	// con.query('SELECT * FROM Users', function(err,rows) {
+	//   if (err) throw err;
+	//   console.log(rows);
+	// });
 
-	return res.redirect("/");
 });
 
 app.post('/link_business_submit', login_required, function(req, res)
@@ -105,50 +128,60 @@ app.post('/link_business_submit', login_required, function(req, res)
 	var events_cater = JSON.stringify(req.body.events_cater, null, 2);
 	var delivery_options = JSON.stringify(req.body.delivery, null, 2);
 	var business;
-	// compare times are correct
-	// check if at least one checkbox is done
-	con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
+
+	con.query('SELECT * FROM Businesses WHERE title = ?', [business_name], function(err, result, fields) {
 		if (err) throw err;
-		business = {
-			userID: result[0].id,
-			title: business_name,
-			opening_time: opening_time,
-			closing_time: closing_time,
-			phone_no: phone,
-			email: email,
-			address: address,
-			description: business_description,
-			events_cater: events_cater,
-			delivery_options: delivery_options,
-			fame: 0.0
-		};
-		console.log(business);
-		con.query('INSERT INTO Businesses SET ?', business, function(err, res) {
-			if (err) throw err;
-			console.log('Inserted business: ', res.insertId);
-			var rate = {
-				businessID: res.insertId,
-				oneStar: 0.0,
-				twoStar: 0.0,
-				threeStar: 0.0,
-				fourStar: 0.0,
-				fiveStar: 0.0,
-				sum: 0
-			};
-			con.query('INSERT INTO RateSum SET ?', rate, function(err, result, fields) {
+		if (result.length > 0) {
+			req.session.error = 1;
+			return res.redirect('/link_business');
+		} else {
+			// compare times are correct
+			// check if at least one checkbox is done
+			con.query('SELECT * FROM Users WHERE username = ?', [req.session.username], function(err, result, fields) {
 				if (err) throw err;
+				business = {
+					userID: result[0].id,
+					title: business_name,
+					opening_time: opening_time,
+					closing_time: closing_time,
+					phone_no: phone,
+					email: email,
+					address: address,
+					description: business_description,
+					events_cater: events_cater,
+					delivery_options: delivery_options,
+					fame: 0.0
+				};
+				console.log(business);
+				con.query('INSERT INTO Businesses SET ?', business, function(err, res) {
+					if (err) throw err;
+					console.log('Inserted business: ', res.insertId);
+					var rate = {
+						businessID: res.insertId,
+						oneStar: 0.0,
+						twoStar: 0.0,
+						threeStar: 0.0,
+						fourStar: 0.0,
+						fiveStar: 0.0,
+						sum: 0
+					};
+					con.query('INSERT INTO RateSum SET ?', rate, function(err, result, fields) {
+						if (err) throw err;
+					});
+				});
 			});
-		});
+
+			setTimeout(function () {
+				con.query('SELECT * FROM Businesses', function(err,rows) {
+				  if (err) throw err;
+				  console.log(rows);
+				});
+			}, 3000);
+
+			return res.redirect("/business");
+		}
 	});
 
-	setTimeout(function () {
-		con.query('SELECT * FROM Businesses', function(err,rows) {
-		  if (err) throw err;
-		  console.log(rows);
-		});
-	}, 3000);
-
-	return res.redirect("/business");
 });
 
 app.post('/post_request', login_required, function(req, res)
@@ -523,7 +556,13 @@ app.get('/make_request', login_required, function(req, res)
 
 app.get('/link_business', login_required, function(req, res)
 {
-	res.render('link_business.html');
+	var err = 0;
+	if (req.session.error === undefined) err = 0;
+	else {
+		err = req.session.error;
+		delete req.session.error;
+	}
+	res.render('link_business.html', {error : err});
 });
 
 app.get('/business', login_required, function(req, res)
