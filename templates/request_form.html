@@ -87,7 +87,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Event name</label>
-                  <input type="text" id="event_name" name="event_name" class="form-control " data-pattern="^.{1,255}$" maxLength=255>
+                  <input type="text" id="event_name" name="event_name" class="form-control " data-pattern="^.{1,255}$" maxLength=255 onchange="checkPattern(this)">
                 </div>
               </div>
                 <div class="alert alert-warning" style="display:none" id="event_name_check">Please enter a name for your event.</div>
@@ -95,7 +95,7 @@
                 <div class="col-md-12 form-group">
                   <label for="name">Date of event</label>
                   <div class="input-group date">
-                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_date" name="event_date" class="form-control" placeholder="YYYY-MM-DD" data-pattern="^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$">
+                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_date" name="event_date" class="form-control" placeholder="YYYY-MM-DD" data-pattern="^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$" onchange="checkValidDateTimes()">
                     <div class="input-group-addon">
                       <span class="glyphicon glyphicon-th"></span>
                     </div>
@@ -106,7 +106,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Starting time of the event</label>
-                  <input type="text" id="event_start_time" name="event_start_time" class="form-control " data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+                  <input type="text" id="event_start_time" name="event_start_time" class="form-control " data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time" onchange="checkValidDateTimes()">
                 </div>
               </div>
                 <div class="alert alert-warning" style="display:none" id="event_start_time_check">Invalid start time - use 24 hour time (HH:MM)</div>
@@ -114,7 +114,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Ending time of the event</label>
-                  <input type="text" id="event_end_time" name="event_end_time" class="form-control " data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+                  <input type="text" id="event_end_time" name="event_end_time" class="form-control " data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time" onchange="checkValidDateTimes()">
 
                 </div>
               </div>
@@ -124,7 +124,7 @@
                 <div class="col-md-12 form-group">
                   <label for="name">Deadline for the request</label>
                   <div class="input-group date">
-                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_deadline" name="event_deadline" class="form-control" placeholder="YYYY-MM-DD" data-pattern="^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$">
+                    <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="event_deadline" name="event_deadline" class="form-control" placeholder="YYYY-MM-DD" data-pattern="^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$" onchange="checkValidDateTimes()">
                 <div class="alert alert-warning" style="display:none" id="event_deadline_check">Please enter a date in the format YYYY-MM-DD</div>
 
                     <div class="input-group-addon">
@@ -136,7 +136,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Suburb the event is going to be held in</label>
-                  <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$">
+                  <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$" onchange="checkPattern(this)">
                 </div>
               </div>
                 <div class="alert alert-warning" style="display:none" id="event_suburb_check">Please enter a suburb</div>
@@ -199,7 +199,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Approximate number of people catering required for</label>
-                  <input type="text" id="noPeople" name="noPeople" class="form-control " data-pattern="^[1-9][0-9]{0,10}$">
+                  <input type="text" id="noPeople" name="noPeople" class="form-control " data-pattern="^[1-9][0-9]{0,10}$" onchange="checkPattern(this)">
                 </div>
               </div>
                 <div class="alert alert-warning" style="display:none" id="noPeople_check">Please enter a number</div>
@@ -230,7 +230,7 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Approximate Budget</label>
-                  <input type="text" id="budget" name="budget" class="form-control " placeholder="$" data-pattern="^[1-9][0-9]{0,9}(\.[0-9]{2})?$" title="Enter as a whole number or to two decimal places">
+                  <input type="text" id="budget" name="budget" class="form-control " placeholder="$" data-pattern="^[1-9][0-9]{0,9}(\.[0-9]{2})?$" title="Enter as a whole number or to two decimal places" onchange="checkPattern(this)">
                 <div class="alert alert-warning" style="display:none" id="budget_check">Please enter as a whole number, or to two decimal places</div>
                 </div>
               </div>
@@ -329,6 +329,12 @@
 			console.log(eventDate + " " + eventDeadline + " " + currentDate + " " + currentTime + " " + startTime + " " + endTime);
 			if  (eventDate < currentDate || (eventDate == currentDate && currentTime > startTime)) {	
 				document.getElementById("valid_time_check").innerText = "Starting date and time of the event has already passed!";
+				document.getElementById("valid_time_check").style.display = "block";
+				document.getElementById("event_date").focus();
+				return false;
+			}
+			else if (eventDeadline < currentDate) {
+				document.getElementById("valid_time_check").innerText = "Deadline has already passed!";
 				document.getElementById("valid_time_check").style.display = "block";
 				document.getElementById("event_date").focus();
 				return false;
