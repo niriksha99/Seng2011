@@ -141,6 +141,7 @@
 		  	}
 			else {
 				document.getElementById("passwordMatch").style.display = "block";
+				document.getElementById("password").focus();
 				return false;
 			}
 		}
@@ -168,6 +169,7 @@
 			else {
 				console.log("not ok");
 				document.getElementById(element.id+"_check").style.display = "block";
+				document.getElementById(element.id).focus();
 				return false;
 			}
 		}
