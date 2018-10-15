@@ -21,6 +21,9 @@
     <!-- Custom styles for this template -->
     <link href="css/clean-blog.min.css" rel="stylesheet">
 
+	<!-- Our CSS -->
+	
+
   </head>
 
   <body>
@@ -68,60 +71,56 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Sign-Up Form.</h3>
-        <form action="/signup_submit" onsubmit="return checkPass()" method="post">
+        <form action="/signup_submit" method="post" onsubmit="return checkValid()">
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">First Name</label>
-                  <input type="text" id="first_name" name="first_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
+                  <input type="text" id="first_name" name="first_name" class="form-control" data-pattern="^[a-zA-Z ,\.'-]{1,255}$" onchange="checkPattern(this)">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="first_name_check">First Name is invalid (allowed characters: letters, spaces and any of the following: , . - ') </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Last Name</label>
-                  <input type="text" id="last_name" name="last_name" class="form-control" required pattern="[a-zA-Z ,\.'-]{1,255}" title="allowed characters: letters, spaces and any of the following: , . - '">
+                  <input type="text" id="last_name" name="last_name" class="form-control" data-pattern="^[a-zA-Z ,\.'-]{1,255}$" onchange="checkPattern(this)"> 
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="last_name_check">Last Name is invalid (allowed characters: letters, spaces and any of the following: , . - ') </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Username</label>
-                   <input type="text" id="username" name="username" class="form-control " required pattern="[A-Za-z0-9_-]{1,255}" title="allowed characters: letters, numbers, and any of the following: , . - _ '">
+                   <input type="text" id="username" name="username" class="form-control " data-pattern="^[A-Za-z0-9_-]{1,255}$">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="username_check">Username is invalid (allowed characters: letters, numbers, and any of the following: , . - _ ') </div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Password</label>
-                  <input type="password" id="password" name="password" class="form-control " required pattern=".{1,255}">
+                  <input type="password" id="password" name="password" class="form-control " onchange="checkPass()">
                 </div>
                 <div class="col-md-12 form-group">
                   <label for="name">Re-enter Password</label>
-                  <input type="password" id="repassword" name="repassword" class="form-control " required pattern=".{1-255}">
+                  <input type="password" id="repassword" name="repassword" class="form-control" onchange="checkPass()">
                 </div>
               </div>
+				<!-- messy !-->
+                <div class="alert alert-warning" style="display:none" id="passwordMatch">Passwords do not match</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Phone Number</label>
-                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
-                </div>
+                  <input type="tel" id="mobile_number" name="mobile_number" class="form-control" data-pattern="^([0-9]{8}|[0-9]{10}|\+[0-9]{11})$" onchange="checkPattern(this)">
+			    </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="mobile_number_check">Invalid phone number. Please enter an 8 or 10 digit number, or in the format +61382938423</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="email">Email</label>
-                  <input type="email" id="email" name="email" class="form-control " required pattern=".{1-255}">
+                  <input type="email" id="email" name="email" class="form-control " data-pattern="\S+@\S+\.\S+" onchange="checkPattern(this)" maxLength="255">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="email_check">Invalid email</div>
               <div class="row">
                 <div class="col-md-6 form-group">
-                  <script>
-                    function checkPass() {
-                      var pass = document.getElementById("password").value;
-                      var repass = document.getElementById("repassword").value;
-                      if (pass != repass) {
-                        alert("Passwords don't match!");
-                        return false;
-                      }
-                      return true;
-                    }
-                  </script>
                   <input type="submit" value="Sign-up" class="btn btn-dark mt-2 mt-sm-0">
                 </div>
               </div>
@@ -136,6 +135,84 @@
         </div>
       </div>
     </div>
+
+	<!-- Form validation scripts  -->
+	<script>
+		function checkPass() {
+			var pass = $("#password").val();
+			var repass = $("#repassword").val();
+		  	if (/^.{1,255}$/.test(pass) && pass == repass) {
+				document.getElementById("passwordMatch").style.display = "none";
+				return true;
+		  	}
+			else {
+				document.getElementById("passwordMatch").style.display = "block";
+				document.getElementById("password").focus();
+				return false;
+			}
+		}
+		/*
+		function checkPattern(id, output) {
+		  var elemID = "#" + id;
+		  var input  = $(elemID).val();
+		  if (!input.match($(elemID).attr('pattern'))) {
+			$("#"+output).html($(elemID).attr('title'));
+		  }
+		  $("#"+output).html("");
+		}
+		*/
+		
+		function checkPattern(element) {
+			console.log("checking", element.id);
+
+			var regex = new RegExp(element.dataset.pattern);
+			console.log(regex);
+			if (regex.test(element.value)) {
+				console.log("ok");
+				document.getElementById(element.id+"_check").style.display = "none";
+				return true;
+			}
+			else {
+				console.log("not ok");
+				document.getElementById(element.id+"_check").style.display = "block";
+				document.getElementById(element.id).focus();
+				return false;
+			}
+		}
+
+		function checkValid() {
+			if (checkPass()) {
+				const elems = ["first_name","last_name","username","mobile_number","email"];
+				var i = 0;
+				for (i=0; i<elems.length; i++) {
+					var elemObj = document.getElementById(elems[i]);
+					console.log(elemObj);
+					if (!checkPattern(elemObj)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		$(document).ready(() => {
+			$("#password").keyup(checkPass);
+			$("#repassword").keyup(checkPass);
+			const elems = ["#first_name","#last_name","#username","#mobile_number","#email"];
+			var i = 0;
+			for (i=0; i<elems.length; i++) {
+				$(elems[i]).keyup(checkPattern);
+			}
+//			$("#first_name").keyup(checkPattern);
+//			$("#last_name").keyup(checkPattern);
+//			$("#username").keyup(checkPattern);
+//			$("#mobile_number").keyup(checkPattern);
+//			$("#email").keyup(checkPattern);
+		});
+	  </script>
 
     <!-- Footer -->
     <footer>
