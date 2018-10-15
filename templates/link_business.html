@@ -79,60 +79,57 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
         <h3 class="mb-5">Business Form.</h3>
-        <form action="/link_business_submit" method="post" onsubmit="return checkTimes()">
-		<script>
-			function checkTimes() {
-            	var openTime = document.getElementById("opening_time").value.split(':').map(num => parseInt(num, 10));
-                var closeTime = document.getElementById("closing_time").value.split(':').map(num => parseInt(num, 10));
-				if (openTime[0] > closeTime[0] || (openTime[0] == closeTime[0] && openTime[1] >= closeTime[1])) {
-					alert("Opening time must be earlier than Closing time");
-					return false;
-				}
-				return true;
-			}
-		</script>
+        <form action="/link_business_submit" method="post" onsubmit="return checkValid()">
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business name</label>
-                  <input type="text" id="business_name" name="business_name" class="form-control" required pattern=".{1-255}">
+                  <input type="text" id="business_name" name="business_name" class="form-control" data-pattern="^.{1,255}$" onchange="checkPattern(this)" maxLength=255>
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:block" id="business_name_check">Please enter a name.</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Opening time (if applicable)</label>
-                  <input type="text" id="opening_time" name="opening_time" class="form-control" required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+                  <input type="text" id="opening_time" name="opening_time" class="form-control" data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time" onchange="checkTimes()">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="opening_time_check">Invalid opening time - use HH:MM</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Closing time (if applicable)</label>
-                  <input type="text" id="closing_time" name="closing_time" class="form-control" required pattern="([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]" placeholder="HH:MM" title="HH:MM - use 24 hour time">
+                  <input type="text" id="closing_time" name="closing_time" class="form-control" data-pattern="^([0-9]|(0|1)[0-9]|2[0-3]):[0-5][0-9]$" placeholder="HH:MM" title="HH:MM - use 24 hour time" onchange="checkTimes()">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="closing_time_check">Invalid closing time - use HH:MM</div>
+                <div class="alert alert-warning" style="display:none" id="valid_time_check">Opening time must be before closing time</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Phone number</label>
-                  <input type="tel" id="phone_number" name="phone" class="form-control" required pattern="[0-9]{8}|[0-9]{10}|\+[0-9]{11}" title="8 or 10 digit number, or in the format +61382938423">
+                  <input type="tel" id="phone_number" name="phone" class="form-control" data-pattern="^[0-9]{8}|[0-9]{10}|\+[0-9]{11}$" title="8 or 10 digit number, or in the format +61382938423" onchange="checkPattern(this)">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="phone_number_check">Invalid phone number. Please enter an 8 or 10 digit number, or in the format +61382938423</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Email Address</label>
-                  <input type="email" id="email" name="email" class="form-control" required="required" pattern=".{1-255}">
+                  <input type="email" id="email" name="email" class="form-control " data-pattern="^\S+@\S+\.\S+$" onchange="checkPattern(this)" maxLength=255>
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="email_check">Invalid email</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Address</label>
-                  <input type="text" id="address" name="address" class="form-control" required pattern=".{1-255}">
+                  <input type="text" id="address" name="address" class="form-control" data-pattern="^.{1,255}$" onchange="checkPattern(this)" maxLength=255>
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="address_check">Please enter an address</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Business Description</label>
-                  <input type="text" id="business_description" name="business_description" class="form-control" required pattern=".{1-255}> 
+                  <input type="text" id="business_description" name="business_description" class="form-control" data-pattern="^.{1,255}$">
                 </div>
               </div>
+                <div class="alert alert-warning" style="display:none" id="business_description_check">Please enter a description</div>
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label for="name">Choose option/s that are applicable</label>
@@ -188,7 +185,7 @@
               </div>
               <div class="row">
                 <div class="col-md-12 form-group">
-                  <label for="name">Choose one</label>
+                  <label for="name">Choose</label>
                   <div class="form-check">
                     <label class="form-check-label">
                       <input class="form-check-input" type="checkbox" name="delivery" id="deliveryChoice1" value="Deliver">
@@ -226,6 +223,75 @@
       </div>
     </div>
 
+	<!-- Form validation scripts -->
+	<script>
+	function checkPattern(element) {
+		console.log("checking", element.id);
+
+		var regex = new RegExp(element.dataset.pattern);
+		console.log(regex);
+		if (regex.test(element.value)) {
+			console.log("ok");
+			document.getElementById(element.id+"_check").style.display = "none";
+			return true;
+		}
+		else {
+			console.log("not ok");
+			document.getElementById(element.id+"_check").style.display = "block";
+			return false;
+		}
+	}		
+
+	function checkValid() {
+		var noCatering = document.getElementByName("events_cater").length;
+		var noDelivery = document.getElementByName("delivery").length;
+		if (noCatering < 1 || noDelivery < 1) {
+			alert("fill the checkboxes");
+			return false;
+		}
+		if (checkTimes()) {
+			const elems = ["business_name", "phone_number", "email", "address", "business_description"];
+			var i = 0;
+			for (i=0; i<elems.length; i++) {
+				var elemObj = document.getElementById(elems[i]);
+				console.log(elemObj);
+				if (!checkPattern(elemObj)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	function checkTimes() {
+		var openTimeObj = document.getElementById("opening_time");
+		var closeTimeObj = document.getElementById("closing_time");
+		if (checkPattern(openTimeObj) && checkPattern(closeTimeObj)) {
+			var openTime = openTimeObj.value.split(':').map(num => parseInt(num, 10));
+			var closeTime = closeTimeObj.value.split(':').map(num => parseInt(num, 10));
+			console.log(openTime[0], openTime[1], closeTime[0], closeTime[1]);
+			if (openTime[0] > closeTime[0] || (openTime[0] == closeTime[0] && openTime[1] >= closeTime[1])) {
+				document.getElementById("valid_time_check").style.display = "block";
+				return false;
+			}
+			document.getElementById("valid_time_check").style.display = "none";
+			return true;
+		}
+		return false;
+	}
+
+	$(document).ready(() => {		
+		$("#open_time").keyup(checkTimes);
+		$("#close_time").keyup(checkTimes);
+		const elems = ["#business_name", "#phone_number", "#email", "#address", "#business_description"];
+		var i = 0;
+		for (i=0; i<elems.length; i++) {
+			$(elems[i]).keyup(checkPattern);
+		}
+	});
+
+	</script>
 
     <!-- Footer -->
     <footer>

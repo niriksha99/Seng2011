@@ -193,11 +193,16 @@
 		$(document).ready(() => {
 			$("#password").keyup(checkPass);
 			$("#repassword").keyup(checkPass);
-			$("#first_name").keyup(checkPattern);
-			$("#last_name").keyup(checkPattern);
-			$("#username").keyup(checkPattern);
-			$("#mobile_number").keyup(checkPattern);
-			$("#email").keyup(checkPattern);
+			const elems = ["#first_name","#last_name","#username","#mobile_number","#email"];
+			var i = 0;
+			for (i=0; i<elems.length; i++) {
+				$(elems[i]).keyup(checkPattern);
+			}
+//			$("#first_name").keyup(checkPattern);
+//			$("#last_name").keyup(checkPattern);
+//			$("#username").keyup(checkPattern);
+//			$("#mobile_number").keyup(checkPattern);
+//			$("#email").keyup(checkPattern);
 		});
 	  </script>
 
