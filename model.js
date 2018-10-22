@@ -334,6 +334,22 @@ app.post('/accept_bid', login_required, function(req, res)
 	res.redirect('/requests');
 });
 
+app.post('/edit_bid', login_required, bidder_required, function(req, res)
+{
+	var bid = JSON.parse(req.body.bid_info);
+	var price = req.body.price;
+	var comment = req.body.additional_info;
+
+	con.query('UPDATE Bids SET price = ? WHERE requestID = ? AND businessID = ?', [price, bid.requestid, bid.businessid], function(err, result, fields) {
+		if (err) throw err;
+	});
+	con.query('UPDATE Bids SET comment = ? WHERE requestID = ? AND businessID = ?', [comment, bid.requestid, bid.businessid], function(err, result, fields) {
+		if (err) throw err;
+	});
+	
+	res.redirect('/my_bids');
+});
+
 app.post('/cancel_bid', login_required, function(req, res)
 {
 	var bid = JSON.parse(req.body.bid_info);
