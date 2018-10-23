@@ -419,40 +419,149 @@ app.get('/home', function(req, res)
 	}
 });
 
-//search for requests by event_type
+//general search bar for event name or business name
 app.post('/search', function(req, res)
 {
 	var key = req.body.search;
-	con.query('SELECT * FROM Requests', function(err, result, fields) {
+	var name = key.toLowerCase();
+	con.query('SELECT * FROM Requests', function(err, result1, fields) {
 		if (err) throw err;
-		var search_result = [];
-		for (var i = 0; i < result.length; i++ ){
-			var name = '"' + key.toLowerCase() + '"';
-			if (result[i].event_type.toLowerCase() == name){
-				search_result.push(result[i].event_name);
+		var event_result = [];
+		for (var i = 0; i < result1.length; i++ ){	
+			if (result1[i].event_name.toLowerCase().includes(name)){
+				event_result.push(result1[i].event_name);
 			}
 		}
-		res.render('catering_requests.html', {request_list: search_result});
+		con.query('SELECT * FROM Businesses', function(err, result2, fields) {
+			if (err) throw err;
+			var business_result = [];
+			for (var j = 0; j < result2.length; j++ ){
+				if (result2[j].title.toLowerCase().includes(name)){
+					business_result.push(result2[j].title);
+				}
+			}
+			console.log(event_result);
+			console.log(business_result);
+			res.render('search.html', {request_list: event_result,business_list: business_result});
+		});
 	});
 });
 
-//search for businesses by catering type
-/*app.post('/search', function(req, res)
+//advance search for events
+app.post('/search_requests', function(req, res)
 {
-	var key = req.body.search;
+	var key = req.body.search_event_name;
+	var date = req.body.search_event_date;
+	var deadline = req.body.search_event_deadline;
+	var suburb = req.body.event_suburb;
+	var type = req.body.search_events_type;
+	var cook = req.body.search_legendRadio;
+
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		var event_result = [];
+		var business_result = [];
+		for (var i = 0; i < result.length; i++ ){
+			if (typeof key !== 'undefined'){
+				var name = key.toLowerCase();
+				if (result[i].event_name.toLowerCase().includes(name)){
+					if (!event_result.includes(result[i].event_name)){
+						event_result.push(result[i].event_name);
+					}		
+				}
+			}
+			if (typeof date !== 'undefined'){
+				if (result[i].event_date == date){
+					if (!event_result.includes(result[i].event_name)){
+						event_result.push(result[i].event_name);
+					}		
+				}
+			}
+			if (typeof dealine !== 'undefined'){
+				if (result[i].event_deadline == dealine){
+					if (!event_result.includes(result[i].event_name)){
+						event_result.push(result[i].event_name);
+					}		
+				}
+			}
+			if (typeof suburb !== 'undefined'){
+				var sb = '"' + suburb.toLowerCase() + '"';
+				if (result[i].event_suburb.toLowerCase() == sb){
+					if (!event_result.includes(result[i].event_name)){
+						event_result.push(result[i].event_name);
+					}		
+				}
+			}
+			if (typeof type !== 'undefined'){
+				for(var j = 0; j < type.length; j++){
+					if (result[i].event_type == type[j]){
+						if (!event_result.includes(result[i].event_name)){
+							event_result.push(result[i].event_name);
+						}	
+					}
+				}
+			}
+			if (typeof cook !== 'undefined'){
+				for(var m = 0; m < type.length; m++){
+					if (result[i].choice == cook[m]){
+						if (!event_result.includes(result[i].event_name)){
+							event_result.push(result[i].event_name);
+						}	
+					}
+				}
+			}
+		}	
+		console.log(event_result);
+		console.log(business_result);
+		res.render('search.html', {request_list: event_result,business_list: business_result});
+
+	});
+});
+
+//advance search for business
+app.post('/search_business', function(req, res)
+{
+	var key = req.body.search_business_name;
+	var type = req.body.search_events_cater;
+	var delivery = req.body.search_delivery;
 	con.query('SELECT * FROM Businesses', function(err, result, fields) {
 		if (err) throw err;
-		var search_result = [];
+		var event_result = [];
+		var business_result = [];
 		for (var i = 0; i < result.length; i++ ){
-			var name = '"' + key + '"';
-
-			if (result[i].events_cater == name){
-				search_result.push(result[i].title);
+			if (typeof key !== 'undefined'){
+				var name = key.toLowerCase();
+				if (result[i].title.toLowerCase().includes(name)){
+					if (!business_result.includes(result[i].title)){
+						business_result.push(result[i].title);
+					}		
+				}
+			}
+			if (typeof type !== 'undefined'){
+				for(var j = 0; j < type.length; j++){
+					if (result[i].events_cater == type[j]){
+						if (!business_result.includes(result[i].title)){
+							business_result.push(result[i].title);
+						}	
+					}
+				}
+			}
+			if (typeof delivery !== 'undefined'){
+				for(var m = 0; m < delivery.length; m++){
+					if (result[i].delivery_options == delivery[j]){
+						if (!business_result.includes(result[i].title)){
+							business_result.push(result[i].title);
+						}	
+					}
+				}
 			}
 		}
-		res.render('all_businesses.html', {business_list: search_result});
+		console.log(event_result);
+		console.log(business_result);
+		res.render('search.html', {request_list: event_result,business_list: business_result});
 	});
-});*/
+});
+
 
 app.get('/user', login_required, function(req, res)
 {
