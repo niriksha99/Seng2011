@@ -42,7 +42,7 @@
               <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user">My Dashboard</a>
+              <a class="nav-link" href="/user">My Profile</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="/make_request"><u>New Request</u></a>
@@ -289,19 +289,19 @@
 				document.getElementById(element.id).focus();
 				return false;
 			}
-		}		
+		}
 
 		function checkValidDateTimes() {
 			if (! (
-				checkPattern(document.getElementById("event_date")) 
-				&& checkPattern(document.getElementById("event_start_time")) 
+				checkPattern(document.getElementById("event_date"))
+				&& checkPattern(document.getElementById("event_start_time"))
 				&& checkPattern(document.getElementById("event_end_time"))
-				&& checkPattern(document.getElementById("event_deadline")) 
+				&& checkPattern(document.getElementById("event_deadline"))
 				)) {
 				return false;
 			}
 			// date of event must be today or later
-			// eventDate <= deadline  
+			// eventDate <= deadline
 			let dateToday = new Date();
 			// currentDate string in yyyy-mm-dd
 			let curMonth = (dateToday.getMonth() + 1).toString();
@@ -318,7 +318,7 @@
 			if (curMin.length < 2) { curMin = "0" + curMin; } // add leading 0
 
 			let eventDate = document.getElementById("event_date").value.split('T')[0];
-			let eventDeadline = document.getElementById("event_deadline").value.split('T')[0]; 
+			let eventDeadline = document.getElementById("event_deadline").value.split('T')[0];
 
 			let currentTime = curHour + ":" + curMin;
 			let startTime = document.getElementById("event_start_time").value.toString();
@@ -327,7 +327,7 @@
 			if (endTime.length < 5) { endTime = "0" + endTime; }
 
 			console.log(eventDate + " " + eventDeadline + " " + currentDate + " " + currentTime + " " + startTime + " " + endTime);
-			if  (eventDate < currentDate || (eventDate == currentDate && currentTime > startTime)) {	
+			if  (eventDate < currentDate || (eventDate == currentDate && currentTime > startTime)) {
 				document.getElementById("valid_time_check").innerText = "Starting date and time of the event has already passed!";
 				document.getElementById("valid_time_check").style.display = "block";
 				document.getElementById("event_date").focus();
@@ -383,14 +383,14 @@
 			return false;
 		}
 
-// 		$(document).ready(() => {		
+// 		$(document).ready(() => {
 // 			const elems = ["#event_name", "#event_date","#event_start_time","#event_end_time","event_deadline","#event_suburb", "#noPeople", "#budget"];
 // 			var i = 0;
 // 			for (i=0; i<elems.length; i++) {
 // 				$(elems[i]).keyup(checkPattern);
 // 			}
 // 		});
-			
+
 		</script>
 
     <!-- Footer -->

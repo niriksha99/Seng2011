@@ -191,7 +191,6 @@ app.post('/link_business_submit', login_required, function(req, res)
 				rate: 0.0,
 				owner: true
 			};
-			
 			return res.redirect('/individual_business');
 		}
 	});
@@ -202,8 +201,8 @@ app.post('/post_request', login_required, function(req, res)
 {
 	var event_name = req.body.event_name;
 	var event_date = req.body.event_date.split('T')[0];
-	var event_start_time = req.body.event_start_time;//.slice(0, -3);
-	var event_end_time = req.body.event_end_time;//.slice(0, -3);
+	var event_start_time = req.body.event_start_time;
+	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
 	var event_type = JSON.stringify(req.body.event_type);
@@ -362,7 +361,7 @@ app.post('/edit_bid', login_required, bidder_required, function(req, res)
 	con.query('UPDATE Bids SET comment = ? WHERE requestID = ? AND businessID = ?', [comment, bid.requestid, bid.businessid], function(err, result, fields) {
 		if (err) throw err;
 	});
-	
+
 	res.redirect('/my_bids');
 });
 
@@ -427,7 +426,7 @@ app.post('/search', function(req, res)
 	con.query('SELECT * FROM Requests', function(err, result1, fields) {
 		if (err) throw err;
 		var event_result = [];
-		for (var i = 0; i < result1.length; i++ ){	
+		for (var i = 0; i < result1.length; i++ ){
 			if (result1[i].event_name.toLowerCase().includes(name)){
 				event_result.push(result1[i].event_name);
 			}
@@ -467,21 +466,21 @@ app.post('/search_requests', function(req, res)
 				if (result[i].event_name.toLowerCase().includes(name)){
 					if (!event_result.includes(result[i].event_name)){
 						event_result.push(result[i].event_name);
-					}		
+					}
 				}
 			}
 			if (typeof date !== 'undefined'){
 				if (result[i].event_date == date){
 					if (!event_result.includes(result[i].event_name)){
 						event_result.push(result[i].event_name);
-					}		
+					}
 				}
 			}
 			if (typeof dealine !== 'undefined'){
 				if (result[i].event_deadline == dealine){
 					if (!event_result.includes(result[i].event_name)){
 						event_result.push(result[i].event_name);
-					}		
+					}
 				}
 			}
 			if (typeof suburb !== 'undefined'){
@@ -489,7 +488,7 @@ app.post('/search_requests', function(req, res)
 				if (result[i].event_suburb.toLowerCase() == sb){
 					if (!event_result.includes(result[i].event_name)){
 						event_result.push(result[i].event_name);
-					}		
+					}
 				}
 			}
 			if (typeof type !== 'undefined'){
@@ -497,7 +496,7 @@ app.post('/search_requests', function(req, res)
 					if (result[i].event_type == type[j]){
 						if (!event_result.includes(result[i].event_name)){
 							event_result.push(result[i].event_name);
-						}	
+						}
 					}
 				}
 			}
@@ -506,7 +505,7 @@ app.post('/search_requests', function(req, res)
 					if (result[i].choice == cook[m]){
 						if (!event_result.includes(result[i].event_name)){
 							event_result.push(result[i].event_name);
-						}	
+						}
 					}
 				}
 			}
@@ -534,7 +533,7 @@ app.post('/search_business', function(req, res)
 				if (result[i].title.toLowerCase().includes(name)){
 					if (!business_result.includes(result[i].title)){
 						business_result.push(result[i].title);
-					}		
+					}
 				}
 			}
 			if (typeof type !== 'undefined'){
@@ -542,7 +541,7 @@ app.post('/search_business', function(req, res)
 					if (result[i].events_cater == type[j]){
 						if (!business_result.includes(result[i].title)){
 							business_result.push(result[i].title);
-						}	
+						}
 					}
 				}
 			}
@@ -551,7 +550,7 @@ app.post('/search_business', function(req, res)
 					if (result[i].delivery_options == delivery[j]){
 						if (!business_result.includes(result[i].title)){
 							business_result.push(result[i].title);
-						}	
+						}
 					}
 				}
 			}
@@ -1020,6 +1019,50 @@ app.get('/my_bids', login_required, bidder_required, function(req, res)
 	});
 });
 
+app.get('/active_bids', login_required, bidder_required, function(req, res)
+{
+	var accepted = [];
+	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
+		if (err) throw err;
+		for (var i = 0; i < result.length; i++) {
+			if (result[i].status === 1) {
+				accepted.push(result[i].requestID);
+			}
+		}
+		var acc_bids = [];
+		con.query('SELECT * FROM Requests', function(err, result, fields) {
+			if (err) throw err;
+			for (var i = 0; i < result.length; i++) {
+				if (accepted.includes(result[i].id))
+					acc_bids.push(result[i].event_name);
+			}
+		})
+		res.render('my_bids.html', {bids: acc_bids});
+	})
+});
+
+app.get('/inactive_bids', login_required, bidder_required, function(req, res)
+{
+	var accepted = [];
+	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
+		if (err) throw err;
+		for (var i = 0; i < result.length; i++) {
+			if (result[i].status === 0) {
+				accepted.push(result[i].requestID);
+			}
+		}
+		var acc_bids = [];
+		con.query('SELECT * FROM Requests', function(err, result, fields) {
+			if (err) throw err;
+			for (var i = 0; i < result.length; i++) {
+				if (accepted.includes(result[i].id))
+					acc_bids.push(result[i].event_name);
+			}
+		})
+		res.render('my_bids.html', {bids: acc_bids});
+	})
+});
+
 app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 {
 	var accepted = [];
@@ -1038,7 +1081,7 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 					acc_bids.push(result[i].event_name);
 			}
 		})
-		res.render('accepted_bids.html', {accepted: acc_bids});
+		res.render('my_bids.html', {accepted: acc_bids});
 	})
 });
 
@@ -1104,6 +1147,78 @@ app.get('/sort_by_price_high', function(req, res)
 		}
 
 		res.render('catering_requests.html', {request_list: sort_by_price});
+	});
+});
+
+app.get('/bidded_requests', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
+		if (err) throw err;
+		var requests = [];
+		for (var i = 0; i < result.length; i++) {
+			requests.push(result[i].completed);
+			requests.push(result[i].event_name);
+		}
+		for (var i = 0; i < requests.length; i=i+2) {
+			if (requests[i] == 0) {
+				requests.splice(i, 1);
+				requests.splice(i, 1);
+				i = i-2;
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			requests.splice(i, 1);
+		}
+		res.render('my_requests.html', {request_list: requests});
+	});
+});
+
+app.get('/non_bidded_requests', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
+		if (err) throw err;
+		var requests = [];
+		for (var i = 0; i < result.length; i++) {
+			requests.push(result[i].completed);
+			requests.push(result[i].event_name);
+		}
+		for (var i = 0; i < requests.length; i=i+2) {
+			if (requests[i] != 0) {
+				requests.splice(i, 1);
+				requests.splice(i, 1);
+				i = i-2;
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			requests.splice(i, 1);
+		}
+		res.render('my_requests.html', {request_list: requests});
+	});
+});
+
+app.get('/completed_requests', login_required, function(req, res)
+{
+	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
+		if (err) throw err;
+		var requests = [];
+		for (var i = 0; i < result.length; i++) {
+			requests.push(result[i].completed);
+			requests.push(result[i].event_name);
+		}
+		for (var i = 0; i < requests.length; i=i+2) {
+			if (requests[i] == 0) {
+				requests.splice(i, 1);
+				requests.splice(i, 1);
+				i = i-2;
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			requests.splice(i, 1);
+		}
+		res.render('my_requests.html', {request_list: requests});
 	});
 });
 
