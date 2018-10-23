@@ -77,8 +77,7 @@
       <div class="row">
         <div class="col-md-4">
           <h3>Opening hours:</h3>
-          <%= business.opening_time %>
-          <%= business.closing_time %>
+          <%= business.opening_time %> - <%= business.closing_time %>
           <br><br>
           <h3> Contact detail:</h3>
           Phone: <%= business.phone %><br>
@@ -100,7 +99,7 @@
        </div>
        <br><br><br>
        <% if (business.rate === 0.0) { %>
-       <h3> Your business has not been rated yet! </h3>
+       <h3> Business has not been rated yet! </h3>
        <% } else { %>
        <h3> Overall ratings: <%= business.rate %></h3>
        <% } %>
@@ -121,6 +120,14 @@
          <% } else { %>
            <p> You haved rated this business <%= rated %> star!</p>
          <% } %>
+       <% } else { %>
+        <div class="row">
+           <div class="col-md-6 form-group">
+              <form method="post" action="/edit_business">
+                <button type="submit" id="business" name="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Edit Business Info</button>
+              </form>
+           </div>
+        </div>
        <% } %>
     </div>
 

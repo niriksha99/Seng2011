@@ -160,6 +160,11 @@
             </div>
           </div>
           <% if (request.status === 0) { %>
+            <div class="col-md-6 form-group">
+              <form method="post" action="/edit_request">
+                <button type="submit" id="request" name="request" value="<%= request.event_name %>" class="btn btn-primary">Edit Request</button>
+              </form>
+            </div>
             <% for (var i = 0; i < biddings.length; i++) { %>
             <div class="row">
               <div class="col-md-6 form-group">
