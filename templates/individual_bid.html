@@ -191,7 +191,7 @@
                   <br>
                   <div class="alert alert-warning" style="display:none" id="price_check">Please enter a whole number, or to two decimal places</div>
                     <label for="name">Additional Information</label>
-                    <input type="text" id="additional_info" name="additional_info" class="form-control ">
+                    <input type="text" id="additional_info" name="additional_info" class="form-control " value="<%= bid.comment %>">
                   <button type="submit" value="<%= JSON.stringify(bid) %>" id="bid_info" name="bid_info" class="btn btn-primary">Edit Bid</button>
                 </div>
               </div>
