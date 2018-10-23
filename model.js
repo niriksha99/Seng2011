@@ -178,7 +178,21 @@ app.post('/link_business_submit', login_required, function(req, res)
 				});
 			}, 3000);
 
-			return res.redirect("/business");
+			req.session.business = {
+				business_name: business_name,
+				opening_time: opening_time,
+				closing_time: closing_time,
+				phone: phone,
+				email: email,
+				address: address,
+				business_description: business_description,
+				events_cater: JSON.parse(events_cater),
+				delivery_options: JSON.parse(delivery_options),
+				rate: 0.0,
+				owner: true
+			};
+			
+			return res.redirect("/individual_business");
 		}
 	});
 
@@ -275,7 +289,9 @@ app.get('/catering_requests', function(req, res)
 app.get('/individual_request', login_required, function(req, res)
 {
 	console.log(req.session.event_name);
-	res.render('individual_request.html', {request: req.session.request});
+	var request_info = req.session.request;
+	delete req.session.request;
+	res.render('individual_request.html', {request: request_info});
 });
 
 app.post('/individual_request', login_required, function(req, res)
@@ -332,6 +348,22 @@ app.post('/accept_bid', login_required, function(req, res)
 
 	con.query('UPDATE Requests SET completed = 1 WHERE id = ?', [bid.requestid]);
 	res.redirect('/requests');
+});
+
+app.post('/edit_bid', login_required, bidder_required, function(req, res)
+{
+	var bid = JSON.parse(req.body.bid_info);
+	var price = req.body.price;
+	var comment = req.body.additional_info;
+
+	con.query('UPDATE Bids SET price = ? WHERE requestID = ? AND businessID = ?', [price, bid.requestid, bid.businessid], function(err, result, fields) {
+		if (err) throw err;
+	});
+	con.query('UPDATE Bids SET comment = ? WHERE requestID = ? AND businessID = ?', [comment, bid.requestid, bid.businessid], function(err, result, fields) {
+		if (err) throw err;
+	});
+	
+	res.redirect('/my_bids');
 });
 
 app.post('/cancel_bid', login_required, function(req, res)
@@ -565,9 +597,11 @@ app.get('/requests', login_required, function(req, res)
 	});
 });
 
-app.get('/individual_bid', login_required, function(req, res)
+app.get('/individual_bid', login_required, bidder_required, function(req, res)
 {
-	res.render('individual_bid.html');
+	var bid_info = req.session.bid;
+	delete req.session.bid;
+	res.render('individual_bid.html', {bid: bid_info});
 });
 
 app.post('/individual_bid', login_required, bidder_required, function(req, res)
@@ -599,10 +633,12 @@ app.post('/individual_bid', login_required, bidder_required, function(req, res)
 
 app.get('/individual_request_user', login_required, function(req, res)
 {
-	console.log(req.session.event_name);
+	//console.log(req.session.event_name);
 	// var owner = true;
 	// var bidder = !owner;
-	res.render('individual_request_user.html', {request: req.session.request, biddings: []});//, owner: owner, bidder: bidder});
+	var request_info = req.session.request;
+	delete req.session.request;
+	res.render('individual_request_user.html', {request: request_info, biddings: []});//, owner: owner, bidder: bidder});
 });
 
 app.post('/individual_request_user', function(req, res)
@@ -701,31 +737,34 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 			if (err) throw err;
 			console.log('Inserted: ', res.insertId);
 		});
-	});
-
-	con.query('SELECT * FROM Businesses WHERE id = ?', [req.session.businessid], function(err, result, fields) {
-		if (err) throw err;
-		req.session.business_name = result[0].title;
-		req.session.business = {
-			business_name: result[0].title,
-			opening_time: result[0].opening_time,
-			closing_time: result[0].closing_time,
-			phone: result[0].phone_no,
-			email: result[0].email,
-			business_description: result[0].description,
-			events_cater: JSON.parse(result[0].events_cater),
-			delivery_options: JSON.parse(result[0].delivery_options),
-			rate: result[0].fame,
-			owner: (result[0].userID === req.session.userid)
+		req.session.bid = {
+			event_name: result[0].event_name,
+			event_date: result[0].event_date,
+			event_start_time: result[0].event_start_time,
+			event_end_time: result[0].event_end_time,
+			event_deadline: result[0].event_deadline,
+			event_suburb: result[0].event_suburb,
+			event_type: result[0].event_type,
+			noPeople: result[0].noPeople,
+			choice: result[0].choice,
+			budget: result[0].budget,
+			additional_info: result[0].additional_info,
+			amount: req.body.price,
+			comment: req.body.additional_info,
+			status: 1,
+			requestid: result[0].id,
+			businessid: req.session.businessid
 		};
-		res.redirect('/individual_business');
+		res.redirect('/individual_bid');
 	});
 });
 
 app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
-	console.log(req.session.business_name);
-	res.render('business.html', {business: req.session.business, rated: 0});
+	//console.log(req.session.business_name);
+	var business_info = req.session.business;
+	delete req.session.business;
+	res.render('business.html', {business: business_info, rated: 0});
 });
 
 app.post('/individual_business', login_required, function(req, res)
