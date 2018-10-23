@@ -26,36 +26,45 @@
   <body>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-      <div class="container">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          Menu
-          <i class="fa fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/user">My Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/business">Business</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/my_bids"><u>My Bids</u></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/accepted_bids">Accepted bids</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/catering_requests">Catering requests</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signout">Sign out</a>
-            </li>
-          </ul>
+      <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+        <div class="container">
+          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fa fa-bars"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/home">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/business">Business Dashboard</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/my_bids"><u>My Bids</u></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/catering_requests">Catering requests</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Username
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="/user">My Profile</a>
+                  <a class="dropdown-item"  href="/make_request">New Request</a>
+                  <a class="dropdown-item"  href="/requests">My Requests</a>
+                  <a class="dropdown-item"  href="/link_business">Link Business</a>
+                  <a class="dropdown-item"  href="/business">My Businesses</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/signout">Sign out</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
@@ -72,8 +81,24 @@
     </header>
 
     <!-- Main Content -->
-    <div class="container">
-      <div class="row">
+
+    <div class="container h-100 d-flex justify-content-center">
+      <form action="/my_bids">
+        <input type="submit" class="btn" style="background-color:transparent" value="All" />
+      </form>
+      <form action="/active_bids">
+        <input type="submit" class="btn" style="background-color:transparent" value="Active" />
+      </form>
+      <form action="/inactive_bids">
+        <input type="submit" class="btn" style="background-color:transparent" value="Inactive" />
+      </form>
+      <form action="/accepted_bids">
+        <input type="submit" class="btn" style="background-color:transparent" value="Accepted" />
+      </form>
+    </div>
+    <br>
+    <br>
+
         <div class="col-lg-8 col-md-10 mx-auto">
           <% for (var i=0; i < bids.length; i++) { %>
             <div class="row">
@@ -83,8 +108,6 @@
             </div>
           <% } %>
         </div>
-      </div>
-    </div>
 
     <!-- Footer -->
     <footer>
