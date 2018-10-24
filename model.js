@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
-	database: "abc"
+	password: "password",
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
@@ -443,8 +443,8 @@ app.post('/search', function(req, res)
 					business_result.push(result2[j].title);
 				}
 			}
-			//console.log(event_result);
-			//console.log(business_result);
+			console.log(event_result);
+			console.log(business_result);
 			res.render('search.html', {request_list: event_result,business_list: business_result});
 		});
 	});
@@ -514,8 +514,8 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 		}
-		//console.log(event_result);
-		//console.log(business_result);
+		console.log(event_result);
+		console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
 
 	});
@@ -560,8 +560,8 @@ app.post('/search_business', function(req, res)
 				}
 			}
 		}
-		//console.log(event_result);
-		//console.log(business_result);
+		console.log(event_result);
+		console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
 	});
 });
