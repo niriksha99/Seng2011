@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "password",
-	database: "PartyWhip"
+	password: "niriksha",
+	database: "abc"
 });
 
 function login_required(req, res, next) {
@@ -156,6 +156,7 @@ app.post('/link_business_submit', login_required, function(req, res)
 				con.query('INSERT INTO Businesses SET ?', business, function(err, res) {
 					if (err) throw err;
 					console.log('Inserted business: ', res.insertId);
+					req.session.businessid = res.insertId;
 					var rate = {
 						businessID: res.insertId,
 						oneStar: 0.0,
@@ -170,7 +171,6 @@ app.post('/link_business_submit', login_required, function(req, res)
 					});
 				});
 			});
-
 			setTimeout(function () {
 				con.query('SELECT * FROM Businesses', function(err,rows) {
 				  if (err) throw err;
@@ -276,7 +276,7 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 			if (err) throw err;
 			var requests = [];
 			for (var i = 0; i < result.length; i++) {
-				if (!bid_request.includes(result[i].id)) {
+				if (!bid_request.includes(result[i].id) && result[i].userID !== req.session.userid) {
 					requests.push(result[i].event_name);
 				}
 			}
@@ -346,7 +346,7 @@ app.post('/accept_bid', login_required, function(req, res)
 	});
 
 	con.query('UPDATE Requests SET completed = 1 WHERE id = ?', [bid.requestid]);
-	res.redirect('/requests');
+	res.redirect('/individual_request_user');
 });
 
 app.post('/edit_bid', login_required, bidder_required, function(req, res)
@@ -361,7 +361,9 @@ app.post('/edit_bid', login_required, bidder_required, function(req, res)
 	con.query('UPDATE Bids SET comment = ? WHERE requestID = ? AND businessID = ?', [comment, bid.requestid, bid.businessid], function(err, result, fields) {
 		if (err) throw err;
 	});
-
+	bid.amount = price;
+	bid.comment = comment;
+	req.session.bid = bid;
 	res.redirect('/my_bids');
 });
 
@@ -371,7 +373,7 @@ app.post('/cancel_bid', login_required, function(req, res)
 	con.query('UPDATE Bids SET status = 0 WHERE requestID = ? AND businessID = ?', [bid.requestid, bid.businessid], function(err, result, fields) {
 		if (err) throw err;
 	});
-	res.redirect('/requests');
+	res.redirect('/individual_request_user');
 });
 
 // delete bids by the bidder himself!
@@ -411,6 +413,7 @@ app.post('/login', function(req, res)
 
 app.get('/home', function(req, res)
 {
+	delete req.session.request;
 	if (req.session.username !== null && req.session.username !== undefined) {
 		res.render('homepage.html', {error: req.session.error, login: req.session.username});
 	} else {
@@ -564,6 +567,10 @@ app.post('/search_business', function(req, res)
 
 app.get('/user', login_required, function(req, res)
 {
+
+	delete req.session.business;
+	delete req.session.businessid;
+	delete req.session.request;
 	var search = req.session.username;
 	con.query('SELECT * FROM Users WHERE username = ?', [search], function(err, rows, fields) {
 		if(err) throw err;
@@ -586,6 +593,9 @@ app.get('/user', login_required, function(req, res)
 
 app.get('/requests', login_required, function(req, res)
 {
+	delete req.session.business;
+	delete req.session.businessid;
+	delete req.session.request;
 	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
@@ -605,8 +615,8 @@ app.get('/individual_bid', login_required, bidder_required, function(req, res)
 
 app.post('/individual_bid', login_required, bidder_required, function(req, res)
 {
-	//select Requests.*, Businesses.* from Requests right join Businesses on event_name = 'death from assignment'
-	con.query('SELECT Requests.*, Bids.* FROM Requests LEFT JOIN Bids ON Requests.id = Bids.requestID WHERE Requests.event_name = ?', [req.body.event_name], function(err, result, fields) {
+	con.query('SELECT Requests.*, Bids.* FROM Requests LEFT JOIN Bids ON Requests.id = Bids.requestID WHERE Requests.event_name = ? AND Bids.businessID = ?',
+				[req.body.event_name, req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		var bid_info = {
 			event_name: result[0].event_name,
@@ -630,13 +640,14 @@ app.post('/individual_bid', login_required, bidder_required, function(req, res)
 	});
 });
 
+
 app.get('/individual_request_user', login_required, function(req, res)
 {
 	//console.log(req.session.event_name);
 	// var owner = true;
 	// var bidder = !owner;
 	var request_info = req.session.request;
-	delete req.session.request;
+	//delete req.session.request;
 	con.query('SELECT Bids.*, Businesses.* FROM Bids LEFT JOIN Businesses ON Bids.businessID = Businesses.id WHERE Bids.requestID = (SELECT id FROM Requests WHERE userID = ? AND event_name = ?)',
 				[request_info.owner, request_info.event_name], function(err, result, fields) {
 		if (err) throw err;
@@ -646,7 +657,7 @@ app.get('/individual_request_user', login_required, function(req, res)
 				value: result[i].price,
 				info: result[i].comment,
 				business: result[i].title,
-				requestid: req_id,
+				requestid: result[i].requestID,
 				businessid: result[i].businessID
 			}
 			bid_list.push(bid);
@@ -674,6 +685,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 			additional_info: result[0].additional_info,
 			status: result[0].completed
 		};
+		req.session.request = request;
 		if (request.status === 0) {
 			con.query('SELECT Bids.*, Businesses.* FROM Bids LEFT JOIN Businesses ON Bids.businessID = Businesses.id WHERE Bids.requestID = ?', [request.req_id], function(err, result, fields) {
 				if (err) throw err;
@@ -684,7 +696,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 							value: result[i].price,
 							info: result[i].comment,
 							business: result[i].title,
-							requestid: result[i].req_id,
+							requestid: result[i].requestID,
 							businessid: result[i].businessID
 						}
 						bid_list.push(bid);
@@ -699,7 +711,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 					value: result[0].price,
 					info: result[0].comment,
 					business: result[0].title,
-					requestid: req_id,
+					requestid: result[0].requestID,
 					businessid: result[0].businessID
 				}
 				res.render('individual_request_user.html', {request: request, biddings: bid});
@@ -798,11 +810,17 @@ app.post('/update_request', login_required, function(req, res)
 
 app.get('/make_request', login_required, function(req, res)
 {
+	delete req.session.business;
+	delete req.session.businessid;
+	delete req.session.request;
 	res.render('request_form.html', {user: req.session.username});
 });
 
 app.get('/link_business', login_required, function(req, res)
 {
+	delete req.session.business;
+	delete req.session.businessid;
+	delete req.session.request;
 	var err = 0;
 	if (req.session.error === undefined) err = 0;
 	else {
@@ -890,6 +908,9 @@ app.post('/update_business', login_required, bidder_required, function(req, res)
 
 app.get('/business', login_required, function(req, res)
 {
+	delete req.session.business;
+	delete req.session.businessid;
+	delete req.session.request;
 	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var businesses = [];
@@ -940,7 +961,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
 	var business_info = req.session.business;
-	delete req.session.business;
+	//delete req.session.business;
 	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business_info.business_name], function(err, result, fields) {
 		if (err) throw err;
 		var total = result[0].sum;
@@ -950,6 +971,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 		if (total == 0) {
 			business_info.rate = 0.0;
 		}
+		req.session.businessid = result[0].businessID;
 		res.render('business.html', {business: business_info});
 	});
 });
@@ -982,7 +1004,7 @@ app.post('/individual_business', login_required, bidder_required, function(req, 
 				business.rate = 0.0;
 			}
 		});
-
+		req.session.business = business;
 		con.query('SELECT * FROM Ratings WHERE userID = ? AND businessID = ?', [req.session.userid, result[0].id], function(err, result2, fields) {
 			if (err) throw err;
 			var rated = 0;
@@ -1001,7 +1023,7 @@ app.get('/individual_business_everyone', function(req, res)
 
 app.get('/my_bids', login_required, bidder_required, function(req, res)
 {
-	var requests_bidded = []
+	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
@@ -1029,15 +1051,16 @@ app.get('/active_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
+
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {bids: acc_bids});
 	})
 });
 
@@ -1051,15 +1074,16 @@ app.get('/inactive_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
+
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {bids: acc_bids});
 	})
 });
 
@@ -1073,15 +1097,15 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {accepted: acc_bids});
 	})
 });
 
