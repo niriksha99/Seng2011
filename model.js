@@ -509,7 +509,7 @@ app.post('/search_requests', function(req, res)
 					}
 				}
 			}
-		}	
+		}
 		//console.log(event_result);
 		//console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
@@ -684,7 +684,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 							value: result[i].price,
 							info: result[i].comment,
 							business: result[i].title,
-							requestid: req_id,
+							requestid: result[i].req_id,
 							businessid: result[i].businessID
 						}
 						bid_list.push(bid);
@@ -793,7 +793,7 @@ app.post('/update_request', login_required, function(req, res)
 		status: completed
 	};
 
-	return res.redirect("/individual_request_user");	
+	return res.redirect("/individual_request_user");
 })
 
 app.get('/make_request', login_required, function(req, res)
@@ -884,7 +884,7 @@ app.post('/update_business', login_required, bidder_required, function(req, res)
 		rate: 0.0,
 		owner: true
 	};
-	
+
 	return res.redirect('/individual_business');
 });
 

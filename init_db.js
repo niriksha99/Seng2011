@@ -33,7 +33,7 @@ function create_tables() {
 		host: "localhost",
 		user: "root",
 		password: "password",
-		database: "PartyWhip"
+	database: "PartyWhip"
 	});
 	basic_query("CREATE TABLE Users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255), password VARCHAR(255), first_name VARCHAR(255), last_name VARCHAR(255), phone_no VARCHAR(20), email VARCHAR(255))", "created Users table");
 

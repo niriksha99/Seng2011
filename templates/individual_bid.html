@@ -180,16 +180,18 @@
             <form method="post" action="/delete_bid">
                 <button type="submit" id="bid_info" name="bid_info" value="<%= JSON.stringify(bid) %>" class="btn btn-primary">Remove Bid</button>
             </form>
+            <br>
             <form action="/edit_bid" method="post" onsubmit="return checkBid()">
               <div class="row">
                 <div class="col-md-6 form-group">
                     <label for="name">Approximate Bidding Amount</label>
                     <input type="number" id="price" name="price" class="form-control " placeholder="$">
-                  <br>
-                  <div class="alert alert-warning" style="display:none" id="price_check">Please enter a whole number, or to two decimal places</div>
+                    <br>
+                    <div class="alert alert-warning" style="display:none" id="price_check">Please enter a whole number, or to two decimal places</div>
                     <label for="name">Additional Information</label>
                     <input type="text" id="additional_info" name="additional_info" class="form-control " value="<%= bid.comment %>">
-                  <button type="submit" value="<%= JSON.stringify(bid) %>" id="bid_info" name="bid_info" class="btn btn-primary">Edit Bid</button>
+                    <br>
+                    <button type="submit" value="<%= JSON.stringify(bid) %>" id="bid_info" name="bid_info" class="btn btn-primary">Edit Bid</button>
                 </div>
               </div>
             </form>

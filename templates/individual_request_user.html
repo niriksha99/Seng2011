@@ -159,15 +159,18 @@
               </form>
             </div>
           </div>
+          <div class="row">
           <% if (request.status === 0) { %>
             <div class="col-md-6 form-group">
               <form method="post" action="/edit_request">
                 <button type="submit" id="request" name="request" value="<%= request.event_name %>" class="btn btn-primary">Edit Request</button>
               </form>
             </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-md-6 form-group">
             <% for (var i = 0; i < biddings.length; i++) { %>
-            <div class="row">
-              <div class="col-md-6 form-group">
                 <form method="post" action="/individual_business">
                   <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings[i].business%>">
                 </form>
@@ -194,6 +197,7 @@
               </form>
             </div>
           <% } %>
+        </div>
         </div>
       </div>
     </div>
