@@ -274,12 +274,10 @@
 
     <!-- Main Content -->
 <!--  <div class="container">
-  	<div class="row">
+    <div class="row">
       <div class="col-lg-8">
         <div class="search-container">
-
             <form action="/search" method="post">
-
               <div class="col-md-6">
                 <input type="text" id="search_event_name" name="search_event_name" placeholder="Search using event name" class="form-control " required pattern=".{1,255}">
                 <br>
@@ -299,13 +297,9 @@
                 <br>
                 <input type="submit" value=" Advance Search Requests " class="btn btn-dark mt-2 mt-sm-0">
               </div>
-
               <div class="col-md-6">
-
               </div>
-
             </form>
-
         </div>
       </div>
     </div>
@@ -314,21 +308,20 @@
   <!-- Search validation scripts -->
   <script>
     function checkValid_search() {
+      document.getElementById("business_check").style.display = "none";
+      document.getElementById("request_check").style.display = "none";
       var key = document.getElementById("search");
       if (key.value == "") {
         document.getElementById("search_check").style.display = "block";
-        //document.getElementById(search).focus();
-        console.log("search not filled");
+        //console.log("search not filled");
         return false;
       }else{
         document.getElementById("search_check").style.display = "none";
-        console.log("search filled");
+        //console.log("search filled");
         return true;
       }
     }
-
     function checkEventType() {
-      console.log("aaa");
       var EventTypeList = document.getElementsByName("search_events_type");
       var i;
       for (i=0; i<EventTypeList.length; i++) {
@@ -338,9 +331,7 @@
       }
       return false;
     }
-
     function checkCateringType() {
-      console.log("aaa");
       var CateringTypeList = document.getElementsByName("search_legendRadio");
       var j;
       for (j=0; j<CateringTypeList.length; j++) {
@@ -350,35 +341,25 @@
       }
       return false;
     }
-
     function checkValid_request(){
+      document.getElementById("search_check").style.display = "none";
+      document.getElementById("business_check").style.display = "none";
       var key = document.getElementById("search_event_name");
       var date = document.getElementById("search_event_date");
       var deadline = document.getElementById("search_event_deadline");
       var suburb = document.getElementById("event_suburb");
-      //var type = document.getElementsByName("search_events_type");
-      //var cater = document.getElementsByName("search_legendRadio");
-      console.log("bbb");
-      console.log("!checkCateringType()");
-
-
       if (key.value == "" && date.value == "" && deadline.value == "" && suburb.value == "" && !checkEventType() && !checkCateringType() ){
         
         document.getElementById("request_check").style.display = "block";
-
         console.log("request not filled");
         return false;
       }else{
         document.getElementById("request_check").style.display = "none";
         console.log("request filled");
         return true;
-
       }
-
     }
-
     function checkBusinessCater() {
-      //console.log("aaa");
       var businesscaterlist = document.getElementsByName("search_events_cater");
       var m;
       for (m=0; m<businesscaterlist.length; m++) {
@@ -388,9 +369,7 @@
       }
       return false;
     }
-
     function checkDelivery() {
-      //console.log("aaa");
       var deliveryList = document.getElementsByName("search_delivery");
       var n;
       for (n=0; n<deliveryList.length; n++) {
@@ -400,10 +379,10 @@
       }
       return false;
     }
-
     function checkValid_business(){
+      document.getElementById("search_check").style.display = "none";
+      document.getElementById("request_check").style.display = "none";
       var key = document.getElementById("search_business_name");
-
       if (key.value == "" && !checkBusinessCater() && !checkDelivery()){
           document.getElementById("business_check").style.display = "block";
           console.log("business not filled");
@@ -413,10 +392,7 @@
           console.log("business filled");
           return true;
       }
-
     
-
-
     }
     
   </script>
@@ -442,4 +418,3 @@
   </body>
 
 </html>
-
