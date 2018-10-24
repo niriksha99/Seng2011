@@ -1,8 +1,9 @@
 class {:autocontracts} System
 {
-    ghost var userID : int;
-    ghost var businessID : int;
-    ghost var error : int;
+    ghost var userID: int;
+    ghost var username: string;
+    ghost var businessID: int;
+    ghost var error: int;
     
     predicate Valid()
     {
