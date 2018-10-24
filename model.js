@@ -206,7 +206,11 @@ app.post('/post_request', login_required, function(req, res)
 	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
-	var event_type = JSON.stringify(req.body.event_type);
+	if (req.body.event_type === 'Other') {
+		event_type = req.body.other;
+	} else {
+		var event_type = JSON.stringify(req.body.event_type);
+	}
 	var noPeople = req.body.noPeople;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
@@ -750,7 +754,11 @@ app.post('/update_request', login_required, function(req, res)
 	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
-	var event_type = JSON.stringify(req.body.event_type);
+	if (req.body.event_type === 'Other') {
+		event_type = req.body.other;
+	} else {
+		var event_type = JSON.stringify(req.body.event_type);
+	}
 	var noPeople = req.body.noPeople;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
