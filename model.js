@@ -171,7 +171,6 @@ app.post('/link_business_submit', login_required, function(req, res)
 					});
 				});
 			});
-
 			setTimeout(function () {
 				con.query('SELECT * FROM Businesses', function(err,rows) {
 				  if (err) throw err;
@@ -431,6 +430,7 @@ app.post('/search', function(req, res)
 {
 	var key = req.body.search;
 	var name = key.toLowerCase();
+
 	con.query('SELECT * FROM Requests', function(err, result1, fields) {
 		if (err) throw err;
 		var event_result = [];
@@ -447,8 +447,8 @@ app.post('/search', function(req, res)
 					business_result.push(result2[j].title);
 				}
 			}
-			//console.log(event_result);
-			//console.log(business_result);
+			console.log(event_result);
+			console.log(business_result);
 			res.render('search.html', {request_list: event_result,business_list: business_result});
 		});
 	});
@@ -509,7 +509,7 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 			if (typeof cook !== 'undefined'){
-				for(var m = 0; m < type.length; m++){
+				for(var m = 0; m < cook.length; m++){
 					if (result[i].choice == cook[m]){
 						if (!event_result.includes(result[i].event_name)){
 							event_result.push(result[i].event_name);
@@ -518,8 +518,8 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 		}
-		//console.log(event_result);
-		//console.log(business_result);
+		console.log(event_result);
+		console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
 
 	});
@@ -531,6 +531,7 @@ app.post('/search_business', function(req, res)
 	var key = req.body.search_business_name;
 	var type = req.body.search_events_cater;
 	var delivery = req.body.search_delivery;
+
 	con.query('SELECT * FROM Businesses', function(err, result, fields) {
 		if (err) throw err;
 		var event_result = [];
@@ -563,8 +564,8 @@ app.post('/search_business', function(req, res)
 				}
 			}
 		}
-		//console.log(event_result);
-		//console.log(business_result);
+		console.log(event_result);
+		console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
 	});
 });
@@ -643,6 +644,7 @@ app.post('/individual_bid', login_required, bidder_required, function(req, res)
 		res.render('individual_bid.html', {bid: bid_info});
 	});
 });
+
 
 app.get('/individual_request_user', login_required, function(req, res)
 {
@@ -1058,15 +1060,16 @@ app.get('/active_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
+
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {bids: acc_bids});
 	})
 });
 
@@ -1080,15 +1083,16 @@ app.get('/inactive_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
+
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {bids: acc_bids});
 	})
 });
 
@@ -1102,15 +1106,15 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 				accepted.push(result[i].requestID);
 			}
 		}
-		var acc_bids = [];
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
+			var acc_bids = [];
 			for (var i = 0; i < result.length; i++) {
 				if (accepted.includes(result[i].id))
 					acc_bids.push(result[i].event_name);
 			}
+			res.render('my_bids.html', {bids: acc_bids});
 		})
-		res.render('my_bids.html', {accepted: acc_bids});
 	})
 });
 
