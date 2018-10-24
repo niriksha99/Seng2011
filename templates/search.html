@@ -51,20 +51,20 @@
       <div class="overlay"></div>
       <div class="container">
         <div class="row">
-
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
               <div class="search-container">
-                <form action="/search" method="post">
-                  <input type="text" id="search" name="search" placeholder="search for event names or business names" class="form-control ">
+                
+                <form action="/search" method="post" onsubmit="return checkValid_search()">
+                  <input type="text" id="search" name="search" placeholder="search for event names or business names" class="form-control">
                   <br>
                   <input type="submit" value="Search" class="btn btn-dark mt-2 mt-sm-0">
+                  <div class="alert alert-warning" style="display:none" id="search_check">Please enter the key word</div>
                 </form>
+
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
@@ -74,11 +74,11 @@
     <div class="modal-body row">
       <div class = "col-md-6 text-center">
         <!-- Content goes here -->
-        <form action="/search_requests" method="post">
-
+        <form action="/search_requests" method="post" onsubmit="return checkValid_request()">
           <div class="col-md">
             <input type="text" id="search_event_name" name="search_event_name" placeholder="Search using event name" class="form-control ">
             <br>
+            <div class="alert alert-warning" style="display:none" id="request_check">Please fill in one or more</div>
             <div class="input-group date">
               <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="search_event_date" name="search_event_date" class="form-control" placeholder="Date of event">
               <div class="input-group-addon">
@@ -93,7 +93,7 @@
               </div>
             </div>
             <br>
-            <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$" onchange="checkPattern(this)" placeholder="Suburb the event will be held in">
+            <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$" placeholder="Suburb the event will be held in">
             <br>
 
             <div class="form-group">
@@ -177,12 +177,13 @@
 
       <div class = "col-md-6 text-center">
         <!-- Content goes here -->
-        <form action="/search_business" method="post">
+        <form action="/search_business" method="post" onsubmit="return checkValid_business()">
 
           <div class="col-md">
+
             <input type="text" id="search_business_name" name="search_business_name" placeholder="Search using business name" class="form-control ">
             <br>
-
+            <div class="alert alert-warning" style="display:none" id="business_check">Please fill in one or more</div>
             <div class="form-group">
               <div class="d-flex justify-content-between">
                 <label for="name">Filter by catering services</label>
@@ -307,8 +308,57 @@
     </div>
   </div> -->
 
+  <!-- Search validation scripts -->
+  <script>
+    function checkValid_search() {
+      var key = document.getElementsByName("search");
+      if (key.value == null) {
+        document.getElementById("search_check").style.display = "block";
+        //document.getElementById(search).focus();
+        console.log("not filled");
+        return false;
+      }else{
+        document.getElementById("search_check").style.display = "none";
+        console.log("filled");
+        return true;
+      }
+    }
+
+    function checkValid_request(){
+      var key = document.getElementByName("search_event_name");
+      var date = document.getElementByName("search_event_date");
+      var deadline = document.getElementByName("search_event_deadline");
+      var suburb = document.getElementByName("event_suburb");
+      var type = document.getElementByName("search_events_type");
+      var cater = document.getElementByName("search_legendRadio");
+
+      if (key.value == null && date.value == null && deadline.value == null && suburb.value == null && type.value == null && cater.value == null){
+        document.getElementById("request_check").style.display = "block";
+        return false;
+      }else{
+        document.getElementById("request_check").style.display = "none";
+        return true;
+      }
+
+    }
+
+    function checkValid_business(){
+      var key = document.getElementByName("search_business_name");
+      var type = document.getElementByName("search_events_cater");
+      var delivery = document.getElementByName("search_delivery");
+
+      if (key.value == null && type.value == null && delivery.value == null){
+          document.getElementById("business_check").style.display = "block";
+          return false;
+      }else{
+          document.getElementById("business_check").style.display = "none";
+          return true;
+      }
 
 
+    }
+    
+  </script>
 
     <!-- Footer -->
     <footer>
@@ -331,3 +381,4 @@
   </body>
 
 </html>
+

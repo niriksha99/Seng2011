@@ -426,6 +426,7 @@ app.post('/search', function(req, res)
 {
 	var key = req.body.search;
 	var name = key.toLowerCase();
+
 	con.query('SELECT * FROM Requests', function(err, result1, fields) {
 		if (err) throw err;
 		var event_result = [];
@@ -504,7 +505,7 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 			if (typeof cook !== 'undefined'){
-				for(var m = 0; m < type.length; m++){
+				for(var m = 0; m < cook.length; m++){
 					if (result[i].choice == cook[m]){
 						if (!event_result.includes(result[i].event_name)){
 							event_result.push(result[i].event_name);
@@ -526,6 +527,7 @@ app.post('/search_business', function(req, res)
 	var key = req.body.search_business_name;
 	var type = req.body.search_events_cater;
 	var delivery = req.body.search_delivery;
+
 	con.query('SELECT * FROM Businesses', function(err, result, fields) {
 		if (err) throw err;
 		var event_result = [];
