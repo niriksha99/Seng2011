@@ -276,7 +276,7 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 			if (err) throw err;
 			var requests = [];
 			for (var i = 0; i < result.length; i++) {
-				if (!bid_request.includes(result[i].id)) {
+				if (!bid_request.includes(result[i].id) && result[i].userID !== req.session.userid) {
 					requests.push(result[i].event_name);
 				}
 			}
@@ -646,7 +646,7 @@ app.get('/individual_request_user', login_required, function(req, res)
 				value: result[i].price,
 				info: result[i].comment,
 				business: result[i].title,
-				requestid: req_id,
+				requestid: result[i].requestID,
 				businessid: result[i].businessID
 			}
 			bid_list.push(bid);
@@ -684,7 +684,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 							value: result[i].price,
 							info: result[i].comment,
 							business: result[i].title,
-							requestid: result[i].req_id,
+							requestid: result[i].requestID,
 							businessid: result[i].businessID
 						}
 						bid_list.push(bid);
@@ -699,7 +699,7 @@ app.post('/individual_request_user', login_required, function(req, res)
 					value: result[0].price,
 					info: result[0].comment,
 					business: result[0].title,
-					requestid: req_id,
+					requestid: result[0].requestID,
 					businessid: result[0].businessID
 				}
 				res.render('individual_request_user.html', {request: request, biddings: bid});
@@ -940,7 +940,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
 	var business_info = req.session.business;
-	delete req.session.business;
+	//delete req.session.business;
 	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business_info.business_name], function(err, result, fields) {
 		if (err) throw err;
 		var total = result[0].sum;

@@ -33,7 +33,6 @@ class {:autocontracts} System
     {
     }
     
-    //not done
     method EditBusiness()
     {
     }
@@ -62,7 +61,6 @@ class {:autocontracts} System
     {
     }
     
-    //not done
     method EditRequest()
     {
     }
