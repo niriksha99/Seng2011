@@ -272,11 +272,13 @@ app.post('/post_request', login_required, function(req, res)
 app.get('/catering_requests', login_required, bidder_required, function(req, res)
 {
 	var user = req.session.username;
-	con.query('SELECT * FROM Bids WHERE businessID = (SELECT id FROM Businesses WHERE userID = ?)', [req.session.userid], function(err, result, fields) {
+	con.query('SELECT Bids.*, Businesses.* FROM Bids LEFT JOIN Businesses ON Bids.businessID = Businesses.id', function(err, result, fields) {
 		if (err) throw err;
 		var bid_request = [];
 		for (var i = 0 ; i < result.length; i++) {
-			bid_request.push(result[i].requestID);
+			if (result[i].userID === req.session.userid) {
+				bid_request.push(result[i].requestID);
+			}
 		}
 		con.query('SELECT * FROM Requests', function(err, result, fields){
 			if (err) throw err;
