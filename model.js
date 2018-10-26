@@ -298,13 +298,15 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 app.get('/individual_request', login_required, function(req, res)
 {
 	//console.log(req.session.event_name);
+	var user = req.session.username;
 	var request_info = req.session.request;
 	delete req.session.request;
-	res.render('individual_request.html', {request: request_info});
+	res.render('individual_request.html', {request: request_info, username: user});
 });
 
 app.post('/individual_request', login_required, function(req, res)
 {
+	var user = req.session.username;
 	con.query('SELECT * FROM Requests WHERE event_name = ? AND completed = 0', [req.body.event_name], function(err, result, fields) {
 		if(err) throw err;
 		var request = {
@@ -320,7 +322,7 @@ app.post('/individual_request', login_required, function(req, res)
 			choice: result[0].choice,
 			additional_info: result[0].additional_info
 		};
-		res.render('individual_request.html', {request: request});
+		res.render('individual_request.html', {request: request, username: user});
 	});
 });
 
