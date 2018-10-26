@@ -101,10 +101,11 @@
 
           <% for (var i=0; i < request_list.length; i++) { %>
             <div class="row">
-            <form method="post" action="/individual_request">
-              <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
-            </form>
-        </div>
+              <form method="post" action="/individual_request">
+                <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
+              </form>
+            </div>
+            <br>
           <% } %>
 
         </div>

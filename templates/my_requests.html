@@ -88,51 +88,49 @@
           </div>
           <br>
           <br>
+
           <div class="col-lg-8 col-md-10 mx-auto">
-            <% for (var i=0; i < request_list.length; i++) { %>
-              <div class="row">
-                <form method="post" action="/individual_request_user">
-                  <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
-                </form>
-              </div>
-            <% } %>
-          </div>
+            <table class="table">
+
+              <thead>
+                <tr>
+                  <th scope="col-md" style="width: 33.33%">Event Name</th>
+                  <th scope="col-md" style="width: 33.33%">Approximate Budget</th>
+                  <th scope="col-md" style="width: 33.33%">Status of the Request</th>
+                </tr>
+              </thead>
+
+
+                  <% for (var i=0; i < request_list.length; i++) { %>
+                    <tbody>
+                    <td class="align-middle ">
+                      <form method="post" action="/individual_request_user">
+                        <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
+                      </form>
+                    </td>
+                    <td class="align-middle ">
+                      $<%=request_list2[i]%>
+                    </td>
+                    <td class="align-middle ">
+                      <% if (request_list3[i] == 0) { %>
+                        <p> In-progress </p>
+                      <% } else { %>
+                        <p> Completed </p>
+                      <% } %>
+                    </td>
+                    </tbody>
+                  <% } %>
+
+
+          </table>
+        </div>
+
+
       </div>
     </div>
 
 
 
-    <!--
-    <input type="button" class="btn" style="background-color:transparent" value="All">
-    <button type="button" id="all_btn" class="btn btn-default" style="background-color:transparent">Bidded</button>
-    <button type="button" class="btn" style="background-color:transparent">Non-bidded</button>
-    <button type="button" class="btn" style="background-color:transparent">Completed</button>
-    <div class="container">
-      <div class="container h-100 d-flex justify-content-center">
-        <ul class="nav nav-tabs">
-          <li><a  type="button" class="btn btn-primary btn-block">All</a></li>
-          <li><a  type="button" class="btn btn-primary btn-block">Bidded</a></li>
-          <li><a  type="button" class="btn btn-primary btn-block">Non-bidded</a></li>
-          <li><a  type="button" class="btn btn-primary btn-block">Completed</a></li>
-        </ul>
-      </div>
-
-      <br>
-      <br>
-      <br>
-      <div class="col-md-2">
-            <div class="vertical-menu">
-              <a  type="button" class="btn btn-primary btn-block">All</a>
-              <br>
-              <a  type="button" class="btn btn-primary btn-block">Bidded</a>
-              <br>
-              <a  type="button" class="btn btn-primary btn-block">Non-bidded</a>
-              <br>
-              <a  type="button" class="btn btn-primary btn-block">Completed</a>
-            </div>
-          </div>
-          <div class="col-md-1">
-          </div>-->
 
     <!-- Footer -->
     <footer>
@@ -144,6 +142,7 @@
         </div>
       </div>
     </footer>
+
     <script>
       document.getElementById("all_btn").addEventListener("click",
       function() {

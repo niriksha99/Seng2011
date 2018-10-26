@@ -613,10 +613,14 @@ app.get('/requests', login_required, function(req, res)
 	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
+		var requests2 = [];
+		var requests3 = [];
 		for (var i = 0; i < result.length; i++) {
 			requests.push(result[i].event_name);
+			requests2.push(result[i].budget);
+			requests3.push(result[i].completed);
 		}
-		res.render('my_requests.html', {request_list: requests});
+		res.render('my_requests.html', {request_list: requests, request_list2: requests2, request_list3: requests3});
 	});
 });
 
@@ -1050,7 +1054,7 @@ app.get('/my_bids', login_required, bidder_required, function(req, res)
 				if (requests_bidded.includes(result[i].id))
 					bid_names.push(result[i].event_name);
 			}
-			res.render('my_bids.html', {bids: bid_names, bids_price: bids_price});
+			res.render('my_bids.html', {bids: bid_names});
 		})
 	});
 });
@@ -1266,12 +1270,16 @@ app.get('/in_progress_requests', login_required, function(req, res)
 	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
+		var requests2 = [];
+		var requests3 = [];
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].completed == 0) {
 				requests.push(result[i].event_name);
+				requests2.push(result[i].budget);
+				requests3.push(result[i].completed);
 			}
 		}
-		res.render('my_requests.html', {request_list: requests});
+			res.render('my_requests.html', {request_list: requests, request_list2: requests2, request_list3: requests3});
 	});
 });
 
@@ -1280,12 +1288,16 @@ app.get('/completed_requests', login_required, function(req, res)
 	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
+		var requests2 = [];
+		var requests3 = [];
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].completed != 0) {
 				requests.push(result[i].event_name);
+				requests2.push(result[i].budget);
+				requests3.push(result[i].completed);
 			}
 		}
-		res.render('my_requests.html', {request_list: requests});
+			res.render('my_requests.html', {request_list: requests, request_list2: requests2, request_list3: requests3});
 	});
 });
 
