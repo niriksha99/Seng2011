@@ -1,8 +1,8 @@
-Seng2011 Project
+# Seng2011 Project
 
-Group Name: Iris
+**Group Name:** Iris
 
-Members:
+**Members:**
   Niriksha Mutharia: z5162774
   Minh Thien Nhat Nguyen: z5137455
   Blaise Paradeza: z5160298
@@ -10,8 +10,14 @@ Members:
   
 Instructions for running the website:
 
-First, initialise the database by running "node init_db.js"
+First, initialise the database by running 
+'''
+node init_db.js
+'''
 
 Wait for the tables to be created, then Ctrl + C
 
-Run the server with "node model.js"
+Run the server with 
+'''
+node model.js
+'''
