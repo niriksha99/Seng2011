@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
-	database: "abc"
+	password: "password",
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
