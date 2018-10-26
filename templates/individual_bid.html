@@ -93,7 +93,13 @@
             <tbody>
               <tr>
                 <th scope="row">Event time</th>
-                <td><%= bid.event_time %></td>
+                <td><%= bid.event_start_time %></td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th scope="row">Event time</th>
+                <td><%= bid.event_end_time %></td>
               </tr>
             </tbody>
             <tbody>
@@ -122,19 +128,13 @@
             </tbody>
             <tbody>
               <tr>
-                <th scope="row">Quality Level</th>
-                <td><%= bid.qualityLevel %></td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr>
                 <th scope="row">Budget</th>
                 <td>$<%= bid.budget %></td>
               </tr>
             </tbody>
             <tbody>
               <tr>
-                <th scope="row">Cook on province (1) <br> Bring prepared food (2)</th>
+                <th scope="row">Food Preparation</th>
                 <td><%= bid.choice %></td>
               </tr>
             </tbody>
