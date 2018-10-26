@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
-	database: "abc"
+	password: "password",
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
@@ -534,6 +534,8 @@ app.post('/filter_requests', function(req, res)
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		var request_result =[];
+		var type_list =[];
+		var budget_list = [];
 		// var date_result = [];
 		// var deadline_result = [];
 		var suburb_result = [];
@@ -607,11 +609,13 @@ app.post('/filter_requests', function(req, res)
 
 				if (name_result.includes(result[i].event_name) && suburb_result.includes(result[i].event_name) && type_result.includes(result[i].event_name) && cook_result.includes(result[i].event_name)){
 					request_result.push(result[i].event_name);
+					type_list.push(result[i].event_type);
+					budget_list.push(result[i].budget);
 				}
 			}
 
 		}
-		res.render('catering_requests.html', {request_list: request_result, username: user});
+		res.render('catering_requests.html', {request_list: request_result, request_list2: type_list, request_list3: budget_list, username: user});
 
 	});
 });
