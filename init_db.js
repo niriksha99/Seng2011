@@ -49,7 +49,6 @@ function create_tables() {
 
 	basic_query("CREATE TABLE RateSum(businessID INT, oneStar INT, twoStar INT, threeStar INT, fourStar INT, fiveStar INT, sum INT, FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(businessID)) ", "created RateSum table");
 
-	basic_query("CREATE TABLE Notes(userID INT, requestID INT, businessID INT, notification VARCHAR(255), FOREIGN KEY (userID) REFERENCES Users(id), FOREIGN KEY (requestID) REFERENCES Requests(id), FOREIGN KEY (businessID) REFERENCES Businesses(id), CONSTRAINT pk PRIMARY KEY(userID, requestID, businessID)) ", "created Notes table");
 }
 
 function basic_query(sql, message) {

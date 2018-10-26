@@ -421,32 +421,91 @@ app.get('/home', function(req, res)
 	}
 });
 
-//general search bar for event name or business name
-app.post('/search', function(req, res)
+//search for business
+app.post('/search_business', function(req, res)
 {
-	var key = req.body.search;
-	var name = key.toLowerCase();
-	con.query('SELECT * FROM Requests', function(err, result1, fields) {
-		if (err) throw err;
-		var event_result = [];
-		for (var i = 0; i < result1.length; i++ ){
-			if (result1[i].event_name.toLowerCase().includes(name)){
-				event_result.push(result1[i].event_name);
-			}
-		}
-		con.query('SELECT * FROM Businesses', function(err, result2, fields) {
-			if (err) throw err;
-			var business_result = [];
-			for (var j = 0; j < result2.length; j++ ){
-				if (result2[j].title.toLowerCase().includes(name)){
-					business_result.push(result2[j].title);
+	con.query('SELECT * FROM Businesses', function(err, result, fields) {
+		var key = req.body.search_business_name;
+		var search_business_result = [];
+		for (var i = 0; i < result.length; i++ ){
+			if (typeof key !== 'undefined'){
+				var name = key.toLowerCase();
+				if (result[i].title.toLowerCase().includes(name)){
+					if (!search_business_result.includes(result[i].title)){
+						search_business_result.push(result[i].title);
+					}
 				}
 			}
-			//console.log(event_result);
-			//console.log(business_result);
-			res.render('search.html', {request_list: event_result,business_list: business_result});
-		});
+		}
+		res.render('search.html', {business_list: search_business_result});
 	});
+});
+
+//filtering for business
+app.post('/filter_business', function(req, res){
+
+	var type = req.body.search_events_cater;
+	var type_result = [];
+	var delivery = req.body.search_delivery;
+	var delivery_result = [];
+	var business_result = [];
+	var business = JSON.parse(req.body.business_button);
+	con.query('SELECT * FROM Businesses',function(err, result, fields) {
+		if (err) throw err;
+		for (var c = 0;c < result.length;c++){
+			if(business.includes(result[c].title)){
+				if (typeof type != 'undefined'){
+					if (type.length > 7){
+						if (result[c].events_cater.includes(type)){
+							if (!type_result.includes(result[c].title)){
+								type_result.push(result[c].title);
+							}
+						}
+					}else{
+						for(var m = 0; m < type.length; m++){
+							if (result[c].events_cater.includes(type[m])){
+								if (!type_result.includes(result[c].title)){
+									type_result.push(result[c].title);
+								}
+							}
+						}
+					}
+
+				}
+				if (typeof delivery !== 'undefined'){
+					if (delivery.length > 3){
+						if (result[c].delivery_options.includes(delivery)){
+							if (!delivery_result.includes(result[c].title)){
+								delivery_result.push(result[c].title);
+							}
+						}
+					}else{
+						for(var n = 0; n < delivery.length; n++){
+							if (result[c].delivery_options.includes(delivery[n])){
+								if (!delivery_result.includes(result[c].title)){
+									delivery_result.push(result[c].title);
+								}
+							}
+						}
+					}
+				}
+				if (typeof delivery == 'undefined' && type_result.includes(result[c].title)){
+					business_result.push(result[c].title);
+				}else if(typeof type == 'undefined' && delivery_result.includes(result[c].title)){
+					business_result.push(result[c].title);
+				}else if (delivery_result.includes(result[c].title) && type_result.includes(result[c].title)){
+					business_result.push(result[c].title);
+				}
+
+			}
+
+		}
+		res.render('search.html', {business_list: business_result});
+
+	});
+
+
+
 });
 
 //advance search for events
@@ -504,7 +563,7 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 			if (typeof cook !== 'undefined'){
-				for(var m = 0; m < type.length; m++){
+				for(var m = 0; m < cook.length; m++){
 					if (result[i].choice == cook[m]){
 						if (!event_result.includes(result[i].event_name)){
 							event_result.push(result[i].event_name);
@@ -513,57 +572,12 @@ app.post('/search_requests', function(req, res)
 				}
 			}
 		}
-		//console.log(event_result);
-		//console.log(business_result);
+		console.log(event_result);
+		console.log(business_result);
 		res.render('search.html', {request_list: event_result,business_list: business_result});
 
 	});
 });
-
-//advance search for business
-app.post('/search_business', function(req, res)
-{
-	var key = req.body.search_business_name;
-	var type = req.body.search_events_cater;
-	var delivery = req.body.search_delivery;
-	con.query('SELECT * FROM Businesses', function(err, result, fields) {
-		if (err) throw err;
-		var event_result = [];
-		var business_result = [];
-		for (var i = 0; i < result.length; i++ ){
-			if (typeof key !== 'undefined'){
-				var name = key.toLowerCase();
-				if (result[i].title.toLowerCase().includes(name)){
-					if (!business_result.includes(result[i].title)){
-						business_result.push(result[i].title);
-					}
-				}
-			}
-			if (typeof type !== 'undefined'){
-				for(var j = 0; j < type.length; j++){
-					if (result[i].events_cater == type[j]){
-						if (!business_result.includes(result[i].title)){
-							business_result.push(result[i].title);
-						}
-					}
-				}
-			}
-			if (typeof delivery !== 'undefined'){
-				for(var m = 0; m < delivery.length; m++){
-					if (result[i].delivery_options == delivery[j]){
-						if (!business_result.includes(result[i].title)){
-							business_result.push(result[i].title);
-						}
-					}
-				}
-			}
-		}
-		//console.log(event_result);
-		//console.log(business_result);
-		res.render('search.html', {request_list: event_result,business_list: business_result});
-	});
-});
-
 
 app.get('/user', login_required, function(req, res)
 {
@@ -1036,7 +1050,7 @@ app.get('/my_bids', login_required, bidder_required, function(req, res)
 				if (requests_bidded.includes(result[i].id))
 					bid_names.push(result[i].event_name);
 			}
-			res.render('my_bids.html', {bids: bid_names});
+			res.render('my_bids.html', {bids: bid_names, bids_price: bids_price});
 		})
 	});
 });
@@ -1117,8 +1131,10 @@ app.get('/sort_by_price_low', function(req, res)
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			sort_by_price.push(result[i].budget);
-			sort_by_price.push(result[i].event_name);
+			if (result[i].completed != 1) {
+				sort_by_price.push(result[i].budget);
+				sort_by_price.push(result[i].event_name);
+			}
 		}
 		// use bubblesort
 		for (var i = 0; i < sort_by_price.length; i=i+2) {
@@ -1149,8 +1165,10 @@ app.get('/sort_by_price_high', function(req, res)
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			sort_by_price.push(result[i].budget);
-			sort_by_price.push(result[i].event_name);
+			if (result[i].completed != 1) {
+				sort_by_price.push(result[i].budget);
+				sort_by_price.push(result[i].event_name);
+			}
 		}
 		// use bubblesort
 		for (var i = 0; i < sort_by_price.length; i=i+2) {
@@ -1174,49 +1192,84 @@ app.get('/sort_by_price_high', function(req, res)
 	});
 });
 
-app.get('/bidded_requests', login_required, function(req, res)
+app.get('/sort_by_earliest_deadline', function(req, res)
 {
-	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
-		var requests = [];
+		// put info in 2d array
+		var sort_by_deadline = [];
 		for (var i = 0; i < result.length; i++) {
-			requests.push(result[i].completed);
-			requests.push(result[i].event_name);
+			if (result[i].completed != 1) {
+				sort_by_deadline.push(result[i].budget);
+				sort_by_deadline.push(dateFormat(result[i].event_deadline, yyyymmdd));
+				console.log(sort_by_deadline[i]);
+			}
 		}
-		for (var i = 0; i < requests.length; i=i+2) {
-			if (requests[i] == 0) {
-				requests.splice(i, 1);
-				requests.splice(i, 1);
-				i = i-2;
+		// use bubblesort
+		for (var i = 0; i < sort_by_deadline.length; i=i+2) {
+			for (var j = sort_by_deadline.length-2; j > i; j=j-2) {
+				if (sort_by_deadline[j] <= sort_by_deadline[j-2]) {
+					var temp1 = sort_by_deadline[j];
+					sort_by_deadline[j] = sort_by_deadline[j-2];
+					sort_by_deadline[j-2] = temp1;
+					var temp2 = sort_by_deadline[j+1];
+					sort_by_deadline[j+1] = sort_by_deadline[j-1];
+					sort_by_deadline[j-1] = temp2;
+				}
 			}
 		}
 
 		for (var i = 0; i < result.length; i=i+1) {
-			requests.splice(i, 1);
+			sort_by_deadline.splice(i, 1);
 		}
-		res.render('my_requests.html', {request_list: requests});
+
+		res.render('catering_requests.html', {request_list: sort_by_deadline});
+	});
+
+});
+
+app.get('/sort_by_latest_deadline', function(req, res)
+{
+	con.query('SELECT * FROM Requests', function(err, result, fields) {
+		if (err) throw err;
+		// put info in 2d array
+		var sort_by_deadline = [];
+		for (var i = 0; i < result.length; i++) {
+			if (result[i].completed != 1) {
+				sort_by_deadline.push(result[i].budget);
+				sort_by_deadline.push((result[i].event_deadline).toISOString);
+			}
+		}
+		// use bubblesort
+		for (var i = 0; i < sort_by_deadline.length; i=i+2) {
+			for (var j = sort_by_deadline.length-2; j > i; j=j-2) {
+				if (sort_by_deadline[j] >= sort_by_deadline[j-2]) {
+					var temp1 = sort_by_deadline[j];
+					sort_by_deadline[j] = sort_by_deadline[j-2];
+					sort_by_deadline[j-2] = temp1;
+					var temp2 = sort_by_deadline[j+1];
+					sort_by_deadline[j+1] = sort_by_deadline[j-1];
+					sort_by_deadline[j-1] = temp2;
+				}
+			}
+		}
+
+		for (var i = 0; i < result.length; i=i+1) {
+			sort_by_deadline.splice(i, 1);
+		}
+		res.render('catering_requests.html', {request_list: sort_by_deadline});
 	});
 });
 
-app.get('/non_bidded_requests', login_required, function(req, res)
+app.get('/in_progress_requests', login_required, function(req, res)
 {
 	con.query('SELECT * FROM Requests WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var requests = [];
 		for (var i = 0; i < result.length; i++) {
-			requests.push(result[i].completed);
-			requests.push(result[i].event_name);
-		}
-		for (var i = 0; i < requests.length; i=i+2) {
-			if (requests[i] != 0) {
-				requests.splice(i, 1);
-				requests.splice(i, 1);
-				i = i-2;
+			if (result[i].completed == 0) {
+				requests.push(result[i].event_name);
 			}
-		}
-
-		for (var i = 0; i < result.length; i=i+1) {
-			requests.splice(i, 1);
 		}
 		res.render('my_requests.html', {request_list: requests});
 	});
@@ -1228,19 +1281,9 @@ app.get('/completed_requests', login_required, function(req, res)
 		if (err) throw err;
 		var requests = [];
 		for (var i = 0; i < result.length; i++) {
-			requests.push(result[i].completed);
-			requests.push(result[i].event_name);
-		}
-		for (var i = 0; i < requests.length; i=i+2) {
-			if (requests[i] == 0) {
-				requests.splice(i, 1);
-				requests.splice(i, 1);
-				i = i-2;
+			if (result[i].completed != 0) {
+				requests.push(result[i].event_name);
 			}
-		}
-
-		for (var i = 0; i < result.length; i=i+1) {
-			requests.splice(i, 1);
 		}
 		res.render('my_requests.html', {request_list: requests});
 	});

@@ -100,14 +100,28 @@
     <br>
 
         <div class="col-lg-8 col-md-10 mx-auto">
-          <% for (var i=0; i < bids.length; i++) { %>
-            <div class="row">
-            <form method="post" action="/individual_bid">
-              <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=bids[i]%>">
-            </form>
-            </div>
-          <% } %>
-        </div>
+          <table class="table">
+
+            <thead>
+              <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Bid Amount</th>
+                <th scope="col">Status of the Bid</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <td>
+                <% for (var i=0; i < bids.length; i++) { %>
+                  <form method="post" action="/individual_bid" scope="row">
+                    <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=bids[i]%>">
+                  </form>
+                <% } %>
+              </td>
+            </tbody>
+
+        </table>
+      </div>
 
     <!-- Footer -->
     <footer>
