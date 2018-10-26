@@ -205,7 +205,11 @@ app.post('/post_request', login_required, function(req, res)
 	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
-	var event_type = JSON.stringify(req.body.event_type);
+	if (req.body.event_type === 'Other') {
+		event_type = req.body.other;
+	} else {
+		var event_type = JSON.stringify(req.body.event_type);
+	}
 	var noPeople = req.body.noPeople;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
@@ -266,6 +270,7 @@ app.post('/post_request', login_required, function(req, res)
 
 app.get('/catering_requests', login_required, bidder_required, function(req, res)
 {
+	var user = req.session.username;
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		var bid_request = [];
@@ -284,7 +289,7 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 					requests3.push(result[i].budget);
 				}
 			}
-			res.render('catering_requests.html', {request_list: requests, request_list2: requests2, request_list3: requests3 });
+			res.render('catering_requests.html', {username: user, request_list: requests, request_list2: requests2, request_list3: requests3 });
 		});
 	});
 });
@@ -368,7 +373,7 @@ app.post('/edit_bid', login_required, bidder_required, function(req, res)
 	bid.amount = price;
 	bid.comment = comment;
 	req.session.bid = bid;
-	res.redirect('/my_bids');
+	res.redirect('/individual_bid');
 });
 
 app.post('/cancel_bid', login_required, function(req, res)
@@ -513,72 +518,100 @@ app.post('/filter_business', function(req, res){
 });
 
 //advance search for events
-app.post('/search_requests', function(req, res)
+//advance search for events
+app.post('/filter_requests', function(req, res)
 {
+	var user = req.session.username;
+
 	var key = req.body.search_event_name;
 	var date = req.body.search_event_date;
 	var deadline = req.body.search_event_deadline;
 	var suburb = req.body.event_suburb;
 	var type = req.body.search_events_type;
 	var cook = req.body.search_legendRadio;
+	var list = JSON.parse(req.body.request_button);
 
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
-		var event_result = [];
-		var business_result = [];
+		var request_result =[];
+		// var date_result = [];
+		// var deadline_result = [];
+		var suburb_result = [];
+		var type_result = [];
+		var cook_result = [];
+		var name_result = [];
+
 		for (var i = 0; i < result.length; i++ ){
-			if (typeof key !== 'undefined'){
-				var name = key.toLowerCase();
-				if (result[i].event_name.toLowerCase().includes(name)){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof date !== 'undefined'){
-				if (result[i].event_date == date){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof dealine !== 'undefined'){
-				if (result[i].event_deadline == dealine){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof suburb !== 'undefined'){
-				var sb = '"' + suburb.toLowerCase() + '"';
-				if (result[i].event_suburb.toLowerCase() == sb){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof type !== 'undefined'){
-				for(var j = 0; j < type.length; j++){
-					if (result[i].event_type == type[j]){
-						if (!event_result.includes(result[i].event_name)){
-							event_result.push(result[i].event_name);
+			if (list.includes(result[i].event_name)){
+				if (typeof key !== 'undefined'){
+					var n = key.toLowerCase();
+					if (result[i].event_name.toLowerCase().includes(n)){
+						if (!name_result.includes(result[i].event_name)){
+							name_result.push(result[i].event_name);
 						}
 					}
+				}else{
+					name_result.push(result[i].event_name);
 				}
-			}
-			if (typeof cook !== 'undefined'){
-				for(var m = 0; m < cook.length; m++){
-					if (result[i].choice == cook[m]){
-						if (!event_result.includes(result[i].event_name)){
-							event_result.push(result[i].event_name);
+
+				if (typeof suburb !== 'undefined'){
+					var sb = suburb.toLowerCase() ;
+					if (result[i].event_suburb.toLowerCase().includes(sb)){
+						if (!suburb_result.includes(result[i].event_name)){
+							suburb_result.push(result[i].event_name);
 						}
 					}
+				}else{
+					suburb_result.push(result[i].event_name);
+				}
+
+				if (typeof type !== 'undefined'){
+					if (type.length > 7){
+						if (result[i].event_type.includes(type)){
+							if (!type_result.includes(result[i].event_name)){
+								type_result.push(result[i].event_name);
+							}
+						}
+					}else{
+						for(var j = 0; j < type.length; j++){
+							if (result[i].event_type.includes(type[j])){
+								if (!type_result.includes(result[i].event_name)){
+									type_result.push(result[i].event_name);
+								}
+							}
+						}
+					}
+				}else{
+					type_result.push(result[i].event_name);
+				}
+
+				if (typeof cook !== 'undefined'){
+					if (cook.length > 3){
+						if (result[i].choice.includes(cook)){
+							if (!cook_result.includes(result[i].event_name)){
+								cook_result.push(result[i].event_name);
+							}
+						}
+					}else{
+						for(var m = 0; m < cook.length; m++){
+							if (result[i].choice.includes(cook[m])){
+								if (!cook_result.includes(result[i].event_name)){
+									cook_result.push(result[i].event_name);
+								}
+							}
+						}
+					}
+				}else{
+					cook_result.push(result[i].event_name);
+				}
+
+				if (name_result.includes(result[i].event_name) && suburb_result.includes(result[i].event_name) && type_result.includes(result[i].event_name) && cook_result.includes(result[i].event_name)){
+					request_result.push(result[i].event_name);
 				}
 			}
+
 		}
-		console.log(event_result);
-		console.log(business_result);
-		res.render('search.html', {request_list: event_result,business_list: business_result});
+		res.render('catering_requests.html', {request_list: request_result, username: user});
 
 	});
 });
@@ -773,7 +806,11 @@ app.post('/update_request', login_required, function(req, res)
 	var event_end_time = req.body.event_end_time;
 	var event_deadline = req.body.event_deadline.split('T')[0];
 	var event_suburb = req.body.event_suburb;
-	var event_type = JSON.stringify(req.body.event_type);
+	if (req.body.event_type === 'Other') {
+		event_type = req.body.other;
+	} else {
+		var event_type = JSON.stringify(req.body.event_type);
+	}
 	var noPeople = req.body.noPeople;
 	var budget = req.body.budget;
 	var choice = req.body.legendRadio;
@@ -987,7 +1024,7 @@ app.post('/bidding', login_required, bidder_required, function(req, res)
 app.get('/individual_business', login_required, bidder_required, function(req, res)
 {
 	var business_info = req.session.business;
-	//delete req.session.business;
+	var user = req.session.username;
 	con.query('SELECT * FROM RateSum WHERE businessID = (SELECT id FROM Businesses WHERE title = ?)', [business_info.business_name], function(err, result, fields) {
 		if (err) throw err;
 		var total = result[0].sum;
@@ -998,12 +1035,13 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 			business_info.rate = 0.0;
 		}
 		req.session.businessid = result[0].businessID;
-		res.render('business.html', {business: business_info});
+		res.render('business.html', {business: business_info, username: user});
 	});
 });
 
 app.post('/individual_business', login_required, function(req, res)
 {
+	var user = req.session.username;
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
 		if (err) throw err;
 		var business = {
@@ -1037,7 +1075,7 @@ app.post('/individual_business', login_required, function(req, res)
 			if (result2.length > 0) {
 				rated = result2[0].rate;
 			}
-			res.render('business.html', {business: business, rated: rated});
+			res.render('business.html', {business: business, rated: rated, username: user});
 		});
 	});
 });
@@ -1049,6 +1087,7 @@ app.get('/individual_business_everyone', function(req, res)
 
 app.get('/my_bids', login_required, bidder_required, function(req, res)
 {
+	var user = req.session.username;
 	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
@@ -1071,13 +1110,14 @@ app.get('/my_bids', login_required, bidder_required, function(req, res)
 					}
 				}
 			}
-			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status, username: user});
 		})
 	});
 });
 
 app.get('/active_bids', login_required, bidder_required, function(req, res)
 {
+	var user = req.session.username;
 	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
@@ -1103,13 +1143,14 @@ app.get('/active_bids', login_required, bidder_required, function(req, res)
 					}
 				}
 			}
-			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status, username: user});
 		})
 	});
 });
 
 app.get('/inactive_bids', login_required, bidder_required, function(req, res)
 {
+	var user = req.session.username;
 	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
@@ -1135,13 +1176,14 @@ app.get('/inactive_bids', login_required, bidder_required, function(req, res)
 					}
 				}
 			}
-			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status, username: user});
 		})
 	});
 });
 
 app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 {
+	var user = req.session.username;
 	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
@@ -1167,20 +1209,23 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 					}
 				}
 			}
-			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status, username: user});
 		})
 	});
 });
 
 
-app.get('/sort_by_price_low', function(req, res)
+app.post('/sort_by_price_low', function(req, res)
 {
+	var user = req.session.username;
+	console.log("sortinglow!!!");
+	var list = JSON.parse(req.body.sortlow);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			if (result[i].completed != 1) {
+			if (list.includes(result[i].event_name) && result[i].completed != 1) {
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);
 				sort_by_price.push(result[i].event_type);
@@ -1210,24 +1255,27 @@ app.get('/sort_by_price_low', function(req, res)
 			budget.push(sort_by_price[i]);
 		}
 		for (var i = 1; i < sort_by_price.length; i=i+3) {
-			type.push(sort_by_price[i]);
-		}
-		for (var i = 2; i < sort_by_price.length; i=i+3) {
 			name.push(sort_by_price[i]);
 		}
-		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget});
+		for (var i = 2; i < sort_by_price.length; i=i+3) {
+			type.push(sort_by_price[i]);
+		}
+		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget, username: user});
 
 	});
 });
 
-app.get('/sort_by_price_high', function(req, res)
+app.post('/sort_by_price_high', function(req, res)
 {
+	var user = req.session.username;
+	console.log("sortinghigh!!!");
+	var list = JSON.parse(req.body.sorthigh);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			if (result[i].completed != 1) {
+			if (list.includes(result[i].event_name) && result[i].completed != 1) {
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);
 				sort_by_price.push(result[i].event_type);
@@ -1262,13 +1310,14 @@ app.get('/sort_by_price_high', function(req, res)
 		for (var i = 2; i < sort_by_price.length; i=i+3) {
 			type.push(sort_by_price[i]);
 		}
-		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget});
+		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget, username: user});
 
 	});
 });
 
 app.get('/sort_by_earliest_deadline', function(req, res)
 {
+	var user = req.session.username;
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
@@ -1302,13 +1351,14 @@ app.get('/sort_by_earliest_deadline', function(req, res)
 			sort_by_deadline.splice(i, 1);
 		}
 
-		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3});
+		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3, username: user});
 	});
 
 });
 
 app.get('/sort_by_latest_deadline', function(req, res)
 {
+	var user = req.session.username;
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
@@ -1340,7 +1390,7 @@ app.get('/sort_by_latest_deadline', function(req, res)
 		for (var i = 0; i < result.length; i=i+1) {
 			sort_by_deadline.splice(i, 1);
 		}
-		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3});
+		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3, username: user});
 	});
 });
 
