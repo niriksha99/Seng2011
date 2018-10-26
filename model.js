@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "niriksha",
-	database: "abc"
+	password: "password",
+	database: "PartyWhip"
 });
 
 function login_required(req, res, next) {
@@ -994,7 +994,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 	});
 });
 
-app.post('/individual_business', login_required, bidder_required, function(req, res)
+app.post('/individual_business', login_required, function(req, res)
 {
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
 		if (err) throw err;
