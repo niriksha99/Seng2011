@@ -1259,10 +1259,10 @@ app.post('/sort_by_price_low', function(req, res)
 			budget.push(sort_by_price[i]);
 		}
 		for (var i = 1; i < sort_by_price.length; i=i+3) {
-			name.push(sort_by_price[i]);
+			type.push(sort_by_price[i]);
 		}
 		for (var i = 2; i < sort_by_price.length; i=i+3) {
-			type.push(sort_by_price[i]);
+			name.push(sort_by_price[i]);
 		}
 		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget, username: user});
 
