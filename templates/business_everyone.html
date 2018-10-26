@@ -137,6 +137,7 @@
        <% } else { %>
        <h3> Overall ratings: <%= business.rate %></h3>
        <% } %>
+       <% if (login !== null) {%>
        <% if (business.owner !== true) { %>
          <% if (rated === 0) { %>
            <div class="col-md-10">
@@ -164,6 +165,7 @@
               </form>
            </div>
         </div>
+       <% } %>
        <% } %>
     </div>
 
