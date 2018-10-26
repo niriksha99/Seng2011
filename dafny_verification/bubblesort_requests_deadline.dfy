@@ -1,135 +1,123 @@
+// Search requests
 
-class {:autocontracts} RowDataPacket
+/* database select all 
+[ RowDataPacket {
+    id: 1,
+    title: 'few',
+    userID: 1,
+    opening_hours: 'kofeoijwefk',
+    phone_no: '3p290832',
+    email: 'ijfojoaijf@gejeojeojk',
+    description: 'efwlneefw' } ]
+*/
+
+class {:autocontracts} RowDataPacket 
 {
     var id: int;
     var userID: int;
-    // other fields omitted
-    var deadline: string;
-
-    predicate Valid() {
-      |deadline| == 10
-    }
-
-    // d is deadline of the event
-    method Init (id: int, userID: int, d: string)
-      requires |d| == 10
-      ensures this.id == id && this.userID == userID
-      ensures deadline[..] == d[..]
-
+    var event_name: array<char>;
+    var event_date: string; // ??? date
+    var event_time: string; // ??? time
+    var deadline: string; // ??? date
+    var suburb: string;
+    var event_type: string;
+    var no_people: int;
+    var food_quality: string;
+    var budget: real;
+    var choice: string;
+    var additional_info: string;
+    var last_modified: string; // ??? datetime
+    var status: int;
+    
+    method init(id: int, userID: int, event_name: array<char>, event_date: string, event_time: string, deadline: string, suburb: string, event_type: string, 
+                no_people: int, food_quality: string, budget: real, choice: string, additional_info: string, last_modified: string, status: int)
+        requires |deadline| == |event_date| == 10;
+        modifies this;
+        ensures this.id==id && this.userID==userID && this.event_name==event_name && this.event_date==event_date && 
+            this.event_time==event_time && this.deadline==deadline && this.suburb==suburb && this.event_type==event_type && 
+            this.no_people==no_people && this.food_quality==food_quality && this.budget==budget && this.choice==choice && 
+            this.additional_info==additional_info && this.last_modified==last_modified && this.status==status
     {
-      this.id := id;
-      this.userID := userID;
-      this.deadline := d;
-      /*
-      this.deadline := new char[10];
-      deadline[0], deadline[1], deadline[2], deadline[3], deadline[4], deadline[5], deadline[6], deadline[7], deadline[8], deadline[9]
-          := d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9];
-      */
+      this.id:= id;
+      this.userID:= userID;
+      this.event_name:= event_name;
+      this.event_date:= event_date;
+      this.event_time:= event_time;
+      this.deadline:= deadline;
+      this.suburb:= suburb;
+      this.event_type:= event_type;
+      this.no_people:= no_people;
+      this.food_quality:= food_quality;
+      this.budget:= budget;
+      this.choice:= choice;
+      this.additional_info:= additional_info;
+      this.last_modified:= last_modified;
+      this.status:= status;
     }
 }
 
-
-function method min(a: int, b: int): int
-{ if a <= b then a else b }
-
-// all chars are equal, up to index n
-predicate PrecedeEqual(a: string, b: string, n: int)
-requires 0 <= n <= min(|a|, |b|);
-{ forall i :: 0 <= i < n ==> a[i] == b[i] }
-
-// a is less than b
-predicate StringLessThan(a: string, b: string)
-requires |a| > 0 && |b| > 0;
-{ exists k :: 0 <= k < min(|a|, |b|) && a[k] < b[k] && PrecedeEqual(a, b, k) }
-
-predicate StringLessThanOrEqual(a: string, b: string)
-requires |a| > 0 && |b| > 0;
+method matches(a: array<char>, b: array<char>, n: int) returns (res: bool)
+requires 0<=n<a.Length-b.Length
+ensures res ==true ==> forall i::0<=i<b.Length ==> a[n+i] == b[i]
+ensures res ==false ==> exists i::0<=i<b.Length && a[n+i] != b[i]
 {
-  // (|a| == |b| && forall i :: 0<=i<|a| ==> a[i] == b[i]) ||
-  // (exists k :: 0 <= k < min(|a|, |b|) && a[k] < b[k] && PrecedeEqual(a, b, k))
-  StringEqual(a,b) || StringLessThan(a,b)
-}
-
-predicate StringMoreThan(a: string, b: string)
-requires |a| > 0 && |b| > 0;
-{ exists k :: 0 <= k < min(|a|, |b|) && a[k] > b[k] && PrecedeEqual(a, b, k) }
-
-predicate StringMoreThanOrEqual(a: string, b: string)
-requires |a| > 0 && |b| > 0;
-{ StringEqual(a,b) || StringMoreThan(a,b) }
-
-predicate StringEqual(a: string, b: string)
-requires |a| > 0 && |b| > 0;
-{ |a| == |b| && forall i :: 0<=i<|a| ==> a[i] == b[i] }
-
-method strcmp(a: string, b: string) returns (res: int)
-requires |a| > 0 && |b| > 0;
-ensures res == 0 || res == 1 || res == -1;
-ensures res == 0  ==> |a| == |b| && PrecedeEqual(a, b, |a|);
-ensures res == -1 ==> StringLessThan(a, b) || (|a| < |b| && PrecedeEqual(a, b, |a|));
-ensures res == 1  ==> StringMoreThan(a, b) || (|a| > |b| && PrecedeEqual(a, b, |b|));
-ensures a[..] == old(a[..]) && b[..] == old(b[..])
-{
-    var i := 0;
-    res := 0;
-    var minLen := min(|a|, |b|);
-    while (i < minLen)
-    invariant 0 <= i <= min(|a|, |b|);
-    invariant PrecedeEqual(a, b, i);
+    var i:=0;
+    while (i < b.Length)
+    invariant 0<=i<=b.Length
+    invariant forall k::0<=k<i ==>a[n+k] == b[k]
     {
-        if (a[i] < b[i]) { return -1; }
-        else if (a[i] > b[i]) { return 1; }
-        i := i + 1;
-    }
-
-    if (|a| < |b|) { return -1; }
-    else if (|a| > |b|) { return 1; }
-    else if (|a| == |b|) { return 0; }
-}
-
-predicate Sorted (a:array<RowDataPacket>, lo:int, hi:int)
-  requires forall i :: 0<=i<a.Length ==> |a[i].deadline|==10
-  requires 0<=lo<=hi<=a.Length
-  reads a
-  reads set m | 0 <= m < a.Length :: a[m]
-  // reads set m | 0 <= m < a.Length :: a[m].deadline
-{ forall j,k:: lo<=j<k<hi ==> StringLessThanOrEqual(a[j].deadline, a[k].deadline) }
-
-// Note: multiset doesn't work with array<RowDataPacket>
-// However, there is only swapping of array elements being done
-
-method bubblesort(arr: array<RowDataPacket>)
-requires 1 < arr.Length;
-requires forall m :: 0<=m<arr.Length ==> |arr[m].deadline|==10
-modifies arr;
-ensures forall m :: 0<=m<arr.Length ==> |arr[m].deadline|==10
-ensures Sorted(arr, 0, arr.Length)
-{
-  var i:=0;
-  while (i < arr.Length-1)
-  invariant 0 <= i <= arr.Length-1
-  invariant forall m :: 0<=m<arr.Length ==> |arr[m].deadline|==10
-  invariant forall p, q :: 0 <= p < i <= q < arr.Length ==> StringLessThanOrEqual(arr[p].deadline, arr[q].deadline);
-  invariant Sorted(arr, 0, i);
-  {
-    var j := arr.Length - 1;
-    while j > i
-    invariant 0 <= i <= j < arr.Length;
-    invariant forall m :: 0<=m<arr.Length ==> |arr[m].deadline|==10
-    invariant forall u, v :: 0 <= u < i <= v < arr.Length ==> StringLessThanOrEqual(arr[u].deadline, arr[v].deadline);
-    invariant forall t :: j <= t < arr.Length ==> StringLessThanOrEqual(arr[j].deadline, arr[t].deadline);
-    invariant Sorted(arr, 0, i);
-    // invariant multiset(arr[..]) == multiset(old(arr[..]))
-    {
-      var cmp: int;
-      cmp := strcmp(arr[j].deadline, arr[j-1].deadline);
-      if (cmp == -1 || cmp == 0)
-      {
-        arr[j - 1], arr[j] := arr[j], arr[j-1];
+      if(a[n+i] != b[i]){
+        return false;
       }
-      j := j - 1;
+      i := i+1;
     }
-    i := i + 1;
-  }
-  assert forall m :: 0<=m<arr.Length ==> |arr[m].deadline|==10;
+    return true;
+}
+
+
+predicate StringContain(a: array<char>, b: array<char>)
+requires a.Length >= b.Length
+{ exists i::0<=i< a.Length-b.Length && forall j::0 <= j < b.Length ==> a[i+j] == b[j] }
+
+method includes(a: array<char>, b: array<char>) returns (res: bool)
+ensures res == true  ==> a.Length >= b.Length && StringContain(a,b)
+ensures res == false  ==> a.Length < b.Length || !StringContain(a,b)
+{
+   var i :=0;
+   if (a.Length < b.Length){return false;}
+   while(i < a.Length-b.Length)
+   invariant 0<=i<=a.Length-b.Length
+   {
+     if (a[i] == b[0]){
+       var m := matches(a,b,i);
+       if (m == true){
+         return true;
+       }
+     }
+      i:= i+1;
+   }
+   return false;
+}
+
+method SearchByEventName(a: array<RowDataPacket>, key: array<char>) returns(b: array<RowDataPacket>)
+requires a.Length>0
+ensures 0<b.Length ==> b.Length<=a.Length && forall i::0<=i<b.Length ==> StringContain(b[i].event_name,key);
+ensures b.Length == 0 ==> forall k:: 0<=k<a.Length ==> !StringContain(a[k].event_name,key);
+{
+   b :=new array<RowDataPacket>;
+   var i:= 0;
+   var j:= 0;
+   while i<a.Length
+   invariant 0<=i<=a.Length
+//   invariant 0<=j<=b.Length
+   //invariant forall k:: 0<=k<i ==> a[k]!=key
+   {
+     var cmp := includes(a[i].event_name,key);
+     if (cmp == true){
+       b[j] := a[i];
+       j := j+1;
+     }
+     i := i+1;
+   }
+   return b;
 }

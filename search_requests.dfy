@@ -15,7 +15,7 @@ class {:autocontracts} RowDataPacket
 {
     var id: int;
     var userID: int;
-    var event_name: string;
+    var event_name: array<char>;
     var event_date: string; // ??? date
     var event_time: string; // ??? time
     var deadline: string; // ??? date
@@ -29,7 +29,7 @@ class {:autocontracts} RowDataPacket
     var last_modified: string; // ??? datetime
     var status: int;
     
-    method init(id: int, userID: int, event_name: string, event_date: string, event_time: string, deadline: string, suburb: string, event_type: string, 
+    method init(id: int, userID: int, event_name: array<char>, event_date: string, event_time: string, deadline: string, suburb: string, event_type: string, 
                 no_people: int, food_quality: string, budget: real, choice: string, additional_info: string, last_modified: string, status: int)
         requires |deadline| == |event_date| == 10;
         modifies this;
@@ -56,49 +56,85 @@ class {:autocontracts} RowDataPacket
     }
 }
 
-predicate StringEqual(a: string, b: string)
-{ |a| == |b| && forall i :: 0 <= i < |a| ==> a[i] == b[i] }
+predicate StringMatch(a: array<char>, b: array<char>, n: int)
+reads a,b;
+requires 0<=n<a.Length-b.Length;
+{ forall k::0<=k<b.Length ==> a[n+k] == b[k]}
 
-method strcmp(a: string, b: string) returns (res: int)
-ensures res == 0  ==> StringEqual(a,b)
-ensures res == 1  ==> (|a| != |b| || (|a| == |b| && exists k :: 0 <= k < |a| && a[k] != b[k]) )
+predicate StringNotMatch(a: array<char>, b: array<char>, n: int)
+reads a,b;
+requires 0<=n<a.Length-b.Length;
+{ exists k::0<=k<b.Length && a[n+k] != b[k]}
+
+method matches(a: array<char>, b: array<char>, n: int) returns (res: bool)
+requires 0<=n<a.Length-b.Length
+ensures res ==true ==> StringMatch(a,b,n)
+ensures res ==false ==> StringNotMatch(a,b,n)
 {
-    if (|a| != |b|) {return 1;}
-    var i := 0;
-    while (i < |a|)
-    invariant 0 <= i <= |a|;
-    invariant forall k :: 0 <= k < i ==> a[k] == b[k]
+    var i:=0;
+    while (i < b.Length)
+    invariant 0<=i<=b.Length
+    invariant forall k::0<=k<i ==>a[n+k] == b[k]
     {
-        if (a[i] != b[i]) { return 1; }
-        i := i + 1;
+      if(a[n+i] != b[i]){
+        return false;
+      }
+      i := i+1;
     }
-    assert StringEqual(a, b);
-    return 0; 
+    return true;
 }
 
-method Search(a: array<RowDataPacket>, key: string) returns(b: array<int>)
-requires a.Length > 1
-ensures b.Length <= a.Length
-ensures forall k::0<=k<b.Length ==> 0<=b[k]<a.Length;
-ensures forall k::0<=k<b.Length ==> StringEqual(a[b[k]].event_type,key)
+
+predicate StringContain(a: array<char>, b: array<char>)
+reads a,b
+{ a.Length >= b.Length ==> exists i::0<=i< a.Length-b.Length && StringMatch(a,b,i) }
+
+predicate StringNotContain(a: array<char>, b: array<char>)
+reads a,b
+{ a.Length >= b.Length ==> forall k::0<=k<a.Length-b.Length ==> StringNotMatch(a,b,k) }
+
+method includes(a: array<char>, b: array<char>) returns (res: bool)
+requires a.Length>0 && b.Length>0
+ensures res == true  ==> a.Length >= b.Length && StringContain(a,b)
+ensures res == false  ==> a.Length < b.Length || (a.Length >= b.Length && StringNotContain(a,b))
 {
-    var i, j, cmp: int;
-    b:= new array<int>;
-    i:=0;
-    j:=0;
-    while i<a.Length
-        invariant 0<=i<=a.Length
-        invariant 0<=j<=i
-       // invariant forall k:: 1<=k<j ==> 0<=b[k]<i
-        invariant forall k:: 1<=k<j ==> StringEqual(a[b[k]].event_type,key)
-    {
-        cmp:=strcmp(a[i].event_type,key);
-        if (cmp == 0){      
-            b[j]:= i;  
-            j:=j+1;
-        }
-        i:=i+1;
-    }
-    assert(i == a.Length);
-    return b;
-}   
+   var i :=0;
+   if (a.Length < b.Length){return false;}
+   while(i < a.Length-b.Length)
+   invariant 0<=i<=a.Length-b.Length
+   {
+     if (a[i] == b[0]){
+       var m := matches(a,b,i);
+       if (m == true){
+         return true;
+       }
+     }
+      i:= i+1;
+   }
+   return false;
+}
+
+method SearchByEventName(a: array<RowDataPacket>, key: array<char>) returns(b: array<RowDataPacket>)
+requires a.Length>0 && key.Length>0
+ensures 0<b.Length ==> forall i::0<=i<b.Length ==> StringContain(b[i].event_name,key);
+ensures b.Length == 0 ==> forall k:: 0<=k<a.Length ==> !StringContain(a[k].event_name,key);
+{
+   b :=new array<RowDataPacket>;
+   var i:= 0;
+   var j:= 0;
+   while i<a.Length
+   invariant 0<=i<=a.Length
+   invariant forall k::0<=k<j ==> exists n::0<=n<a.Length && a[n]==b[k] && StringContain(b[k].event_name,key)
+   {
+       if (a[i].event_name.Length >= key.Length){
+         var cmp := includes(a[i].event_name,key);
+         if (cmp == true){
+           b[j] := a[i];
+           j := j+1;
+         }
+       }
+       
+       i := i+1;     
+   }
+   return b;
+}
