@@ -9,7 +9,9 @@ Members:
   Jemma Zhao: z5157678
   
 Instructions for running the website:
+
 First, initialise the database by running "node init_db.js"
+
 Wait for the tables to be created, then Ctrl + C
 
 Run the server with "node model.js"
