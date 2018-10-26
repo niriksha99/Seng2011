@@ -49,9 +49,10 @@ app.get('/', function(req, res){
 	if (req.session.error === undefined) req.session.error = false;
 	if (req.session.username === undefined) req.session.username = null;
 	if (req.session.userid === undefined) req.session.userid = null;
+	if (req.session.business === undefined) req.session.business = null;
 	var err = req.session.error;
 	delete req.session.error;
-	res.render('homepage.html', {error: err, login: req.session.username});
+	res.render('homepage.html', {error: err, login: req.session.username, business: req.session.business});
 });
 
 app.get('/signup', function(req, res)
