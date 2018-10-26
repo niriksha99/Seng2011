@@ -59,7 +59,7 @@
           </li>
         </ul>
         </div>
-        <% } else { %>
+        <% } else if (business === null || business === undefined) { %>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
@@ -79,6 +79,38 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/business">My Businesses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/signout">Sign out</a>
+            </li>
+          </ul>
+        </div>
+        <% } else {%>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/individual_business"><u>Business Dashboard</u></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/my_bids">My Bids</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/catering_requests">Catering requests</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <%= username %>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/user">My Profile</a>
+                <a class="dropdown-item"  href="/make_request">New Request</a>
+                <a class="dropdown-item"  href="/requests">My Requests</a>
+                <a class="dropdown-item"  href="/link_business">Link Business</a>
+                <a class="dropdown-item"  href="/business">My Businesses</a>
+              </div>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/signout">Sign out</a>

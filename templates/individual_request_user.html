@@ -171,7 +171,7 @@
           <div class="row">
             <div class="col-md-6 form-group">
             <% for (var i = 0; i < biddings.length; i++) { %>
-                <form method="post" action="/individual_business">
+                <form method="post" action="/individual_business_everyone">
                   <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings[i].business%>">
                 </form>
                 <p> Bid price: $<%= biddings[i].value %></p>
@@ -192,7 +192,7 @@
           <% } else { %>
             <p> You accepted the bid from:</p>
             <div class="col-md-6 form-group">
-              <form method="post" action="/individual_business">
+              <form method="post" action="/individual_business_everyone">
                 <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=biddings.business%>">
               </form>
             </div>

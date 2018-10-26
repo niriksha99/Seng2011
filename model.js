@@ -424,7 +424,7 @@ app.get('/home', function(req, res)
 {
 	delete req.session.request;
 	if (req.session.username !== null && req.session.username !== undefined) {
-		res.render('homepage.html', {error: req.session.error, login: req.session.username});
+		res.render('homepage.html', {error: req.session.error, login: req.session.username, business: req.session.business, username: req.session.username});
 	} else {
 		res.redirect('/');
 	}
@@ -1043,7 +1043,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 	});
 });
 
-app.post('/individual_business', login_required, function(req, res)
+app.post('/individual_business', login_required, bidder_requried, function(req, res)
 {
 	var user = req.session.username;
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
@@ -1087,6 +1087,56 @@ app.post('/individual_business', login_required, function(req, res)
 app.get('/individual_business_everyone', function(req, res)
 {
 	res.render('business_everyone.html');
+});
+
+app.post('/individual_business_everyone', function(req, res)
+{
+	var user;
+	if (req.session.username === null || req.session.username === undefined) {
+		user = null;
+	} else {
+		user = req.session.username;
+	}
+	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
+		if (err) throw err;
+		var business = {
+			business_name: result[0].title,
+			opening_time: result[0].opening_time.slice(0, -3),
+			closing_time: result[0].closing_time.slice(0, -3),
+			phone: result[0].phone_no,
+			email: result[0].email,
+			address: result[0].address,
+			business_description: result[0].description,
+			events_cater: JSON.parse(result[0].events_cater),
+			delivery_options: JSON.parse(result[0].delivery_options),
+			rate: result[0].fame,
+			owner: (result[0].userID === req.session.userid)
+		};
+		req.session.businessid = result[0].id;
+		con.query('SELECT * FROM RateSum WHERE businessID = ?', [req.session.businessid], function(err, result3, fields) {
+			if (err) throw err;
+			var total = result3[0].sum;
+			var value = result3[0].oneStar + result3[0].twoStar * 2 + result3[0].threeStar * 3 + result3[0].fourStar * 4 + result3[0].fiveStar * 5;
+			value = value / total;
+			business.rate = value.toFixed(2);
+			if (total == 0) {
+				business.rate = 0.0;
+			}
+		});
+		var rated = 0;
+		if (user !== null) {
+			con.query('SELECT * FROM Ratings WHERE userID = ? AND businessID = ?', [req.session.userid, result[0].id], function(err, result2, fields) {
+				if (err) throw err;
+				rated = 0;
+				if (result2.length > 0) {
+					rated = result2[0].rate;
+				}
+				res.render('business_everyone.html', {business: business, login: user, rated: rated});
+			});
+		} else {
+			res.render('business_everyone.html', {business: business, login: user, rated: rated});
+		}
+	});
 });
 
 app.get('/my_bids', login_required, bidder_required, function(req, res)

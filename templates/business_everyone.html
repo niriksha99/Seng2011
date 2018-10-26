@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{{ Business_Name }}</title>
+    <title><%= business.business_name %></title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -26,36 +26,71 @@
   <body>
 
     <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-        <div class="container">
-          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            Menu
-            <i class="fa fa-bars"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="/user">My Profile</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/make_request">Request form</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/requests">My Requests</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/link_business">Link Business</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/business">My Businesses</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/signout">Sign out</a>
-              </li>
-            </ul>
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fa fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+       <% if (login === null) { %>
+       <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/"><u>Home</u></a>
+          </li>
+        </ul>
+        <form action="/login" method="post">
+          <div class="row">
+          <div class="col-md-5">
+            <input type="text" id="username" name="username" placeholder="username" class="form-control ">
           </div>
+          <div class="col-md-5">
+            <input type="password" id="password" name="password" placeholder="password" class="form-control ">
+          </div>
+          </div>
+          <br>
+          <div class="row">
+          <div class="col-md-5">
+            <input type="submit" value="Login" class="btn btn-dark mt-2 mt-sm-0">
+          </div>
+          </div>
+        </form>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a href="/signup" class="nav-link">Sign-up</a>
+          </li>
+        </ul>
         </div>
-      </nav>
+       <% } else { %>
+       <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="/home"><u>Home</u></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user">My Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/make_request">New Request</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/requests">My Requests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/link_business">Link Business</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/business">My Businesses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/signout">Sign out</a>
+            </li>
+          </ul>
+        </div>
+        <% } %>
+      </div>
+    </nav>
 
     <!-- Page Header -->
     <header class="masthead" style="background-image: url('img/champagne.jpg')">
@@ -64,7 +99,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
-              <h1>{{Business_Name}}</h1>
+              <h1><%= business.business_name %></h1>
             </div>
           </div>
         </div>
@@ -74,10 +109,62 @@
     <!-- Main Content -->
     <div class="container">
       <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <h>for the customer to view -- Get business info from database</h>
+        <div class="col-md-4">
+          <h3>Opening hours:</h3>
+          <%= business.opening_time %> - <%= business.closing_time %>
+          <br><br>
+          <h3> Contact detail:</h3>
+          Phone: <%= business.phone %><br>
+          Email: <%= business.email %>
+          <br><br>
+          <h3> Address:</h3>
+          <%= business.address %>
         </div>
-      </div>
+        <div class="col-md-8">
+          <h3>About This Business</h3>
+          <%= business.business_description %>
+          <br><br>
+          <h3>Events Catered For</h3>
+          <%= business.events_cater %>
+          <br><br>
+          <h3>Delivery Options</h3>
+          <%= business.delivery_options %>
+        </div>
+       </div>
+       <br><br><br>
+       <% if (business.rate === 0.0) { %>
+       <h3> Business has not been rated yet! </h3>
+       <% } else { %>
+       <h3> Overall ratings: <%= business.rate %></h3>
+       <% } %>
+       <% if (business.owner !== true) { %>
+         <% if (rated === 0) { %>
+           <div class="col-md-10">
+             <h3>Rate Business</h3>
+             <form method="post" action="/rate">
+               <input type="radio" name="rate_star" id="rate_star" value="1">One Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="2">Two Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="3">Three Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="4">Four Star<br>
+               <input type="radio" name="rate_star" id="rate_star" value="5">Five Star<br>
+               <input type="text" name="comment" id="comment" placeholder="Review">
+               <button type="submit" name="business" id="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Rate</button>
+             </form>
+           </div>
+         <% } else { %>
+           <p> You haved rated this business <%= rated %> star!</p>
+         <% } %>
+       <% } else { %>
+         <br>
+         <br>
+        <div class="row">
+           <div class="col-md-6 form-group">
+              <form method="post" action="/edit_business">
+                <button type="submit" id="business" name="business" value="<%= JSON.stringify(business) %>" class="btn btn-primary">Edit Business Info</button>
+              </form>
+           </div>
+        </div>
+       <% } %>
     </div>
 
     <!-- Footer -->
