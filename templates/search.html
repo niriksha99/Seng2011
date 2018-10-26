@@ -54,13 +54,15 @@
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
               <div class="search-container">
-                
-                <form action="/search" method="post" onsubmit="return checkValid_search()">
-                  <input type="text" id="search" name="search" placeholder="search for event names or business names" class="form-control">
-                  <br>
-                  <div class="alert alert-warning" style="display:none" id="search_check">Please enter the key word</div>
-                  <input type="submit" value="Search" class="btn btn-dark mt-2 mt-sm-0">
-                  
+                <form action="/search_business" method="post" onsubmit = "return checkValid_business()">
+                  <div class="col-md">
+                    <div class="alert alert-warning" style="display:none" id="business_check">Please fill in one or more</div>
+                    <input type="text" id="search_business_name" name="search_business_name" placeholder="Search using business name " class="form-control "> 
+                    <br>
+                    <button type="submit" name="business_button" id="business_button" value="<%= JSON.stringify(business_list) %>" class="btn btn-dark mt-2 mt-sm-0">Search Business
+                    </button>
+                  </div>
+
                 </form>
 
               </div>
@@ -71,11 +73,105 @@
     </div>
     </header>
 
-
-    <div class="modal-body row">
-      <div class = "col-md-6 text-center">
+    <div class = "col-lg-8 col-md-10 mx-auto">
+      <div class="modal-body row">
         <!-- Content goes here -->
-        <form action="/search_requests" method="post" onsubmit="return checkValid_request()">
+        <form action="/filter_business" method="post" onsubmit = "return checkValid_business_filter()" >
+       
+          <div class="form-group">
+
+            <div class="alert alert-warning" style="display:none" id="business_filter_check">Please check at least one! </div>
+
+            <div class="d-flex justify-content-between">
+              <label for="name">Filter by catering services</label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption1" value="Wedding Services Catering">
+                Wedding Services Catering
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption2" value="Corporate Catering">
+                Corporate Catering
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption3" value="Cocktail Reception">
+                Cocktail Reception
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption4" value="Sit-down Catering">
+                Sit-down Catering
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption5" value="Petite Take-Away Buffet Catering">
+                Petite Take-Away Buffet Catering
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption6" value="Bento Catering">
+                Bento Catering
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption7" value="Buffet Catering">
+                Buffet Catering
+              </label>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+
+            <div class="d-flex justify-content-between">
+              <label for="name">Filter by delivery options</label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice1" value="Deliver">
+                Deliver
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice2" value="Pick-up">
+                Pick-up
+              </label>
+            </div>
+
+            <div class="d-flex justify-content-between form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice3" value="Prepare at venue">
+                Prepare at venue
+              </label>
+            </div>
+
+            <button type="submit" name="business_button" id="business_button" value="<%= JSON.stringify(business_list) %>" class="btn btn-dark mt-2 mt-sm-0">Filter Business
+            </button>
+
+          </form> 
+      </div> 
+    </div> 
+        
+         <!--<form action="/search_requests" method="post" onsubmit="return checkValid_request()">
 
           <div class="col-md">
             <div class="alert alert-warning" style="display:none" id="request_check">Please fill in one or more</div>
@@ -175,100 +271,26 @@
 
           </div>
 
-        </form>
+        </form> 
+      </div> -->
+
+     <!--  <div class = "col-md-6 text-center">
+        Content goes here
+        
       </div>
-
-      <div class = "col-md-6 text-center">
-        <!-- Content goes here -->
-        <form action="/search_business" method="post" onsubmit="return checkValid_business()">
-
-          <div class="col-md">
-            <div class="alert alert-warning" style="display:none" id="business_check">Please fill in one or more</div>
-            <input type="text" id="search_business_name" name="search_business_name" placeholder="Search using business name" class="form-control ">
-            <br>
-            
-            <div class="form-group">
-              <div class="d-flex justify-content-between">
-                <label for="name">Filter by catering services</label>
+    </div> -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <% for (var i=0; i < business_list.length; i++) { %>
+              <div class="row">
+              <form method="post" action="/individual_business_everyone">
+                <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=business_list[i]%>">
+              </form>
+              <br><br>
               </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption1" value="Wedding Services Catering">
-                  Wedding Services Catering
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption2" value="Corporate Catering">
-                  Corporate Catering
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption3" value="Cocktail Reception">
-                  Cocktail Reception
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption4" value="Sit-down Catering">
-                  Sit-down Catering
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption5" value="Petite Take-Away Buffet Catering">
-                  Petite Take-Away Buffet Catering
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption6" value="Bento Catering">
-                  Bento Catering
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_events_cater" id="search_caterOption7" value="Buffet Catering">
-                  Buffet Catering
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="d-flex justify-content-between">
-                <label for="name">Filter by delivery options</label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice1" value="Deliver">
-                  Deliver
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice2" value="Pick-up">
-                  Pick-up
-                </label>
-              </div>
-              <div class="d-flex justify-content-between form-check">
-                <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" name="search_delivery" id="search_deliveryChoice3" value="Prepare at venue">
-                  Prepare at venue
-                </label>
-              </div>
-            </div>
-
-            <input type="submit" value=" Advance Search Business" class="btn btn-dark mt-2 mt-sm-0">
-          </div>
-
-        </form>
-      </div>
-    </div>
-
-    <div class="modal-body row">
-      <div class = "d-flex justify-content-between col-md-6 text-center">
-        <label for="name">Place search results here</label>
+            <% } %>
+        </div>
       </div>
     </div>
 
@@ -313,67 +335,83 @@
 
   <!-- Search validation scripts -->
   <script>
-    function checkValid_search() {
-      document.getElementById("business_check").style.display = "none";
-      document.getElementById("request_check").style.display = "none";
-      var key = document.getElementById("search");
-      if (key.value == "") {
-        document.getElementById("search_check").style.display = "block";
+    // function checkValid_search() {
+      // var key = document.getElementById("search_business_name");
+      // if (key.value == "") {
+      //   document.getElementById("business_check").style.display = "block";
         //console.log("search not filled");
-        return false;
-      }else{
-        document.getElementById("search_check").style.display = "none";
+      //   return false;
+      // }else{
+        // document.getElementById("business_check").style.display = "none";
         //console.log("search filled");
-        return true;
-      }
-    }
+    //     return true;
+    //   }
+    // }
 
-    function checkEventType() {
-      var EventTypeList = document.getElementsByName("search_events_type");
-      var i;
-      for (i=0; i<EventTypeList.length; i++) {
-        if (EventTypeList[i].checked) {
-          return true;
-        }
-      }
-      return false;
-    }
+    // function checkEventType() {
+    //   var EventTypeList = document.getElementsByName("search_events_type");
+    //   var i;
+    //   for (i=0; i<EventTypeList.length; i++) {
+    //     if (EventTypeList[i].checked) {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // }
 
-    function checkCateringType() {
-      var CateringTypeList = document.getElementsByName("search_legendRadio");
-      var j;
-      for (j=0; j<CateringTypeList.length; j++) {
-        if (CateringTypeList[j].checked) {
-          return true;
-        }
-      }
-      return false;
-    }
+    // function checkCateringType() {
+    //   var CateringTypeList = document.getElementsByName("search_legendRadio");
+    //   var j;
+    //   for (j=0; j<CateringTypeList.length; j++) {
+    //     if (CateringTypeList[j].checked) {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // }
 
-    function checkValid_request(){
-      document.getElementById("search_check").style.display = "none";
-      document.getElementById("business_check").style.display = "none";
-      var key = document.getElementById("search_event_name");
-      var date = document.getElementById("search_event_date");
-      var deadline = document.getElementById("search_event_deadline");
-      var suburb = document.getElementById("event_suburb");
+    // function checkValid_request(){
+    //   document.getElementById("search_check").style.display = "none";
+    //   document.getElementById("business_check").style.display = "none";
+    //   var key = document.getElementById("search_event_name");
+    //   var date = document.getElementById("search_event_date");
+    //   var deadline = document.getElementById("search_event_deadline");
+    //   var suburb = document.getElementById("event_suburb");
 
-      if (key.value == "" && date.value == "" && deadline.value == "" && suburb.value == "" && !checkEventType() && !checkCateringType() ){
+    //   if (key.value == "" && date.value == "" && deadline.value == "" && suburb.value == "" && !checkEventType() && !checkCateringType() ){
         
-        document.getElementById("request_check").style.display = "block";
+    //     document.getElementById("request_check").style.display = "block";
 
-        console.log("request not filled");
-        return false;
+    //     console.log("request not filled");
+    //     return false;
+    //   }else{
+    //     document.getElementById("request_check").style.display = "none";
+    //     console.log("request filled");
+    //     return true;
+
+    //   }
+
+    // }
+
+    
+
+    function checkValid_business(){
+      document.getElementById("business_filter_check").style.display = "none";
+      var key = document.getElementById("search_business_name");
+
+      if (key.value == ""){
+          document.getElementById("business_check").style.display = "block";
+          console.log("business not filled");
+          return false;
       }else{
-        document.getElementById("request_check").style.display = "none";
-        console.log("request filled");
-        return true;
-
+          document.getElementById("business_check").style.display = "none";
+          console.log("business filled");
+          return true;
       }
-
     }
 
-    function checkBusinessCater() {
+      function checkBusinessCater() {
+        console.log("aaa");
       var businesscaterlist = document.getElementsByName("search_events_cater");
       var m;
       for (m=0; m<businesscaterlist.length; m++) {
@@ -385,6 +423,7 @@
     }
 
     function checkDelivery() {
+
       var deliveryList = document.getElementsByName("search_delivery");
       var n;
       for (n=0; n<deliveryList.length; n++) {
@@ -395,25 +434,21 @@
       return false;
     }
 
-    function checkValid_business(){
-      document.getElementById("search_check").style.display = "none";
-      document.getElementById("request_check").style.display = "none";
-      var key = document.getElementById("search_business_name");
+      function checkValid_business_filter(){
+        document.getElementById("business_check").style.display = "none";
+        if (!checkBusinessCater() && !checkDelivery()){
+            document.getElementById("business_filter_check").style.display = "block";
+            console.log("business not filled");
+            return false;
+        }else{
+            document.getElementById("business_filter_check").style.display = "none";
+            console.log("business filled");
+            return true;
+            
+        }
 
-      if (key.value == "" && !checkBusinessCater() && !checkDelivery()){
-          document.getElementById("business_check").style.display = "block";
-          console.log("business not filled");
-          return false;
-      }else{
-          document.getElementById("business_check").style.display = "none";
-          console.log("business filled");
-          return true;
       }
 
-    
-
-
-    }
     
   </script>
 
