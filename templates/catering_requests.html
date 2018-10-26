@@ -21,6 +21,10 @@
     <!-- Custom styles for this template -->
     <link href="css/clean-blog.min.css" rel="stylesheet">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+
   </head>
 
   <body>
@@ -48,7 +52,7 @@
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Username
+                  <%= username %>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="/user">My Profile</a>
@@ -66,40 +70,137 @@
         </div>
       </nav>
 
-    <!-- Page Header -->
-    <header class="masthead" style="background-image: url('img/champagne.jpg')">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-md-10 mx-auto">
-            <div class="site-heading">
-              <h1>Catering Requests</h1>
+      <!-- Page Header -->
+      <header class="masthead" style="background-image: url('img/champagne.jpg')">
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+              <div class="site-heading">
+                <h1>Catering Requests</h1>
+                <br>
+              </div>
             </div>
           </div>
         </div>
+      </header>
+
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="modal-body row">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="aboutus" name ="aboutus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+              Sort
+              </button>
+              <div class="dropdown-menu" aria-labelledby="aboutus">
+                <a class="dropdown-item" href="#">Earliest Deadline</a>
+                <a class="dropdown-item" href="#">Latest Deadline</a>
+
+                <form action="/sort_by_price_low" method="post">
+                  <button type="submit" name="sortlow" id="sortlow" value="<%= JSON.stringify(request_list) %>" class="dropdown-item">Lowest Budget Price
+                  </button>
+                </form>
+
+                <form action="/sort_by_price_high" method="post">
+                  <button type="submit" name="sorthigh" id="sorthigh" value="<%= JSON.stringify(request_list) %>" class="dropdown-item">Highest Budget Price
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+      <div class = "col-lg-8 col-md-10 mx-auto">
+        <div class="modal-body row">
+          <!-- Content goes here -->
+          <form action="/filter_requests" method="post" onsubmit="return checkValid_request_filter()">
+              <div class="alert alert-warning" style="display:none" id="request_filter_check">Please fill in one or more!</div>
+              <br>
+              <input type="text" id="search_event_name" name="search_event_name" class="form-control " data-pattern="^.{1,255}$" placeholder="Search event name">
+              <br>
+              <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$" placeholder="Suburb the event will be held in">
+              <br>
+
+              <div class="form-group">
+                <div class="d-flex justify-content-between">
+                  <label for="name">Filter by type of event</label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_caterOption1" value="Wedding Services Catering">
+                    Wedding Services Catering
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption2" value="Corporate Catering">
+                    Corporate Catering
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption3" value="Cocktail Reception">
+                    Cocktail Reception
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption4" value="Sit-down Catering">
+                    Sit-down Catering
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption5" value="Petite Take-Away Buffet Catering">
+                    Petite Take-Away Buffet Catering
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption6" value="Bento Catering">
+                    Bento Catering
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption7" value="Buffet Catering">
+                    Buffet Catering
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="d-flex justify-content-between">
+                  <label for="name">Filter by..</label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio1" value="Cook on province">
+                    Cook on province
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio2" value="Bring prepared food">
+                    Bring prepared food
+                  </label>
+                </div>
+                <div class="d-flex justify-content-between form-check">
+                  <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio3" value="Cook on province & Bring prepared food">
+                    Both
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" name="request_button" id="request_button" value="<%= JSON.stringify(request_list) %>" class="btn btn-dark mt-2 mt-sm-0">Filter Requests
+              </button>
+
+            </div>
+
+          </form>
+        </div>
       </div>
-    </header>
 
     <!-- Main Content -->
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
 
-          <div class="row">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="about-us" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Sort
-            </button>
-            <div class="dropdown-menu" aria-labelledby="about-us">
-              <a class="dropdown-item" href="#">Earliest Deadline</a>
-              <a class="dropdown-item" href="#">Latest Deadline</a>
-              <a class="dropdown-item" href="/sort_by_price_low">Lowest Budget Price</a>
-              <a class="dropdown-item" href="/sort_by_price_high">Highest Budget Price</a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
           <br><br>
 
@@ -108,9 +209,9 @@
 
               <thead>
                 <tr>
-                  <th scope="col-md" style="width: 33.33%">Event Name</th>
-                  <th scope="col-md" style="width: 33.33%">Event Type</th>
-                  <th scope="col-md" style="width: 33.33%">Approximate Budget</th>
+                  <th scope="col-md" style="width: 25%">Event Name</th>
+                  <th scope="col-md" style="width: 50%">Event Type</th>
+                  <th scope="col-md" style="width: 25%">Event Budget</th>
                 </tr>
               </thead>
 
@@ -135,6 +236,45 @@
           </table>
         </div>
 
+        <!-- Search validation scripts -->
+      <script>
+         function checkEventType() {
+          var EventTypeList = document.getElementsByName("search_events_type");
+          var i;
+          for (i=0; i<EventTypeList.length; i++) {
+            if (EventTypeList[i].checked) {
+              return true;
+            }
+          }
+          return false;
+        }
+        function checkCateringType() {
+          var CateringTypeList = document.getElementsByName("search_legendRadio");
+          var j;
+          for (j=0; j<CateringTypeList.length; j++) {
+            if (CateringTypeList[j].checked) {
+              return true;
+            }
+          }
+          return false;
+        }
+        function checkValid_request_filter(){
+          // var date = document.getElementById("search_event_date");
+          // var deadline = document.getElementById("search_event_deadline");
+          var suburb = document.getElementById("event_suburb");
+          var key = document.getElementById("search_event_name");
+          if (key.value == "" && suburb.value == "" && !checkEventType() && !checkCateringType() ){
+
+            document.getElementById("request_filter_check").style.display = "block";
+            console.log("request not filled");
+            return false;
+          }else{
+            document.getElementById("request_filter_check").style.display = "none";
+            console.log("request filled");
+            return true;
+          }
+        }
+      </script>
 
     <!-- Footer -->
     <footer>
