@@ -1043,7 +1043,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 	});
 });
 
-app.post('/individual_business', login_required, bidder_requried, function(req, res)
+app.post('/individual_business', login_required, bidder_required, function(req, res)
 {
 	var user = req.session.username;
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
