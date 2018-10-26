@@ -280,7 +280,7 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 				bid_request.push(result[i].requestID);
 			}
 		}
-		con.query('SELECT * FROM Requests', function(err, result, fields){
+		con.query('SELECT * FROM Requests WHERE completed = 0', function(err, result, fields){
 			if (err) throw err;
 			var requests = [];
 			var requests2 = [];
