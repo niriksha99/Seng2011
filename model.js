@@ -19,8 +19,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "password",
-	database: "PartyWhip"
+	password: "niriksha",
+	database: "abc"
 });
 
 function login_required(req, res, next) {
@@ -275,12 +275,16 @@ app.get('/catering_requests', login_required, bidder_required, function(req, res
 		con.query('SELECT * FROM Requests', function(err, result, fields){
 			if (err) throw err;
 			var requests = [];
+			var requests2 = [];
+			var requests3 = [];
 			for (var i = 0; i < result.length; i++) {
 				if (!bid_request.includes(result[i].id) && result[i].userID !== req.session.userid) {
 					requests.push(result[i].event_name);
+					requests2.push(result[i].event_type);
+					requests3.push(result[i].budget);
 				}
 			}
-			res.render('catering_requests.html', {request_list: requests});
+			res.render('catering_requests.html', {request_list: requests, request_list2: requests2, request_list3: requests3 });
 		});
 	});
 });
@@ -932,10 +936,14 @@ app.get('/business', login_required, function(req, res)
 	con.query('SELECT * FROM Businesses WHERE userID = (SELECT id FROM Users WHERE username = ?)', [req.session.username], function(err, result, fields) {
 		if (err) throw err;
 		var businesses = [];
+		var businesses2 = [];
+		var businesses3 = [];
 		for (var i = 0; i < result.length; i++) {
 			businesses.push(result[i].title);
+			businesses2.push(result[i].phone_no);
+			businesses3.push(result[i].fame);
 		}
-		res.render('my_businesses.html', {business_list: businesses});
+		res.render('my_businesses.html', {business_list: businesses, business_list2: businesses2, business_list3: businesses3});
 	});
 });
 
@@ -994,7 +1002,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 	});
 });
 
-app.post('/individual_business', login_required, function(req, res)
+app.post('/individual_business', login_required, bidder_required, function(req, res)
 {
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
 		if (err) throw err;
@@ -1046,85 +1054,122 @@ app.get('/my_bids', login_required, bidder_required, function(req, res)
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
 			requests_bidded.push(result[i].requestID);
+			requests_bidded.push(result[i].price);
+			requests_bidded.push(result[i].status);
 		}
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
 			var bid_names = [];
+			var bid_amount = [];
+			var bid_status = [];
 			for (var i = 0; i < result.length; i++) {
-				if (requests_bidded.includes(result[i].id))
-					bid_names.push(result[i].event_name);
+				for (var j = 0; j < requests_bidded.length; j = j+3) {
+					if (requests_bidded[j] == result[i].id) {
+						bid_names.push(result[i].event_name);
+						bid_amount.push(requests_bidded[j+1]);
+						bid_status.push(requests_bidded[j+2]);
+					}
+				}
 			}
-			res.render('my_bids.html', {bids: bid_names});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
 		})
 	});
 });
 
 app.get('/active_bids', login_required, bidder_required, function(req, res)
 {
-	var accepted = [];
+	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].status === 1) {
-				accepted.push(result[i].requestID);
+				requests_bidded.push(result[i].requestID);
+				requests_bidded.push(result[i].price);
+				requests_bidded.push(result[i].status);
 			}
 		}
 
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
-			var acc_bids = [];
+			var bid_names = [];
+			var bid_amount = [];
+			var bid_status = [];
 			for (var i = 0; i < result.length; i++) {
-				if (accepted.includes(result[i].id))
-					acc_bids.push(result[i].event_name);
+				for (var j = 0; j < requests_bidded.length; j = j+3) {
+					if (requests_bidded[j] == result[i].id) {
+						bid_names.push(result[i].event_name);
+						bid_amount.push(requests_bidded[j+1]);
+						bid_status.push(requests_bidded[j+2]);
+					}
+				}
 			}
-			res.render('my_bids.html', {bids: acc_bids});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
 		})
-	})
+	});
 });
 
 app.get('/inactive_bids', login_required, bidder_required, function(req, res)
 {
-	var accepted = [];
+	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].status === 0) {
-				accepted.push(result[i].requestID);
+				requests_bidded.push(result[i].requestID);
+				requests_bidded.push(result[i].price);
+				requests_bidded.push(result[i].status);
 			}
 		}
 
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
-			var acc_bids = [];
+			var bid_names = [];
+			var bid_amount = [];
+			var bid_status = [];
 			for (var i = 0; i < result.length; i++) {
-				if (accepted.includes(result[i].id))
-					acc_bids.push(result[i].event_name);
+				for (var j = 0; j < requests_bidded.length; j = j+3) {
+					if (requests_bidded[j] == result[i].id) {
+						bid_names.push(result[i].event_name);
+						bid_amount.push(requests_bidded[j+1]);
+						bid_status.push(requests_bidded[j+2]);
+					}
+				}
 			}
-			res.render('my_bids.html', {bids: acc_bids});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
 		})
-	})
+	});
 });
 
 app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 {
-	var accepted = [];
+	var requests_bidded = [];
 	con.query('SELECT * FROM Bids WHERE businessID = ?', [req.session.businessid], function(err, result, fields) {
 		if (err) throw err;
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].status === 2) {
-				accepted.push(result[i].requestID);
+				requests_bidded.push(result[i].requestID);
+				requests_bidded.push(result[i].price);
+				requests_bidded.push(result[i].status);
 			}
 		}
+
 		con.query('SELECT * FROM Requests', function(err, result, fields) {
 			if (err) throw err;
-			var acc_bids = [];
+			var bid_names = [];
+			var bid_amount = [];
+			var bid_status = [];
 			for (var i = 0; i < result.length; i++) {
-				if (accepted.includes(result[i].id))
-					acc_bids.push(result[i].event_name);
+				for (var j = 0; j < requests_bidded.length; j = j+3) {
+					if (requests_bidded[j] == result[i].id) {
+						bid_names.push(result[i].event_name);
+						bid_amount.push(requests_bidded[j+1]);
+						bid_status.push(requests_bidded[j+2]);
+					}
+				}
 			}
-			res.render('my_bids.html', {bids: acc_bids});
+			res.render('my_bids.html', {bids: bid_names, bids2: bid_amount, bids3: bid_status});
 		})
-	})
+	});
 });
 
 
@@ -1138,26 +1183,39 @@ app.get('/sort_by_price_low', function(req, res)
 			if (result[i].completed != 1) {
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);
+				sort_by_price.push(result[i].event_type);
 			}
 		}
 		// use bubblesort
-		for (var i = 0; i < sort_by_price.length; i=i+2) {
-			for (var j = sort_by_price.length-2; j > i; j=j-2) {
-				if (sort_by_price[j] <= sort_by_price[j-2]) {
+		for (var i = 0; i < sort_by_price.length; i=i+3) {
+			for (var j = sort_by_price.length-3; j > i; j=j-3) {
+				if (sort_by_price[j] <= sort_by_price[j-3]) {
 					var temp1 = sort_by_price[j];
-					sort_by_price[j] = sort_by_price[j-2];
-					sort_by_price[j-2] = temp1;
+					sort_by_price[j] = sort_by_price[j-3];
+					sort_by_price[j-3] = temp1;
 					var temp2 = sort_by_price[j+1];
 					sort_by_price[j+1] = sort_by_price[j-1];
 					sort_by_price[j-1] = temp2;
+					var temp3 = sort_by_price[j+2];
+					sort_by_price[j+2] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp3;
 				}
 			}
 		}
 
-		for (var i = 0; i < result.length; i=i+1) {
-			sort_by_price.splice(i, 1);
+		var name = [];
+		var type = [];
+		var budget = [];
+		for (var i = 0; i < sort_by_price.length; i=i+3) {
+			budget.push(sort_by_price[i]);
 		}
-		res.render('catering_requests.html', {request_list: sort_by_price});
+		for (var i = 1; i < sort_by_price.length; i=i+3) {
+			type.push(sort_by_price[i]);
+		}
+		for (var i = 2; i < sort_by_price.length; i=i+3) {
+			name.push(sort_by_price[i]);
+		}
+		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget});
 
 	});
 });
@@ -1172,27 +1230,40 @@ app.get('/sort_by_price_high', function(req, res)
 			if (result[i].completed != 1) {
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);
+				sort_by_price.push(result[i].event_type);
 			}
 		}
 		// use bubblesort
-		for (var i = 0; i < sort_by_price.length; i=i+2) {
-			for (var j = sort_by_price.length-2; j > i; j=j-2) {
-				if (sort_by_price[j] >= sort_by_price[j-2]) {
+		for (var i = 0; i < sort_by_price.length; i=i+3) {
+			for (var j = sort_by_price.length-3; j > i; j=j-3) {
+				if (sort_by_price[j] >= sort_by_price[j-3]) {
 					var temp1 = sort_by_price[j];
-					sort_by_price[j] = sort_by_price[j-2];
-					sort_by_price[j-2] = temp1;
+					sort_by_price[j] = sort_by_price[j-3];
+					sort_by_price[j-3] = temp1;
 					var temp2 = sort_by_price[j+1];
 					sort_by_price[j+1] = sort_by_price[j-1];
 					sort_by_price[j-1] = temp2;
+					var temp3 = sort_by_price[j+2];
+					sort_by_price[j+2] = sort_by_price[j-2];
+					sort_by_price[j-2] = temp3;
 				}
 			}
 		}
 
-		for (var i = 0; i < result.length; i=i+1) {
-			sort_by_price.splice(i, 1);
+		var name = [];
+		var type = [];
+		var budget = [];
+		for (var i = 0; i < sort_by_price.length; i=i+3) {
+			budget.push(sort_by_price[i]);
 		}
+		for (var i = 1; i < sort_by_price.length; i=i+3) {
+			name.push(sort_by_price[i]);
+		}
+		for (var i = 2; i < sort_by_price.length; i=i+3) {
+			type.push(sort_by_price[i]);
+		}
+		res.render('catering_requests.html', {request_list: name, request_list2: type, request_list3: budget});
 
-		res.render('catering_requests.html', {request_list: sort_by_price});
 	});
 });
 
@@ -1202,10 +1273,14 @@ app.get('/sort_by_earliest_deadline', function(req, res)
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_deadline = [];
+		var sort_by_deadline2 = [];
+		var sort_by_deadline3 = [];
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].completed != 1) {
 				sort_by_deadline.push(result[i].budget);
 				sort_by_deadline.push(dateFormat(result[i].event_deadline, yyyymmdd));
+				sort_by_deadline2.push(result[i].event_type);
+				sort_by_deadline3.push(result[i].budget);
 				console.log(sort_by_deadline[i]);
 			}
 		}
@@ -1227,7 +1302,7 @@ app.get('/sort_by_earliest_deadline', function(req, res)
 			sort_by_deadline.splice(i, 1);
 		}
 
-		res.render('catering_requests.html', {request_list: sort_by_deadline});
+		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3});
 	});
 
 });
@@ -1238,10 +1313,14 @@ app.get('/sort_by_latest_deadline', function(req, res)
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_deadline = [];
+		var sort_by_deadline2 = [];
+		var sort_by_deadline3 = [];
 		for (var i = 0; i < result.length; i++) {
 			if (result[i].completed != 1) {
 				sort_by_deadline.push(result[i].budget);
 				sort_by_deadline.push((result[i].event_deadline).toISOString);
+				sort_by_deadline2.push(result[i].event_type);
+				sort_by_deadline3.push(result[i].budget);
 			}
 		}
 		// use bubblesort
@@ -1261,7 +1340,7 @@ app.get('/sort_by_latest_deadline', function(req, res)
 		for (var i = 0; i < result.length; i=i+1) {
 			sort_by_deadline.splice(i, 1);
 		}
-		res.render('catering_requests.html', {request_list: sort_by_deadline});
+		res.render('catering_requests.html', {request_list: sort_by_deadline, request_list2: sort_by_deadline2, request_list3: sort_by_deadline3});
 	});
 });
 
