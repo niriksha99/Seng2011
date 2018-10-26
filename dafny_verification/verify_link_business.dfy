@@ -101,14 +101,11 @@ class {:autocontracts} Session
         var i := 0;
         while (i < BusinessDB.Length && err)
         invariant 0 <= i <= BusinessDB.Length;
-        invariant this.userID == old(this.userID) && this.username == old(this.username) && this.bidder == old(this.bidder);
-        invariant BusinessDB[..] == old(BusinessDB[..]);
         invariant err ==> this.businessID == -1 && forall j:: 0 <= j < i ==> (BusinessDB[j].userID != this.userID || BusinessDB[j].title != business_name);
         invariant !err ==> 0 <= this.businessID < BusinessDB.Length && BusinessDB[this.businessID].userID == this.userID && BusinessDB[this.businessID].title == business_name;
         {
             if (BusinessDB[i].userID == this.userID && BusinessDB[i].title == business_name)
             {
-                //this.businessID := BusinessDB[i].id;
                 this.businessID := i;
                 return false;
             }
@@ -125,28 +122,6 @@ class {:autocontracts} Session
         this.username := "";
         this.businessID := -1;
         this.bidder := false;
-    }
-}
-
-method Login(UserDB: array<UserTable>, username: string, password: string) returns (userID: int)
-//requires |username| > 0 && |password| > 0;
-ensures UserDB[..] == old(UserDB[..]);
-ensures -1 <= userID < UserDB.Length;
-ensures userID == -1 ==> forall i:: 0 <= i < UserDB.Length ==> (UserDB[i].username != username || UserDB[i].password != password);
-ensures userID > -1 ==> UserDB[userID].username == username && UserDB[userID].password == password;
-{
-    var i := 0;
-    userID := -1;
-    while (i < UserDB.Length)
-    invariant 0 <= i <= UserDB.Length;
-    invariant userID == -1 ==> forall j:: 0 <= j < i ==> (UserDB[j].username != username || UserDB[j].password != password);
-    invariant userID > -1 ==> UserDB[userID].username == username && UserDB[userID].password == password;
-    {
-        if (UserDB[i].username == username && UserDB[i].password == password)
-        {
-            return i;
-        }
-        i := i + 1;
     }
 }
 
@@ -194,18 +169,6 @@ ensures !err ==> forall i:: 0 <= i < BusinessDB.Length ==> BusinessDB[i].title !
     }
 }
 
-method InsertUser(UserDB: array<UserTable>, newUser: UserTable, tempUsers: array<UserTable>) returns (newUserDB: array<UserTable>)
-modifies tempUsers;
-requires tempUsers.Length == UserDB.Length + 1;
-ensures newUserDB.Length == UserDB.Length + 1;
-ensures forall i:: 0 <= i < old(UserDB.Length) ==> newUserDB[i] == old(UserDB[i]);
-ensures newUserDB[old(UserDB.Length)] == newUser;
-{
-    forall i | 0 <= i < UserDB.Length { tempUsers[i] := UserDB[i]; }
-    tempUsers[UserDB.Length] := newUser;
-    return tempUsers;
-}
-
 method InsertBusiness(BusinessDB: array<BusinessTable>, newBusiness: BusinessTable, tempBusinesses: array<BusinessTable>) returns (newBusinessDB: array<BusinessTable>)
 modifies tempBusinesses;
 requires tempBusinesses.Length == BusinessDB.Length + 1;
@@ -225,38 +188,50 @@ method TestBusiness()
     
     var tempBusiness := new BusinessTable(0, "tmp", "tmp");
     
+    /*
+      Create a user
+    */
     var admin := new UserTable("admin", "pass", "admin@admin.com");
     assert admin.username == "admin" && admin.password == "pass" && admin.email == "admin@admin.com";
     admin.SetID(0);
     assert admin.username == "admin" && admin.password == "pass" && admin.email == "admin@admin.com" && admin.id == 0;
     var Users: array<UserTable> := new UserTable[1][admin];
     
-//    assert Users.Length == 1 && Users[0] == admin && Users[0].username == admin.username && Users[0].password == admin.password;
-//    var err_login := Login(Users, "admin", "pass");
-//    assert err_login == admin.id;
+    /*
+      Log into session
+    */
     session.Login(admin.id, admin.username, Businesses);
     assert session.username == admin.username && session.userID == admin.id && !session.bidder;
     
-    var b1 := new BusinessTable(session.userID, "Flourist", "flou@rist.com");
+    /*
+      Link a new business
+    */
+    var b1 := new BusinessTable(admin.id, "Flourist", "flou@rist.com");
     var err_linkb := LinkBusiness(Businesses, b1);
     assert !err_linkb;
+    
+    /*
+      Add new business to "database"
+    */
     var tempBusinessDB: array<BusinessTable> := new BusinessTable[Businesses.Length + 1][tempBusiness];
     b1.SetID(Businesses.Length);
     Businesses := InsertBusiness(Businesses, b1, tempBusinessDB);
     assert Businesses.Length == 1 && Businesses[0] == b1;
     
+    /*
+      Check if new business is added, then log out and log in
+    */
     assert BidderRequired(session.userID, Businesses);
     session.Logout();
     assert session.userID == -1 && session.username == "" && session.businessID == -1 && !session.bidder;
     
-//    err_login := Login(Users, "admin", "pass");
-//    assert err_login == admin.id;
     session.Login(admin.id, admin.username, Businesses);
     assert session.username == admin.username && session.userID == admin.id && session.bidder;
     
-    var err_session_business := session.AccessBusiness(Businesses, "Doofenshmirtz");
-    assert err_session_business;
-    
-    err_session_business := session.AccessBusiness(Businesses, "Flourist");
+    /*
+      Access the business
+    */
+    assert Businesses.Length == 1 && Businesses[0] == b1 && Businesses[0].title == "Flourist" && Businesses[0].userID == admin.id;
+    var err_session_business := session.AccessBusiness(Businesses, "Flourist");
     assert !err_session_business && session.businessID == b1.id;
 }
