@@ -75,19 +75,37 @@
     </header>
 
     <!-- Main Content -->
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th scope="col-md" style="width: 33.33%">Business Name</th>
+            <th scope="col-md" style="width: 33.33%">Phone Number</th>
+            <th scope="col-md" style="width: 33.33%">Rating</th>
+          </tr>
+        </thead>
+
+
             <% for (var i=0; i < business_list.length; i++) { %>
-              <div class="row">
-              <form method="post" action="/individual_business">
-                <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=business_list[i]%>">
-              </form>
-              </div>
+              <tbody>
+              <td class="align-middle ">
+                <form method="post" action="/individual_business">
+                  <input type="submit" name="business_name" id="business_name" class="list-group-item list-group-item-action" value="<%=business_list[i]%>">
+                </form>
+              </td>
+              <td class="align-middle ">
+                <%=business_list2[i]%>
+              </td>
+              <td class="align-middle ">
+                <%=business_list3[i]%>
+              </td>
+              </tbody>
             <% } %>
-        </div>
-      </div>
-    </div>
+
+
+    </table>
+  </div>
 
     <!-- Footer -->
     <footer>

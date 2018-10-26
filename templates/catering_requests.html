@@ -97,20 +97,44 @@
             </div>
           </div>
 
-          <br><br>
-
-          <% for (var i=0; i < request_list.length; i++) { %>
-            <div class="row">
-              <form method="post" action="/individual_request">
-                <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
-              </form>
-            </div>
-            <br>
-          <% } %>
-
         </div>
       </div>
     </div>
+
+          <br><br>
+
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <table class="table">
+
+              <thead>
+                <tr>
+                  <th scope="col-md" style="width: 33.33%">Event Name</th>
+                  <th scope="col-md" style="width: 33.33%">Event Type</th>
+                  <th scope="col-md" style="width: 33.33%">Approximate Budget</th>
+                </tr>
+              </thead>
+
+
+                  <% for (var i=0; i < request_list.length; i++) { %>
+                    <tbody>
+                    <td class="align-middle ">
+                      <form method="post" action="/individual_request">
+                        <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
+                      </form>
+                    </td>
+                    <td class="align-middle ">
+                      <%=request_list2[i]%>
+                    </td>
+                    <td class="align-middle ">
+                      $<%=request_list3[i]%>
+                    </td>
+                    </tbody>
+                  <% } %>
+
+
+          </table>
+        </div>
+
 
     <!-- Footer -->
     <footer>

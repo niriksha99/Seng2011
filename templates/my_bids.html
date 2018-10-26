@@ -90,7 +90,7 @@
         <input type="submit" class="btn" style="background-color:transparent" value="Active" />
       </form>
       <form action="/inactive_bids">
-        <input type="submit" class="btn" style="background-color:transparent" value="Inactive" />
+        <input type="submit" class="btn" style="background-color:transparent" value="Rejected" />
       </form>
       <form action="/accepted_bids">
         <input type="submit" class="btn" style="background-color:transparent" value="Accepted" />
@@ -99,7 +99,41 @@
     <br>
     <br>
 
-        <div class="col-lg-8 col-md-10 mx-auto">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th scope="col-md" style="width: 33.33%">Event Name</th>
+            <th scope="col-md" style="width: 33.33%">Bid Amount</th>
+            <th scope="col-md" style="width: 33.33%">Status of the Bid</th>
+          </tr>
+        </thead>
+            <% for (var i=0; i < bids.length; i++) { %>
+              <tbody>
+              <td class="align-middle ">
+                <form method="post" action="/individual_bid" scope="row">
+                  <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=bids[i]%>">
+                </form>
+              </td>
+              <td class="align-middle ">
+                $<%=bids2[i]%>
+              </td>
+              <td class="align-middle ">
+                <% if (bids3[i] == 1) { %>
+                  <p> Active </p>
+                <% } else if (bids3[i] == 0) { %>
+                  <p> Rejected </p>
+                <% } else { %>
+                  <p> Completed </p>
+                <% } %>
+              </td>
+              </tbody>
+            <% } %>
+    </table>
+  </div>
+
+        <!--<div class="col-lg-8 col-md-10 mx-auto">
           <table class="table">
 
             <thead>
@@ -121,7 +155,7 @@
             </tbody>
 
         </table>
-      </div>
+      </div>-->
 
     <!-- Footer -->
     <footer>

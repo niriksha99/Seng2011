@@ -238,7 +238,7 @@
 			document.getElementById(element.id).focus();
 			return false;
 		}
-	}		
+	}
 
 	function checkValid() {
 		if (checkTimes() && checkCatering() && checkDelivery()) {
@@ -273,7 +273,7 @@
 		}
 		return false;
 	}
-		
+
 	function checkCatering() {
 		var cateringList = document.getElementsByName("events_cater");
 		var noCatering = 0;
@@ -313,7 +313,7 @@
 		}
 	}
 
-	$(document).ready(() => {		
+	$(document).ready(() => {
 		$("#open_time").keyup(checkTimes);
 		$("#close_time").keyup(checkTimes);
 		const elems = ["#phone_number", "#email", "#address", "#business_description"];
