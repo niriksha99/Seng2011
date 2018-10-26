@@ -1181,15 +1181,17 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 });
 
 
-app.get('/sort_by_price_low', function(req, res)
+app.post('/sort_by_price_low', function(req, res)
 {
-	var list = JSON.parse(req.body.aboutus);
+	console.log("sortinglow!!!");
+	var list = JSON.parse(req.body.sortlow);
+	//console.log(list);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			if (list.inclues(result[i].event_name)){
+			if (list.includes(result[i].event_name)){
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);	
 			}
@@ -1217,15 +1219,16 @@ app.get('/sort_by_price_low', function(req, res)
 	});
 });
 
-app.get('/sort_by_price_high', function(req, res)
+app.post('/sort_by_price_high', function(req, res)
 {
-	var list = JSON.parse(req.body.aboutus);
+	console.log("sortinghigh!!!");
+	var list = JSON.parse(req.body.sorthigh);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			if (list.inclues(result[i].event_name)){
+			if (list.includes(result[i].event_name)){
 				sort_by_price.push(result[i].budget);
 				sort_by_price.push(result[i].event_name);
 		

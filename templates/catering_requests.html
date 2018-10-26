@@ -89,14 +89,23 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="row">
-            <button class="btn btn-primary dropdown-toggle" type="submit" id="aboutus" name ="aboutus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="<%= JSON.stringify(request_list) %>">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="aboutus" name ="aboutus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
             Sort
             </button>
             <div class="dropdown-menu" aria-labelledby="aboutus">
               <a class="dropdown-item" href="#">Earliest Deadline</a>
               <a class="dropdown-item" href="#">Latest Deadline</a>
-              <a class="dropdown-item" href="/sort_by_price_low">Lowest Budget Price</a>
-              <a class="dropdown-item" href="/sort_by_price_high">Highest Budget Price</a>
+
+              <form action="/sort_by_price_low" method="post">
+                <button type="submit" name="sortlow" id="sortlow" value="<%= JSON.stringify(request_list) %>" class="dropdown-item">Lowest Budget Price
+                </button>
+              </form>
+
+              <form action="/sort_by_price_high" method="post">
+                <button type="submit" name="sorthigh" id="sorthigh" value="<%= JSON.stringify(request_list) %>" class="dropdown-item">Highest Budget Price
+                </button>
+              </form>
+
               <a class="dropdown-item" href="#">Location?</a>
             </div>
           </div>
