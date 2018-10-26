@@ -1527,6 +1527,7 @@ app.get('/top_5_business', function(req, res)
 
 app.post('/rate', login_required, function(req, res)
 {
+	var user = req.session.username;
 	var val = parseInt(req.body.rate_star, 10);
 	// get business info
 	var business = JSON.parse(req.body.business);
@@ -1600,7 +1601,7 @@ app.post('/rate', login_required, function(req, res)
 		var value = result[0].oneStar + result[0].twoStar * 2 + result[0].threeStar * 3 + result[0].fourStar * 4 + result[0].fiveStar * 5;
 		value = value / total;
 		business.rate = value.toFixed(2);
-		res.render('business.html', {business: business, rated: val});
+		res.render('business.html', {business: business, rated: val, username: user});
 	});
 });
 
