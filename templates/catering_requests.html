@@ -21,6 +21,10 @@
     <!-- Custom styles for this template -->
     <link href="css/clean-blog.min.css" rel="stylesheet">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+
   </head>
 
   <body>
@@ -74,22 +78,21 @@
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
               <h1>Catering Requests</h1>
+              <br>
             </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Main Content -->
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-
           <div class="row">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="about-us" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-primary dropdown-toggle" type="submit" id="aboutus" name ="aboutus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="<%= JSON.stringify(request_list) %>">
             Sort
             </button>
-            <div class="dropdown-menu" aria-labelledby="about-us">
+            <div class="dropdown-menu" aria-labelledby="aboutus">
               <a class="dropdown-item" href="#">Earliest Deadline</a>
               <a class="dropdown-item" href="#">Latest Deadline</a>
               <a class="dropdown-item" href="/sort_by_price_low">Lowest Budget Price</a>
@@ -97,20 +100,174 @@
               <a class="dropdown-item" href="#">Location?</a>
             </div>
           </div>
-
-          <br><br>
-
-          <% for (var i=0; i < request_list.length; i++) { %>
-            <div class="row">
-            <form method="post" action="/individual_request">
-              <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
-            </form>
-        </div>
-          <% } %>
-
         </div>
       </div>
     </div>
+
+    <div class = "col-lg-8 col-md-10 mx-auto">
+      <div class="modal-body row">
+        <!-- Content goes here -->
+        <form action="/filter_requests" method="post" onsubmit="return checkValid_request_filter()">
+            <div class="alert alert-warning" style="display:none" id="request_filter_check">Please fill in one or more!</div> 
+            <br>
+            <input type="text" id="search_event_name" name="search_event_name" class="form-control " data-pattern="^.{1,255}$" placeholder="Search event name">
+            <!--  <br>
+           <div class="input-group date">
+              <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="search_event_date" name="search_event_date" class="form-control" placeholder="Date of event">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div>
+            <br>
+            <div class="input-group date">
+              <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="search_event_deadline" name="search_event_deadline" class="form-control" placeholder="Bidding deadline">
+              <div class="input-group-addon">
+                <span class="glyphicon glyphicon-th"></span>
+              </div>
+            </div> -->
+            <br>
+            <input type="text" id="event_suburb" name="event_suburb" class="form-control " data-pattern="^.{1,255}$" placeholder="Suburb the event will be held in">
+            <br>
+
+            <div class="form-group">
+              <div class="d-flex justify-content-between">
+                <label for="name">Filter by type of event</label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_caterOption1" value="Wedding Services Catering">
+                  Wedding Services Catering
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption2" value="Corporate Catering">
+                  Corporate Catering
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption3" value="Cocktail Reception">
+                  Cocktail Reception
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption4" value="Sit-down Catering">
+                  Sit-down Catering
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption5" value="Petite Take-Away Buffet Catering">
+                  Petite Take-Away Buffet Catering
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption6" value="Bento Catering">
+                  Bento Catering
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_events_type" id="search_typeOption7" value="Buffet Catering">
+                  Buffet Catering
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="d-flex justify-content-between">
+                <label for="name">Filter by..</label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio1" value="Cook on province">
+                  Cook on province
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio2" value="Bring prepared food">
+                  Bring prepared food
+                </label>
+              </div>
+              <div class="d-flex justify-content-between form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="search_legendRadio" id="search_legendRadio3" value="Cook on province & Bring prepared food">
+                  Both
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" name="request_button" id="request_button" value="<%= JSON.stringify(request_list) %>" class="btn btn-dark mt-2 mt-sm-0">Filter Requests
+            </button>
+
+          </div>
+
+        </form> 
+      </div>
+    </div>
+    <!-- Main Content -->
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+              <% for (var i=0; i < request_list.length; i++) { %>
+                <div class="row">
+                <form method="post" action="/individual_request">
+                  <input type="submit" name="event_name" id="event_name" class="list-group-item list-group-item-action" value="<%=request_list[i]%>">
+                </form>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+    <!-- Search validation scripts -->
+  <script>
+     function checkEventType() {
+      var EventTypeList = document.getElementsByName("search_events_type");
+      var i;
+      for (i=0; i<EventTypeList.length; i++) {
+        if (EventTypeList[i].checked) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function checkCateringType() {
+      var CateringTypeList = document.getElementsByName("search_legendRadio");
+      var j;
+      for (j=0; j<CateringTypeList.length; j++) {
+        if (CateringTypeList[j].checked) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function checkValid_request_filter(){
+      // var date = document.getElementById("search_event_date");
+      // var deadline = document.getElementById("search_event_deadline");
+      var suburb = document.getElementById("event_suburb");
+      var key = document.getElementById("search_event_name");
+
+      if (key.value == "" && suburb.value == "" && !checkEventType() && !checkCateringType() ){
+        
+        document.getElementById("request_filter_check").style.display = "block";
+
+        console.log("request not filled");
+        return false;
+      }else{
+        document.getElementById("request_filter_check").style.display = "none";
+        console.log("request filled");
+        return true;
+
+      }
+
+    }
+  </script>
 
     <!-- Footer -->
     <footer>

@@ -56,7 +56,7 @@
               <div class="search-container">
                 <form action="/search_business" method="post" onsubmit = "return checkValid_business()">
                   <div class="col-md">
-                    <div class="alert alert-warning" style="display:none" id="business_check">Please fill in one or more</div>
+                    <div class="alert alert-warning" style="display:none" id="business_check">Please enter the key word!</div>
                     <input type="text" id="search_business_name" name="search_business_name" placeholder="Search using business name " class="form-control "> 
                     <br>
                     <button type="submit" name="business_button" id="business_button" value="<%= JSON.stringify(business_list) %>" class="btn btn-dark mt-2 mt-sm-0">Search Business
@@ -279,6 +279,7 @@
         
       </div>
     </div> -->
+    <!-- Main Content -->
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
@@ -294,59 +295,8 @@
       </div>
     </div>
 
-    <!-- Main Content -->
-<!--  <div class="container">
-  	<div class="row">
-      <div class="col-lg-8">
-        <div class="search-container">
-
-            <form action="/search" method="post">
-
-              <div class="col-md-6">
-                <input type="text" id="search_event_name" name="search_event_name" placeholder="Search using event name" class="form-control " required pattern=".{1,255}">
-                <br>
-                <div class="input-group date">
-                  <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="search_event_date" name="search_event_date" class="form-control" placeholder="Date of event">
-                  <div class="input-group-addon">
-                    <span class="glyphicon glyphicon-th"></span>
-                  </div>
-                </div>
-                <br>
-                <div class="input-group date">
-                  <input data-provide="datepicker" data-date-format="yyyy-mm-dd" type="text" id="search_event_deadline" name="search_event_deadline" class="form-control" placeholder="Bidding deadline">
-                  <div class="input-group-addon">
-                    <span class="glyphicon glyphicon-th"></span>
-                  </div>
-                </div>
-                <br>
-                <input type="submit" value=" Advance Search Requests " class="btn btn-dark mt-2 mt-sm-0">
-              </div>
-
-              <div class="col-md-6">
-
-              </div>
-
-            </form>
-
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <!-- Search validation scripts -->
   <script>
-    // function checkValid_search() {
-      // var key = document.getElementById("search_business_name");
-      // if (key.value == "") {
-      //   document.getElementById("business_check").style.display = "block";
-        //console.log("search not filled");
-      //   return false;
-      // }else{
-        // document.getElementById("business_check").style.display = "none";
-        //console.log("search filled");
-    //     return true;
-    //   }
-    // }
 
     // function checkEventType() {
     //   var EventTypeList = document.getElementsByName("search_events_type");

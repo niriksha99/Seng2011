@@ -509,7 +509,7 @@ app.post('/filter_business', function(req, res){
 });	
 
 //advance search for events
-app.post('/search_requests', function(req, res)
+app.post('/filter_requests', function(req, res)
 {
 	var key = req.body.search_event_name;
 	var date = req.body.search_event_date;
@@ -517,64 +517,118 @@ app.post('/search_requests', function(req, res)
 	var suburb = req.body.event_suburb;
 	var type = req.body.search_events_type;
 	var cook = req.body.search_legendRadio;
+	var list = JSON.parse(req.body.request_button);
 
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
-		var event_result = [];
-		var business_result = [];
+		var request_result =[];
+		// var date_result = [];
+		// var deadline_result = [];
+		var suburb_result = [];
+		var type_result = [];
+		var cook_result = [];
+		var name_result = [];
+
 		for (var i = 0; i < result.length; i++ ){
-			if (typeof key !== 'undefined'){
-				var name = key.toLowerCase();
-				if (result[i].event_name.toLowerCase().includes(name)){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof date !== 'undefined'){
-				if (result[i].event_date == date){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof dealine !== 'undefined'){
-				if (result[i].event_deadline == dealine){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof suburb !== 'undefined'){
-				var sb = '"' + suburb.toLowerCase() + '"';
-				if (result[i].event_suburb.toLowerCase() == sb){
-					if (!event_result.includes(result[i].event_name)){
-						event_result.push(result[i].event_name);
-					}
-				}
-			}
-			if (typeof type !== 'undefined'){
-				for(var j = 0; j < type.length; j++){
-					if (result[i].event_type == type[j]){
-						if (!event_result.includes(result[i].event_name)){
-							event_result.push(result[i].event_name);
+			if (list.includes(result[i].event_name)){
+				if (typeof key !== 'undefined'){
+					var n = key.toLowerCase();
+					if (result[i].event_name.toLowerCase().includes(n)){
+						if (!name_result.includes(result[i].event_name)){
+							name_result.push(result[i].event_name);
 						}
 					}
+				}else{
+					name_result.push(result[i].event_name);
 				}
-			}
-			if (typeof cook !== 'undefined'){
-				for(var m = 0; m < cook.length; m++){
-					if (result[i].choice == cook[m]){
-						if (!event_result.includes(result[i].event_name)){
-							event_result.push(result[i].event_name);
+
+				// if (typeof date !== 'undefined'){
+				// 	var d1 = result[i].event_date.getDate();
+
+				// 	var m1 = result[i].event_date.getMonth();+1
+				// 	var y1 = result[i].event_date.getFullYear();
+				// 	var ymd1 = 	y1 +"-" + m1 +"-" +d1;
+				// 	console.log(result[i].event_date);
+				// 	console.log(ymd1);
+				// 	console.log(date);			
+				// 	if (ymd1 == date){
+				// 		if (!date_result.includes(result[i].event_name)){
+				// 			date_result.push(result[i].event_name);
+				// 		}
+				// 	}
+				// }else{
+				// 	date_result.push(result[i].event_name);
+				// }
+				// console.log(date_result);
+
+				// if (typeof dealine !== 'undefined'){
+				// 	if (result[i].event_deadline == dealine){
+				// 		if (!deadline_result.includes(result[i].event_name)){
+				// 			deadline_result.push(result[i].event_name);
+				// 		}
+				// 	}
+				// }else{
+				// 	deadline_result.push(result[i].event_name);
+				// }
+
+				if (typeof suburb !== 'undefined'){
+					var sb = suburb.toLowerCase() ;
+					if (result[i].event_suburb.toLowerCase().includes(sb)){
+						if (!suburb_result.includes(result[i].event_name)){
+							suburb_result.push(result[i].event_name);
 						}
 					}
+				}else{
+					suburb_result.push(result[i].event_name);
+				}
+
+				if (typeof type !== 'undefined'){
+					if (type.length > 7){
+						if (result[i].event_type.includes(type)){
+							if (!type_result.includes(result[i].event_name)){
+								type_result.push(result[i].event_name);
+							}
+						}
+					}else{
+						for(var j = 0; j < type.length; j++){
+							if (result[i].event_type.includes(type[j])){
+								if (!type_result.includes(result[i].event_name)){
+									type_result.push(result[i].event_name);
+								}
+							}
+						}
+					}
+				}else{
+					type_result.push(result[i].event_name);
+				}
+
+				if (typeof cook !== 'undefined'){
+					if (cook.length > 3){
+						if (result[i].choice.includes(cook)){
+							if (!cook_result.includes(result[i].event_name)){
+								cook_result.push(result[i].event_name);
+							}
+						}
+					}else{
+						for(var m = 0; m < cook.length; m++){
+							if (result[i].choice.includes(cook[m])){
+								if (!cook_result.includes(result[i].event_name)){
+									cook_result.push(result[i].event_name);
+								}
+							}
+						}
+					}	
+				}else{
+					cook_result.push(result[i].event_name);
+				}
+
+				if (name_result.includes(result[i].event_name) && suburb_result.includes(result[i].event_name) && type_result.includes(result[i].event_name) && cook_result.includes(result[i].event_name)){
+					request_result.push(result[i].event_name);
 				}
 			}
+			
 		}
-		console.log(event_result);
-		console.log(business_result);
-		res.render('search.html', {request_list: event_result,business_list: business_result});
+		res.render('catering_requests.html', {request_list: request_result});
 
 	});
 });
@@ -1129,13 +1183,17 @@ app.get('/accepted_bids', login_required, bidder_required, function(req, res)
 
 app.get('/sort_by_price_low', function(req, res)
 {
+	var list = JSON.parse(req.body.aboutus);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			sort_by_price.push(result[i].budget);
-			sort_by_price.push(result[i].event_name);
+			if (list.inclues(result[i].event_name)){
+				sort_by_price.push(result[i].budget);
+				sort_by_price.push(result[i].event_name);	
+			}
+			
 		}
 		// use bubblesort
 		for (var i = 0; i < sort_by_price.length; i=i+2) {
@@ -1161,13 +1219,17 @@ app.get('/sort_by_price_low', function(req, res)
 
 app.get('/sort_by_price_high', function(req, res)
 {
+	var list = JSON.parse(req.body.aboutus);
 	con.query('SELECT * FROM Requests', function(err, result, fields) {
 		if (err) throw err;
 		// put info in 2d array
 		var sort_by_price = [];
 		for (var i = 0; i < result.length; i++) {
-			sort_by_price.push(result[i].budget);
-			sort_by_price.push(result[i].event_name);
+			if (list.inclues(result[i].event_name)){
+				sort_by_price.push(result[i].budget);
+				sort_by_price.push(result[i].event_name);
+		
+			}
 		}
 		// use bubblesort
 		for (var i = 0; i < sort_by_price.length; i=i+2) {
