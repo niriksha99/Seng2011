@@ -1002,7 +1002,7 @@ app.get('/individual_business', login_required, bidder_required, function(req, r
 	});
 });
 
-app.post('/individual_business', login_required, bidder_required, function(req, res)
+app.post('/individual_business', login_required, function(req, res)
 {
 	con.query('SELECT * FROM Businesses WHERE title = ?', [req.body.business_name], function(err, result, fields) {
 		if (err) throw err;
